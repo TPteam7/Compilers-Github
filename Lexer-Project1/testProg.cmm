@@ -1,3 +1,20 @@
+/*
+Project:
+Needs to print error handling
+Can be in any code
+We have a C-- starter grammar
+need a test file of a code
+declaration, assignments, addition, and writes (write x;)
+
+Recognizes every valid keyword, expression, or construct defined in the grammar provided.
+Returns the correct token and its kind.
+Generates lexical errors when there are errors in the code, including their exact location.
+Certifies that the source code is correct when there are no lexical errors.
+
+TODO:
+add the advanced commands from padlet
+*/
+
 int x;
 int y;
 x = 1;
