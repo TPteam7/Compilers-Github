@@ -16,5 +16,22 @@ add the advanced commands from padlet
 */
 
 int x;
-int y;
 x = 1;
+float y;
+y = 1.1;
+print(y);
+if(x = 1) {
+    y = 1.2;
+}
+z = x + 1;
+z = x - 1;
+z = x * 1;
+z = x / 1;
+
+while(x = 1) {
+    if(z = 1) {
+        x = 2;
+    }
+}
+
+return x;
