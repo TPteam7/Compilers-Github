@@ -26,7 +26,14 @@ enum yytokentype {
     OPEN_BRACE = 274,
     CLOSE_BRACE = 275,
     SEMICOLON = 276,
-    COMMA = 277
+    COMMA = 277,
+	PLUS_EQUAL = 288,
+	SUB_EQUAL = 289,
+	MULT_EQUAL = 290,
+	POWER = 291,
+	DIV_EQUAL = 292,
+	ADD_ONE = 293,
+	SUB_ONE = 294,
 };
 
 int words = 0;
@@ -93,6 +100,34 @@ ws          {delim}+
               printf("%s : NUMBER\n", yytext); 
               return NUM; }
 
+"+="		{ chars += 2; 
+              printf("%s : PLUS_EQUAL\n", yytext); 
+              return PLUS_EQUAL; }
+
+"-="		{ chars += 2; 
+              printf("%s : SUB_EQUAL\n", yytext); 
+              return SUB_EQUAL; }
+
+"*="		{ chars += 2; 
+              printf("%s : MULT_EQUAL\n", yytext); 
+              return MULT_EQUAL; }
+
+"/="		{ chars += 2; 
+              printf("%s : DIV_EQUAL\n", yytext); 
+              return DIV_EQUAL; }
+
+"++;"		{ chars += 2; 
+              printf("%s : ADD_ONE\n", yytext); 
+              return ADD_ONE; }
+
+"--;"		{ chars += 2; 
+              printf("%s : SUB_ONE\n", yytext); 
+              return SUB_ONE; }
+
+"^"		{ chars ++; 
+              printf("%s : POWER\n", yytext); 
+              return POWER; }
+
 "+"         { chars++; 
               printf("%s : PLUS\n", yytext); 
               return PLUS; }
@@ -137,11 +172,25 @@ ws          {delim}+
               printf("%s : COMMA\n", yytext);
               return COMMA; }           
 
-\n          { lines++; 
-              chars = 0; 
-              return '\n'; }
 
-{ws}        { chars++; /* Ignore whitespace */ }
+\r\n    { lines++; chars = 0; }
+\n		{lines++; chars=0;}
+[ \t]	{chars++;}
+.		{chars++;
+         printf("%s : Unrecognized symbol at line %d char %d\n", yytext,lines,chars);
+		}
+
+{
+	/*
+		Debugging for symbols. Don't allow any other symbols then the patterns we define above.
+	*/
+}
+
+"+"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '+' at line %d char %d\n", lines, chars); }
+"*"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '*' at line %d char %d\n", lines, chars); }
+"/"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '/' at line %d char %d\n", lines, chars); }
+"-"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '-' at line %d char %d\n", lines, chars); }
+"^"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '^' at line %d char %d\n", lines, chars); }
 
 %%
 
