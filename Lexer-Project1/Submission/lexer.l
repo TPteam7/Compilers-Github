@@ -116,7 +116,7 @@ ws          {delim}+
               printf("%s : DIV_EQUAL\n", yytext); 
               return DIV_EQUAL; }
 
-"++;"		{ chars += 2; 
+"++"		{ chars += 2; 
               printf("%s : ADD_ONE\n", yytext); 
               return ADD_ONE; }
 
@@ -186,6 +186,8 @@ ws          {delim}+
 	*/
 }
 
+"++"[^;] { chars++; printf("Error: Invalid symbol after '++' at line %d char %d\n", lines, chars); }
+"--"[^;] { chars++; printf("Error: Invalid symbol after '--' at line %d char %d\n", lines, chars); }
 "+"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '+' at line %d char %d\n", lines, chars); }
 "*"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '*' at line %d char %d\n", lines, chars); }
 "/"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '/' at line %d char %d\n", lines, chars); }
