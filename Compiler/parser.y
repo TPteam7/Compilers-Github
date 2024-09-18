@@ -29,7 +29,7 @@ ASTNode* root = NULL;
 %token <char> SEMICOLON
 %token <operator> EQ
 %token <char> PLUS
-%token <number> NUMBER
+%token <number> NUM
 %token <string> WRITE
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
