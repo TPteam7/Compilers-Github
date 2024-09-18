@@ -13,7 +13,7 @@ extern int yyparse();
 
 void yyerror(const char* s);
 
-ASTNode* root = NULL; 
+// ASTNode* root = NULL; 
 %}
 
 %union {
@@ -21,7 +21,7 @@ ASTNode* root = NULL;
 	char character;
 	char* string;
 	char* operator;
-	struct ASTNode* ast;
+	// struct ASTNode* ast;
 }
 
 %token <string> TYPE
@@ -69,8 +69,8 @@ int main() {
     if (yyparse() == 0) {
         // Successfully parsed
 		printf("Parsing successful!\n");
-        traverseAST(root, 0);
-        freeAST(root);
+        // traverseAST(root, 0);
+        // freeAST(root);
     } else {
         fprintf(stderr, "Parsing failed\n");
     }

@@ -1,16 +1,18 @@
-# The default target is to build the lexer
-all: lexer
+all: parser
 
-# Build the lexer executable from the Flex file
-lexer: lexer.l
+parser.tab.c parser.tab.h:	parser.y
+	bison -t -v -d parser.y
+
+lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l
-	gcc lex.yy.c -o lexer -lfl
 
-# Clean up the generated files
+lexer: lex.yy.c parser.tab.c parser.tab.h
+	gcc -o lexer lex.yy.c parser1.tab.c
+
+parser: lex.yy.c parser.tab.c parser.tab.h
+	gcc -o parser parser.tab.c lex.yy.c
+	./parser testProg.cmm
+
 clean:
-	rm -f lexer lex.yy.c
+	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output lex.yy.o parser.tab.o
 	ls -l
-
-# Run the lexer (optional target for running it on a specific file)
-run: lexer
-	./lexer testProg.cmm

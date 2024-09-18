@@ -195,23 +195,3 @@ ws          {delim}+
 "^"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '^' at line %d char %d\n", lines, chars); }
 
 %%
-
-int main(int argc, char** argv)
-{
-    #ifdef YYDEBUG
-        yydebug = 1;
-    #endif
-
-    printf("Compiler started. \n\n");
-
-    if (argc > 1){
-        if(!(yyin = fopen(argv[1], "r"))) {
-            perror(argv[1]);
-            return(1);
-        }
-    }
-    
-    while(yylex()) {
-
-    }
-}
