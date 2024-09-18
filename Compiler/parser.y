@@ -13,7 +13,7 @@ extern int yyparse();
 
 void yyerror(const char* s);
 
-// ASTNode* root = NULL; 
+ASTNode* root = NULL; 
 %}
 
 %union {
@@ -21,7 +21,7 @@ void yyerror(const char* s);
 	char character;
 	char* string;
 	char* operator;
-	// struct ASTNode* ast;
+	struct ASTNode* ast;
 }
 
 %token <string> TYPE
@@ -39,25 +39,35 @@ void yyerror(const char* s);
 
 %%
 
-Program: VarDeclList StmtList    {};
-
-VarDeclList:  {} 
-	| VarDecl VarDeclList {};
-
-VarDecl: TYPE ID SEMICOLON {} 
-	| TYPE ID {};
+Program: StmtList {};
 
 StmtList:  {} 
 	| Stmt StmtList {};
 
-Stmt: ID EQ Expr SEMICOLON {} 
-	| WRITE ID SEMICOLON {};
+Stmt: Declaration {} 
+	| Assignment {}
+	| Print {};
 
-Expr: ID BinOp ID {}
+Declaration: Type ID SEMICOLON {};
+
+Type: INT {}
+	| FLOAT {};
+
+Assignment: ID EQ Expr SEMICOLON {};
+
+Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON {};
+
+Expr: Expr PLUS Term {}
+	| Expr MINUS Term {}
+	| Term {};
+
+Term: Term MULT Factor {}
+	| Term DIV Factor {}
+	| Factor {};
+
+Factor: OPEN_PAREN Expr CLOSE_PAREN {}
 	| ID {}
-	| NUMBER {};
-
-BinOp: PLUS {};
+	| NUM {};
 
 %%
 
@@ -69,13 +79,10 @@ int main() {
     if (yyparse() == 0) {
         // Successfully parsed
 		printf("Parsing successful!\n");
-        // traverseAST(root, 0);
-        // freeAST(root);
-    } else {
-        fprintf(stderr, "Parsing failed\n");
-    }
-
-    fclose(yyin);
+        traverseAST(root, 0);
+        freeAST(root);
+reeAST(root);
+se(yyin);
     return 0;
 }
 
