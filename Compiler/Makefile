@@ -7,7 +7,7 @@ lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l
 
 lexer: lex.yy.c parser.tab.c parser.tab.h
-	gcc -o lexer lex.yy.c parser1.tab.c
+	gcc -o lexer lex.yy.c parser.tab.c
 
 parser: lex.yy.c parser.tab.c parser.tab.h
 	gcc -o parser parser.tab.c lex.yy.c

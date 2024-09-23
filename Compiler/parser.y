@@ -13,7 +13,7 @@ extern int yyparse();
 
 void yyerror(const char* s);
 
-ASTNode* root = NULL; 
+//ASTNode* root = NULL; 
 %}
 
 %union {
@@ -24,17 +24,18 @@ ASTNode* root = NULL;
 	struct ASTNode* ast;
 }
 
-%token <string> TYPE
+
 %token <string> ID
-%token <char> SEMICOLON
+%token INT FLOAT
+%token <string> PRINT IF ELSE WHILE RETURN
+%token <char> SEMICOLON COMMA PLUS MINUS MULT DIV
+%token <char> OPEN_PAREN OPEN_BRACE CLOSE_BRACE CLOSE_PAREN
 %token <operator> EQ
-%token <char> PLUS
 %token <number> NUM
-%token <string> WRITE
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
-%type <ast> Program VarDecl VarDeclList Stmt StmtList Expr BinOp
+%type <ast> Program Stmt StmtList Expr
 %start Program
 
 %%
@@ -48,10 +49,10 @@ Stmt: Declaration {}
 	| Assignment {}
 	| Print {};
 
-Declaration: Type ID SEMICOLON {};
+Declaration: Type ID SEMICOLON { printf("Declared variable: %s\n", $2); };
 
-Type: INT {}
-	| FLOAT {};
+Type: INT { printf("Parsed INT type\n"); }
+    | FLOAT { printf("Parsed FLOAT type\n"); };
 
 Assignment: ID EQ Expr SEMICOLON {};
 
@@ -72,21 +73,27 @@ Factor: OPEN_PAREN Expr CLOSE_PAREN {}
 %%
 
 int main() {
-    // Initialize file or input source
     yyin = fopen("testProg.cmm", "r");
 
-    // Start parsing
-    if (yyparse() == 0) {
-        // Successfully parsed
-		printf("Parsing successful!\n");
-        traverseAST(root, 0);
-        freeAST(root);
-reeAST(root);
-se(yyin);
+	yydebug = 1;  // Enable Bison debug mode
+
+	printf("Starting to parse\n");
+    int result = yyparse();
+    printf("yyparse() returned %d\n", result);
+
+	
+
+    if (result == 0) {
+        printf("Parsing successful!\n");
+        //traverseAST(root, 0);
+        //freeAST(root);
+    }
+
+    fclose(yyin);
     return 0;
 }
 
 void yyerror(const char* s) {
-	fprintf(stderr, "Parse error: %s\n", s);
-	exit(1);
+    fprintf(stderr, "Parse error: %s\n", s);
+    exit(1);
 }

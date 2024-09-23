@@ -96,6 +96,8 @@ ws          {delim}+
               printf("%s : IDENTIFIER\n", yytext); 
               return ID; }
 
+{ws}        { /* Ignore whitespace */ }
+
 {NUMBER}    { words++; chars += strlen(yytext); 
               printf("%s : NUMBER\n", yytext); 
               return NUM; }

@@ -20,7 +20,7 @@ enum yytokentype {
     MINUS = 268,
     MULT = 269,
     DIV = 270,
-    ASSIGN = 271,
+    EQ = 271,
     OPEN_PAREN = 272,
     CLOSE_PAREN = 273,
     OPEN_BRACE = 274,
@@ -145,8 +145,8 @@ ws          {delim}+
               return DIV; }
 
 "="         { chars++; 
-              printf("%s : ASSIGN\n", yytext); 
-              return ASSIGN; }
+              printf("%s : EQ\n", yytext); 
+              return EQ; }
 
 "("         { chars++;
               printf("%s : OPEN_PAREN\n", yytext);
