@@ -68,12 +68,13 @@ extern int yydebug;
     MINUS = 269,                   /* MINUS  */
     MULT = 270,                    /* MULT  */
     DIV = 271,                     /* DIV  */
-    OPEN_PAREN = 272,              /* OPEN_PAREN  */
-    OPEN_BRACE = 273,              /* OPEN_BRACE  */
-    CLOSE_BRACE = 274,             /* CLOSE_BRACE  */
-    CLOSE_PAREN = 275,             /* CLOSE_PAREN  */
-    EQ = 276,                      /* EQ  */
-    NUM = 277                      /* NUM  */
+    ASSIGN = 272,                  /* ASSIGN  */
+    OPEN_PAREN = 273,              /* OPEN_PAREN  */
+    OPEN_BRACE = 274,              /* OPEN_BRACE  */
+    CLOSE_BRACE = 275,             /* CLOSE_BRACE  */
+    CLOSE_PAREN = 276,             /* CLOSE_PAREN  */
+    EQ = 277,                      /* EQ  */
+    NUMBER = 278                   /* NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -89,7 +90,7 @@ union YYSTYPE
 	char* string;
 	char* operator;
 
-#line 93 "parser.tab.h"
+#line 94 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

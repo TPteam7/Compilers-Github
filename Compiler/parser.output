@@ -5,6 +5,7 @@ Terminals unused in grammar
     WHILE
     RETURN
     COMMA
+    ASSIGN
     OPEN_BRACE
     CLOSE_BRACE
 
@@ -41,7 +42,7 @@ Grammar
 
    18 Factor: OPEN_PAREN Expr CLOSE_PAREN
    19       | ID
-   20       | NUM
+   20       | NUMBER
 
 
 Terminals, with rules where they appear
@@ -62,46 +63,47 @@ Terminals, with rules where they appear
     MINUS <char> (269) 13
     MULT <char> (270) 15
     DIV <char> (271) 16
-    OPEN_PAREN <char> (272) 11 18
-    OPEN_BRACE <char> (273)
-    CLOSE_BRACE <char> (274)
-    CLOSE_PAREN <char> (275) 11 18
-    EQ <operator> (276) 10
-    NUM <number> (277) 20
+    ASSIGN <char> (272)
+    OPEN_PAREN <char> (273) 11 18
+    OPEN_BRACE <char> (274)
+    CLOSE_BRACE <char> (275)
+    CLOSE_PAREN <char> (276) 11 18
+    EQ <operator> (277) 10
+    NUMBER <number> (278) 20
 
 
 Nonterminals, with rules where they appear
 
-    $accept (23)
+    $accept (24)
         on left: 0
-    Program <string> (24)
+    Program <string> (25)
         on left: 1
         on right: 0
-    StmtList <string> (25)
+    StmtList <string> (26)
         on left: 2 3
         on right: 1 3
-    Stmt <string> (26)
+    Stmt <string> (27)
         on left: 4 5 6
         on right: 3
-    Declaration (27)
+    Declaration (28)
         on left: 7
         on right: 4
-    Type (28)
+    Type (29)
         on left: 8 9
         on right: 7
-    Assignment (29)
+    Assignment (30)
         on left: 10
         on right: 5
-    Print (30)
+    Print (31)
         on left: 11
         on right: 6
-    Expr <string> (31)
+    Expr <string> (32)
         on left: 12 13 14
         on right: 10 11 12 13 18
-    Term (32)
+    Term (33)
         on left: 15 16 17
         on right: 12 13 14 15 16
-    Factor (33)
+    Factor (34)
         on left: 18 19 20
         on right: 15 16 17
 
@@ -221,7 +223,7 @@ State 12
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
-    NUM         shift, and go to state 19
+    NUMBER      shift, and go to state 19
 
     Expr    go to state 20
     Term    go to state 21
@@ -234,7 +236,7 @@ State 13
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
-    NUM         shift, and go to state 19
+    NUMBER      shift, and go to state 19
 
     Expr    go to state 23
     Term    go to state 21
@@ -275,7 +277,7 @@ State 18
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
-    NUM         shift, and go to state 19
+    NUMBER      shift, and go to state 19
 
     Expr    go to state 25
     Term    go to state 21
@@ -284,7 +286,7 @@ State 18
 
 State 19
 
-   20 Factor: NUM •
+   20 Factor: NUMBER •
 
     $default  reduce using rule 20 (Factor)
 
@@ -361,7 +363,7 @@ State 27
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
-    NUM         shift, and go to state 19
+    NUMBER      shift, and go to state 19
 
     Term    go to state 33
     Factor  go to state 22
@@ -373,7 +375,7 @@ State 28
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
-    NUM         shift, and go to state 19
+    NUMBER      shift, and go to state 19
 
     Term    go to state 34
     Factor  go to state 22
@@ -385,7 +387,7 @@ State 29
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
-    NUM         shift, and go to state 19
+    NUMBER      shift, and go to state 19
 
     Factor  go to state 35
 
@@ -396,7 +398,7 @@ State 30
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
-    NUM         shift, and go to state 19
+    NUMBER      shift, and go to state 19
 
     Factor  go to state 36
 

@@ -24,10 +24,10 @@ void yyerror(const char* s);
 %token <string> ID
 %token INT FLOAT
 %token <string> PRINT IF ELSE WHILE RETURN
-%token <char> SEMICOLON COMMA PLUS MINUS MULT DIV
+%token <char> SEMICOLON COMMA PLUS MINUS MULT DIV ASSIGN
 %token <char> OPEN_PAREN OPEN_BRACE CLOSE_BRACE CLOSE_PAREN
 %token <operator> EQ
-%token <number> NUM
+%token <number> NUMBER
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
@@ -36,7 +36,7 @@ void yyerror(const char* s);
 
 %%
 
-Program: StmtList { printf("Program parsed successfully.\n"); };
+Program: StmtList { printf("Recieved statement list\n"); };
 
 StmtList:  
 	  {}
@@ -57,15 +57,15 @@ Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { printf("Print statement\n")
 
 Expr: Expr PLUS Term { printf("Add operation\n"); }
 	| Expr MINUS Term { printf("Subtract operation\n"); }
-	| Term;
+	| Term {};
 
 Term: Term MULT Factor { printf("Multiply operation\n"); }
 	| Term DIV Factor { printf("Divide operation\n"); }
-	| Factor;
+	| Factor {};
 
 Factor: OPEN_PAREN Expr CLOSE_PAREN { printf("Parenthesized expression\n"); }
 	| ID { printf("Variable: %s\n", $1); }
-	| NUM { printf("Number: %d\n", $1); };
+	| NUMBER { printf("Number: %d\n", $1); };
 
 %%
 

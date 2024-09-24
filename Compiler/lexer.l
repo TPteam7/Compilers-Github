@@ -3,38 +3,9 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "parser.tab.h"
 
 #define YY_DECL int yylex()
-
-enum yytokentype {
-    INT = 258,
-    FLOAT = 259,
-    PRINT = 260,
-    IF = 261,
-    ELSE = 262,
-    WHILE = 263,
-    RETURN = 264,
-    ID = 265,
-    NUM = 266,
-    PLUS = 267,
-    MINUS = 268,
-    MULT = 269,
-    DIV = 270,
-    ASSIGN = 271,
-    OPEN_PAREN = 272,
-    CLOSE_PAREN = 273,
-    OPEN_BRACE = 274,
-    CLOSE_BRACE = 275,
-    SEMICOLON = 276,
-    COMMA = 277,
-	PLUS_EQUAL = 288,
-	SUB_EQUAL = 289,
-	MULT_EQUAL = 290,
-	POWER = 291,
-	DIV_EQUAL = 292,
-	ADD_ONE = 293,
-	SUB_ONE = 294,
-};
 
 int words = 0;
 int chars = 0;
@@ -66,69 +37,50 @@ ws          {delim}+
 
 "int"       { words++; chars += strlen(yytext); 
               printf("%s : TYPE\n", yytext); 
+              yylval.string = strdup(yytext); 
               return INT; }
 
 "float"     { words++; chars += strlen(yytext); 
               printf("%s : TYPE\n", yytext); 
+              yylval.string = strdup(yytext); 
               return FLOAT; }
 
 "print"      { words++; chars += strlen(yytext); 
               printf("%s : KEYWORD\n", yytext); 
+              yylval.string = strdup(yytext); 
               return PRINT; }
 
 "if"        { words++; chars += strlen(yytext); 
               printf("%s : KEYWORD\n", yytext); 
+              yylval.string = strdup(yytext); 
               return IF; }
               
 "else"      { words++; chars += strlen(yytext); 
               printf("%s : KEYWORD\n", yytext); 
+              yylval.string = strdup(yytext); 
               return ELSE; }
 
 "while"     { words++; chars += strlen(yytext); 
               printf("%s : KEYWORD\n", yytext); 
+              yylval.string = strdup(yytext); 
               return WHILE; }
 
 "return"    { words++; chars += strlen(yytext); 
               printf("%s : KEYWORD\n", yytext); 
+              yylval.string = strdup(yytext); 
               return RETURN; }
 
 {ID}        { words++; chars += strlen(yytext); 
               printf("%s : IDENTIFIER\n", yytext); 
+              yylval.string = strdup(yytext); 
               return ID; }
 
 {ws}        { /* Ignore whitespace */ }
 
 {NUMBER}    { words++; chars += strlen(yytext); 
-              printf("%s : NUMBER\n", yytext); 
-              return NUM; }
-
-"+="		{ chars += 2; 
-              printf("%s : PLUS_EQUAL\n", yytext); 
-              return PLUS_EQUAL; }
-
-"-="		{ chars += 2; 
-              printf("%s : SUB_EQUAL\n", yytext); 
-              return SUB_EQUAL; }
-
-"*="		{ chars += 2; 
-              printf("%s : MULT_EQUAL\n", yytext); 
-              return MULT_EQUAL; }
-
-"/="		{ chars += 2; 
-              printf("%s : DIV_EQUAL\n", yytext); 
-              return DIV_EQUAL; }
-
-"++"		{ chars += 2; 
-              printf("%s : ADD_ONE\n", yytext); 
-              return ADD_ONE; }
-
-"--;"		{ chars += 2; 
-              printf("%s : SUB_ONE\n", yytext); 
-              return SUB_ONE; }
-
-"^"		{ chars ++; 
-              printf("%s : POWER\n", yytext); 
-              return POWER; }
+              printf("%s : NUMBER\n", yytext);
+              yylval.number = atoi(strdup(yytext));  
+              return NUMBER; }
 
 "+"         { chars++; 
               printf("%s : PLUS\n", yytext); 
