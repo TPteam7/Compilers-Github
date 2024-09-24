@@ -73,7 +73,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "AST.h"
 
 extern int yylex();
 extern int yyparse();
@@ -83,9 +82,8 @@ extern int yyparse();
 
 void yyerror(const char* s);
 
-//ASTNode* root = NULL; 
 
-#line 89 "parser.tab.c"
+#line 87 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -534,9 +532,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    43,    43,    45,    46,    48,    49,    50,    52,    54,
-      55,    57,    59,    61,    62,    63,    65,    66,    67,    69,
-      70,    71
+       0,    39,    39,    41,    43,    45,    46,    47,    49,    51,
+      52,    54,    56,    58,    59,    60,    62,    63,    64,    66,
+      67,    68
 };
 #endif
 
@@ -737,9 +735,9 @@ yy_symbol_value_print (FILE *yyo,
   switch (yykind)
     {
     case YYSYMBOL_ID: /* ID  */
-#line 36 "parser.y"
+#line 32 "parser.y"
          { fprintf(yyoutput, "%s", ((*yyvaluep).string)); }
-#line 743 "parser.tab.c"
+#line 741 "parser.tab.c"
         break;
 
       default:
@@ -1127,127 +1125,103 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: StmtList  */
-#line 43 "parser.y"
-                  {}
-#line 1133 "parser.tab.c"
-    break;
-
-  case 3: /* StmtList: %empty  */
-#line 45 "parser.y"
-           {}
-#line 1139 "parser.tab.c"
-    break;
-
-  case 4: /* StmtList: Stmt StmtList  */
-#line 46 "parser.y"
-                        {}
-#line 1145 "parser.tab.c"
+#line 39 "parser.y"
+                  { printf("Program parsed successfully.\n"); }
+#line 1131 "parser.tab.c"
     break;
 
   case 5: /* Stmt: Declaration  */
-#line 48 "parser.y"
+#line 45 "parser.y"
                   {}
-#line 1151 "parser.tab.c"
+#line 1137 "parser.tab.c"
     break;
 
   case 6: /* Stmt: Assignment  */
-#line 49 "parser.y"
+#line 46 "parser.y"
                      {}
-#line 1157 "parser.tab.c"
+#line 1143 "parser.tab.c"
     break;
 
   case 7: /* Stmt: Print  */
-#line 50 "parser.y"
+#line 47 "parser.y"
                 {}
-#line 1163 "parser.tab.c"
+#line 1149 "parser.tab.c"
     break;
 
   case 8: /* Declaration: Type ID SEMICOLON  */
-#line 52 "parser.y"
+#line 49 "parser.y"
                                { printf("Declared variable: %s\n", (yyvsp[-1].string)); }
-#line 1169 "parser.tab.c"
+#line 1155 "parser.tab.c"
     break;
 
   case 9: /* Type: INT  */
-#line 54 "parser.y"
+#line 51 "parser.y"
           { printf("Parsed INT type\n"); }
-#line 1175 "parser.tab.c"
+#line 1161 "parser.tab.c"
     break;
 
   case 10: /* Type: FLOAT  */
-#line 55 "parser.y"
+#line 52 "parser.y"
             { printf("Parsed FLOAT type\n"); }
-#line 1181 "parser.tab.c"
+#line 1167 "parser.tab.c"
     break;
 
   case 11: /* Assignment: ID EQ Expr SEMICOLON  */
-#line 57 "parser.y"
-                                 {}
-#line 1187 "parser.tab.c"
+#line 54 "parser.y"
+                                 { printf("Assigned value to variable: %s\n", (yyvsp[-3].string)); }
+#line 1173 "parser.tab.c"
     break;
 
   case 12: /* Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON  */
-#line 59 "parser.y"
-                                                   {}
-#line 1193 "parser.tab.c"
+#line 56 "parser.y"
+                                                   { printf("Print statement\n"); }
+#line 1179 "parser.tab.c"
     break;
 
   case 13: /* Expr: Expr PLUS Term  */
-#line 61 "parser.y"
-                     {}
-#line 1199 "parser.tab.c"
+#line 58 "parser.y"
+                     { printf("Add operation\n"); }
+#line 1185 "parser.tab.c"
     break;
 
   case 14: /* Expr: Expr MINUS Term  */
-#line 62 "parser.y"
-                          {}
-#line 1205 "parser.tab.c"
-    break;
-
-  case 15: /* Expr: Term  */
-#line 63 "parser.y"
-               {}
-#line 1211 "parser.tab.c"
+#line 59 "parser.y"
+                          { printf("Subtract operation\n"); }
+#line 1191 "parser.tab.c"
     break;
 
   case 16: /* Term: Term MULT Factor  */
-#line 65 "parser.y"
-                       {}
-#line 1217 "parser.tab.c"
+#line 62 "parser.y"
+                       { printf("Multiply operation\n"); }
+#line 1197 "parser.tab.c"
     break;
 
   case 17: /* Term: Term DIV Factor  */
-#line 66 "parser.y"
-                          {}
-#line 1223 "parser.tab.c"
-    break;
-
-  case 18: /* Term: Factor  */
-#line 67 "parser.y"
-                 {}
-#line 1229 "parser.tab.c"
+#line 63 "parser.y"
+                          { printf("Divide operation\n"); }
+#line 1203 "parser.tab.c"
     break;
 
   case 19: /* Factor: OPEN_PAREN Expr CLOSE_PAREN  */
-#line 69 "parser.y"
-                                    {}
-#line 1235 "parser.tab.c"
+#line 66 "parser.y"
+                                    { printf("Parenthesized expression\n"); }
+#line 1209 "parser.tab.c"
     break;
 
   case 20: /* Factor: ID  */
-#line 70 "parser.y"
-             {}
-#line 1241 "parser.tab.c"
+#line 67 "parser.y"
+             { printf("Variable: %s\n", (yyvsp[0].string)); }
+#line 1215 "parser.tab.c"
     break;
 
   case 21: /* Factor: NUM  */
-#line 71 "parser.y"
-              {}
-#line 1247 "parser.tab.c"
+#line 68 "parser.y"
+              { printf("Number: %d\n", (yyvsp[0].number)); }
+#line 1221 "parser.tab.c"
     break;
 
 
-#line 1251 "parser.tab.c"
+#line 1225 "parser.tab.c"
 
       default: break;
     }
@@ -1440,24 +1414,20 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 73 "parser.y"
+#line 70 "parser.y"
 
 
 int main() {
     yyin = fopen("testProg.cmm", "r");
 
-	yydebug = 1;  // Enable Bison debug mode
+	yydebug = 0;  // Disable Bison debug mode by default
 
 	printf("Starting to parse\n");
     int result = yyparse();
     printf("yyparse() returned %d\n", result);
 
-	
-
     if (result == 0) {
         printf("Parsing successful!\n");
-        //traverseAST(root, 0);
-        //freeAST(root);
     }
 
     fclose(yyin);
