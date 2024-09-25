@@ -23,51 +23,52 @@ Grammar
     6     | Print
 
     7 Declaration: Type ID SEMICOLON
+    8            | error SEMICOLON
 
-    8 Type: INT
-    9     | FLOAT
+    9 Type: INT
+   10     | FLOAT
 
-   10 Assignment: ID ASSIGN Expr SEMICOLON
+   11 Assignment: ID ASSIGN Expr SEMICOLON
 
-   11 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON
+   12 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON
 
-   12 Expr: Expr PLUS Term
-   13     | Expr MINUS Term
-   14     | Term
+   13 Expr: Expr PLUS Term
+   14     | Expr MINUS Term
+   15     | Term
 
-   15 Term: Term MULT Factor
-   16     | Term DIV Factor
-   17     | Factor
+   16 Term: Term MULT Factor
+   17     | Term DIV Factor
+   18     | Factor
 
-   18 Factor: OPEN_PAREN Expr CLOSE_PAREN
-   19       | ID
-   20       | NUMBER
+   19 Factor: OPEN_PAREN Expr CLOSE_PAREN
+   20       | ID
+   21       | NUMBER
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    error (256)
-    ID <string> (258) 7 10 19
-    INT (259) 8
-    FLOAT (260) 9
-    PRINT <string> (261) 11
+    error (256) 8
+    ID <string> (258) 7 11 20
+    INT (259) 9
+    FLOAT (260) 10
+    PRINT <string> (261) 12
     IF <string> (262)
     ELSE <string> (263)
     WHILE <string> (264)
     RETURN <string> (265)
-    SEMICOLON <character> (266) 7 10 11
+    SEMICOLON <character> (266) 7 8 11 12
     COMMA <character> (267)
-    OPEN_PAREN <character> (268) 11 18
+    OPEN_PAREN <character> (268) 12 19
     OPEN_BRACE <character> (269)
     CLOSE_BRACE <character> (270)
-    CLOSE_PAREN <character> (271) 11 18
-    ASSIGN <operator> (272) 10
-    PLUS <operator> (273) 12
-    MINUS <operator> (274) 13
-    MULT <operator> (275) 15
-    DIV <operator> (276) 16
-    NUMBER <number> (277) 20
+    CLOSE_PAREN <character> (271) 12 19
+    ASSIGN <operator> (272) 11
+    PLUS <operator> (273) 13
+    MINUS <operator> (274) 14
+    MULT <operator> (275) 16
+    DIV <operator> (276) 17
+    NUMBER <number> (277) 21
 
 
 Nonterminals, with rules where they appear
@@ -84,377 +85,393 @@ Nonterminals, with rules where they appear
         on left: 4 5 6
         on right: 3
     Declaration (27)
-        on left: 7
+        on left: 7 8
         on right: 4
     Type (28)
-        on left: 8 9
+        on left: 9 10
         on right: 7
     Assignment (29)
-        on left: 10
+        on left: 11
         on right: 5
     Print (30)
-        on left: 11
+        on left: 12
         on right: 6
     Expr <string> (31)
-        on left: 12 13 14
-        on right: 10 11 12 13 18
+        on left: 13 14 15
+        on right: 11 12 13 14 19
     Term (32)
-        on left: 15 16 17
-        on right: 12 13 14 15 16
+        on left: 16 17 18
+        on right: 13 14 15 16 17
     Factor (33)
-        on left: 18 19 20
-        on right: 15 16 17
+        on left: 19 20 21
+        on right: 16 17 18
 
 
 State 0
 
     0 $accept: • Program $end
 
-    ID     shift, and go to state 1
-    INT    shift, and go to state 2
-    FLOAT  shift, and go to state 3
-    PRINT  shift, and go to state 4
+    error  shift, and go to state 1
+    ID     shift, and go to state 2
+    INT    shift, and go to state 3
+    FLOAT  shift, and go to state 4
+    PRINT  shift, and go to state 5
 
-    $default  reduce using rule 2 (StmtList)
+    $end  reduce using rule 2 (StmtList)
 
-    Program      go to state 5
-    StmtList     go to state 6
-    Stmt         go to state 7
-    Declaration  go to state 8
-    Type         go to state 9
-    Assignment   go to state 10
-    Print        go to state 11
+    Program      go to state 6
+    StmtList     go to state 7
+    Stmt         go to state 8
+    Declaration  go to state 9
+    Type         go to state 10
+    Assignment   go to state 11
+    Print        go to state 12
 
 
 State 1
 
-   10 Assignment: ID • ASSIGN Expr SEMICOLON
+    8 Declaration: error • SEMICOLON
 
-    ASSIGN  shift, and go to state 12
+    SEMICOLON  shift, and go to state 13
 
 
 State 2
 
-    8 Type: INT •
+   11 Assignment: ID • ASSIGN Expr SEMICOLON
 
-    $default  reduce using rule 8 (Type)
+    ASSIGN  shift, and go to state 14
 
 
 State 3
 
-    9 Type: FLOAT •
+    9 Type: INT •
 
     $default  reduce using rule 9 (Type)
 
 
 State 4
 
-   11 Print: PRINT • OPEN_PAREN Expr CLOSE_PAREN SEMICOLON
+   10 Type: FLOAT •
 
-    OPEN_PAREN  shift, and go to state 13
+    $default  reduce using rule 10 (Type)
 
 
 State 5
 
-    0 $accept: Program • $end
+   12 Print: PRINT • OPEN_PAREN Expr CLOSE_PAREN SEMICOLON
 
-    $end  shift, and go to state 14
+    OPEN_PAREN  shift, and go to state 15
 
 
 State 6
+
+    0 $accept: Program • $end
+
+    $end  shift, and go to state 16
+
+
+State 7
 
     1 Program: StmtList •
 
     $default  reduce using rule 1 (Program)
 
 
-State 7
+State 8
 
     3 StmtList: Stmt • StmtList
 
-    ID     shift, and go to state 1
-    INT    shift, and go to state 2
-    FLOAT  shift, and go to state 3
-    PRINT  shift, and go to state 4
+    error  shift, and go to state 1
+    ID     shift, and go to state 2
+    INT    shift, and go to state 3
+    FLOAT  shift, and go to state 4
+    PRINT  shift, and go to state 5
 
-    $default  reduce using rule 2 (StmtList)
+    $end  reduce using rule 2 (StmtList)
 
-    StmtList     go to state 15
-    Stmt         go to state 7
-    Declaration  go to state 8
-    Type         go to state 9
-    Assignment   go to state 10
-    Print        go to state 11
+    StmtList     go to state 17
+    Stmt         go to state 8
+    Declaration  go to state 9
+    Type         go to state 10
+    Assignment   go to state 11
+    Print        go to state 12
 
 
-State 8
+State 9
 
     4 Stmt: Declaration •
 
     $default  reduce using rule 4 (Stmt)
 
 
-State 9
+State 10
 
     7 Declaration: Type • ID SEMICOLON
 
-    ID  shift, and go to state 16
+    ID  shift, and go to state 18
 
 
-State 10
+State 11
 
     5 Stmt: Assignment •
 
     $default  reduce using rule 5 (Stmt)
 
 
-State 11
+State 12
 
     6 Stmt: Print •
 
     $default  reduce using rule 6 (Stmt)
 
 
-State 12
-
-   10 Assignment: ID ASSIGN • Expr SEMICOLON
-
-    ID          shift, and go to state 17
-    OPEN_PAREN  shift, and go to state 18
-    NUMBER      shift, and go to state 19
-
-    Expr    go to state 20
-    Term    go to state 21
-    Factor  go to state 22
-
-
 State 13
 
-   11 Print: PRINT OPEN_PAREN • Expr CLOSE_PAREN SEMICOLON
+    8 Declaration: error SEMICOLON •
 
-    ID          shift, and go to state 17
-    OPEN_PAREN  shift, and go to state 18
-    NUMBER      shift, and go to state 19
-
-    Expr    go to state 23
-    Term    go to state 21
-    Factor  go to state 22
+    $default  reduce using rule 8 (Declaration)
 
 
 State 14
+
+   11 Assignment: ID ASSIGN • Expr SEMICOLON
+
+    ID          shift, and go to state 19
+    OPEN_PAREN  shift, and go to state 20
+    NUMBER      shift, and go to state 21
+
+    Expr    go to state 22
+    Term    go to state 23
+    Factor  go to state 24
+
+
+State 15
+
+   12 Print: PRINT OPEN_PAREN • Expr CLOSE_PAREN SEMICOLON
+
+    ID          shift, and go to state 19
+    OPEN_PAREN  shift, and go to state 20
+    NUMBER      shift, and go to state 21
+
+    Expr    go to state 25
+    Term    go to state 23
+    Factor  go to state 24
+
+
+State 16
 
     0 $accept: Program $end •
 
     $default  accept
 
 
-State 15
+State 17
 
     3 StmtList: Stmt StmtList •
 
     $default  reduce using rule 3 (StmtList)
 
 
-State 16
+State 18
 
     7 Declaration: Type ID • SEMICOLON
 
-    SEMICOLON  shift, and go to state 24
-
-
-State 17
-
-   19 Factor: ID •
-
-    $default  reduce using rule 19 (Factor)
-
-
-State 18
-
-   18 Factor: OPEN_PAREN • Expr CLOSE_PAREN
-
-    ID          shift, and go to state 17
-    OPEN_PAREN  shift, and go to state 18
-    NUMBER      shift, and go to state 19
-
-    Expr    go to state 25
-    Term    go to state 21
-    Factor  go to state 22
+    SEMICOLON  shift, and go to state 26
 
 
 State 19
 
-   20 Factor: NUMBER •
+   20 Factor: ID •
 
     $default  reduce using rule 20 (Factor)
 
 
 State 20
 
-   10 Assignment: ID ASSIGN Expr • SEMICOLON
-   12 Expr: Expr • PLUS Term
-   13     | Expr • MINUS Term
+   19 Factor: OPEN_PAREN • Expr CLOSE_PAREN
 
-    SEMICOLON  shift, and go to state 26
-    PLUS       shift, and go to state 27
-    MINUS      shift, and go to state 28
+    ID          shift, and go to state 19
+    OPEN_PAREN  shift, and go to state 20
+    NUMBER      shift, and go to state 21
+
+    Expr    go to state 27
+    Term    go to state 23
+    Factor  go to state 24
 
 
 State 21
 
-   14 Expr: Term •
-   15 Term: Term • MULT Factor
-   16     | Term • DIV Factor
+   21 Factor: NUMBER •
 
-    MULT  shift, and go to state 29
-    DIV   shift, and go to state 30
-
-    $default  reduce using rule 14 (Expr)
+    $default  reduce using rule 21 (Factor)
 
 
 State 22
 
-   17 Term: Factor •
+   11 Assignment: ID ASSIGN Expr • SEMICOLON
+   13 Expr: Expr • PLUS Term
+   14     | Expr • MINUS Term
 
-    $default  reduce using rule 17 (Term)
+    SEMICOLON  shift, and go to state 28
+    PLUS       shift, and go to state 29
+    MINUS      shift, and go to state 30
 
 
 State 23
 
-   11 Print: PRINT OPEN_PAREN Expr • CLOSE_PAREN SEMICOLON
-   12 Expr: Expr • PLUS Term
-   13     | Expr • MINUS Term
+   15 Expr: Term •
+   16 Term: Term • MULT Factor
+   17     | Term • DIV Factor
 
-    CLOSE_PAREN  shift, and go to state 31
-    PLUS         shift, and go to state 27
-    MINUS        shift, and go to state 28
+    MULT  shift, and go to state 31
+    DIV   shift, and go to state 32
+
+    $default  reduce using rule 15 (Expr)
 
 
 State 24
+
+   18 Term: Factor •
+
+    $default  reduce using rule 18 (Term)
+
+
+State 25
+
+   12 Print: PRINT OPEN_PAREN Expr • CLOSE_PAREN SEMICOLON
+   13 Expr: Expr • PLUS Term
+   14     | Expr • MINUS Term
+
+    CLOSE_PAREN  shift, and go to state 33
+    PLUS         shift, and go to state 29
+    MINUS        shift, and go to state 30
+
+
+State 26
 
     7 Declaration: Type ID SEMICOLON •
 
     $default  reduce using rule 7 (Declaration)
 
 
-State 25
-
-   12 Expr: Expr • PLUS Term
-   13     | Expr • MINUS Term
-   18 Factor: OPEN_PAREN Expr • CLOSE_PAREN
-
-    CLOSE_PAREN  shift, and go to state 32
-    PLUS         shift, and go to state 27
-    MINUS        shift, and go to state 28
-
-
-State 26
-
-   10 Assignment: ID ASSIGN Expr SEMICOLON •
-
-    $default  reduce using rule 10 (Assignment)
-
-
 State 27
 
-   12 Expr: Expr PLUS • Term
+   13 Expr: Expr • PLUS Term
+   14     | Expr • MINUS Term
+   19 Factor: OPEN_PAREN Expr • CLOSE_PAREN
 
-    ID          shift, and go to state 17
-    OPEN_PAREN  shift, and go to state 18
-    NUMBER      shift, and go to state 19
-
-    Term    go to state 33
-    Factor  go to state 22
+    CLOSE_PAREN  shift, and go to state 34
+    PLUS         shift, and go to state 29
+    MINUS        shift, and go to state 30
 
 
 State 28
 
-   13 Expr: Expr MINUS • Term
+   11 Assignment: ID ASSIGN Expr SEMICOLON •
 
-    ID          shift, and go to state 17
-    OPEN_PAREN  shift, and go to state 18
-    NUMBER      shift, and go to state 19
-
-    Term    go to state 34
-    Factor  go to state 22
+    $default  reduce using rule 11 (Assignment)
 
 
 State 29
 
-   15 Term: Term MULT • Factor
+   13 Expr: Expr PLUS • Term
 
-    ID          shift, and go to state 17
-    OPEN_PAREN  shift, and go to state 18
-    NUMBER      shift, and go to state 19
+    ID          shift, and go to state 19
+    OPEN_PAREN  shift, and go to state 20
+    NUMBER      shift, and go to state 21
 
-    Factor  go to state 35
+    Term    go to state 35
+    Factor  go to state 24
 
 
 State 30
 
-   16 Term: Term DIV • Factor
+   14 Expr: Expr MINUS • Term
 
-    ID          shift, and go to state 17
-    OPEN_PAREN  shift, and go to state 18
-    NUMBER      shift, and go to state 19
+    ID          shift, and go to state 19
+    OPEN_PAREN  shift, and go to state 20
+    NUMBER      shift, and go to state 21
 
-    Factor  go to state 36
+    Term    go to state 36
+    Factor  go to state 24
 
 
 State 31
 
-   11 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN • SEMICOLON
+   16 Term: Term MULT • Factor
 
-    SEMICOLON  shift, and go to state 37
+    ID          shift, and go to state 19
+    OPEN_PAREN  shift, and go to state 20
+    NUMBER      shift, and go to state 21
+
+    Factor  go to state 37
 
 
 State 32
 
-   18 Factor: OPEN_PAREN Expr CLOSE_PAREN •
+   17 Term: Term DIV • Factor
 
-    $default  reduce using rule 18 (Factor)
+    ID          shift, and go to state 19
+    OPEN_PAREN  shift, and go to state 20
+    NUMBER      shift, and go to state 21
+
+    Factor  go to state 38
 
 
 State 33
 
-   12 Expr: Expr PLUS Term •
-   15 Term: Term • MULT Factor
-   16     | Term • DIV Factor
+   12 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN • SEMICOLON
 
-    MULT  shift, and go to state 29
-    DIV   shift, and go to state 30
-
-    $default  reduce using rule 12 (Expr)
+    SEMICOLON  shift, and go to state 39
 
 
 State 34
 
-   13 Expr: Expr MINUS Term •
-   15 Term: Term • MULT Factor
-   16     | Term • DIV Factor
+   19 Factor: OPEN_PAREN Expr CLOSE_PAREN •
 
-    MULT  shift, and go to state 29
-    DIV   shift, and go to state 30
-
-    $default  reduce using rule 13 (Expr)
+    $default  reduce using rule 19 (Factor)
 
 
 State 35
 
-   15 Term: Term MULT Factor •
+   13 Expr: Expr PLUS Term •
+   16 Term: Term • MULT Factor
+   17     | Term • DIV Factor
 
-    $default  reduce using rule 15 (Term)
+    MULT  shift, and go to state 31
+    DIV   shift, and go to state 32
+
+    $default  reduce using rule 13 (Expr)
 
 
 State 36
 
-   16 Term: Term DIV Factor •
+   14 Expr: Expr MINUS Term •
+   16 Term: Term • MULT Factor
+   17     | Term • DIV Factor
 
-    $default  reduce using rule 16 (Term)
+    MULT  shift, and go to state 31
+    DIV   shift, and go to state 32
+
+    $default  reduce using rule 14 (Expr)
 
 
 State 37
 
-   11 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON •
+   16 Term: Term MULT Factor •
 
-    $default  reduce using rule 11 (Print)
+    $default  reduce using rule 16 (Term)
+
+
+State 38
+
+   17 Term: Term DIV Factor •
+
+    $default  reduce using rule 17 (Term)
+
+
+State 39
+
+   12 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON •
+
+    $default  reduce using rule 12 (Print)
