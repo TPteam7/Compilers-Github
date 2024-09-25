@@ -5,7 +5,6 @@ Terminals unused in grammar
     WHILE
     RETURN
     COMMA
-    ASSIGN
     OPEN_BRACE
     CLOSE_BRACE
 
@@ -28,7 +27,7 @@ Grammar
     8 Type: INT
     9     | FLOAT
 
-   10 Assignment: ID EQ Expr SEMICOLON
+   10 Assignment: ID ASSIGN Expr SEMICOLON
 
    11 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON
 
@@ -57,53 +56,52 @@ Terminals, with rules where they appear
     ELSE <string> (263)
     WHILE <string> (264)
     RETURN <string> (265)
-    SEMICOLON <char> (266) 7 10 11
-    COMMA <char> (267)
-    PLUS <char> (268) 12
-    MINUS <char> (269) 13
-    MULT <char> (270) 15
-    DIV <char> (271) 16
-    ASSIGN <char> (272)
-    OPEN_PAREN <char> (273) 11 18
-    OPEN_BRACE <char> (274)
-    CLOSE_BRACE <char> (275)
-    CLOSE_PAREN <char> (276) 11 18
-    EQ <operator> (277) 10
-    NUMBER <number> (278) 20
+    SEMICOLON <character> (266) 7 10 11
+    COMMA <character> (267)
+    OPEN_PAREN <character> (268) 11 18
+    OPEN_BRACE <character> (269)
+    CLOSE_BRACE <character> (270)
+    CLOSE_PAREN <character> (271) 11 18
+    ASSIGN <operator> (272) 10
+    PLUS <operator> (273) 12
+    MINUS <operator> (274) 13
+    MULT <operator> (275) 15
+    DIV <operator> (276) 16
+    NUMBER <number> (277) 20
 
 
 Nonterminals, with rules where they appear
 
-    $accept (24)
+    $accept (23)
         on left: 0
-    Program <string> (25)
+    Program <string> (24)
         on left: 1
         on right: 0
-    StmtList <string> (26)
+    StmtList <string> (25)
         on left: 2 3
         on right: 1 3
-    Stmt <string> (27)
+    Stmt <string> (26)
         on left: 4 5 6
         on right: 3
-    Declaration (28)
+    Declaration (27)
         on left: 7
         on right: 4
-    Type (29)
+    Type (28)
         on left: 8 9
         on right: 7
-    Assignment (30)
+    Assignment (29)
         on left: 10
         on right: 5
-    Print (31)
+    Print (30)
         on left: 11
         on right: 6
-    Expr <string> (32)
+    Expr <string> (31)
         on left: 12 13 14
         on right: 10 11 12 13 18
-    Term (33)
+    Term (32)
         on left: 15 16 17
         on right: 12 13 14 15 16
-    Factor (34)
+    Factor (33)
         on left: 18 19 20
         on right: 15 16 17
 
@@ -130,9 +128,9 @@ State 0
 
 State 1
 
-   10 Assignment: ID • EQ Expr SEMICOLON
+   10 Assignment: ID • ASSIGN Expr SEMICOLON
 
-    EQ  shift, and go to state 12
+    ASSIGN  shift, and go to state 12
 
 
 State 2
@@ -219,7 +217,7 @@ State 11
 
 State 12
 
-   10 Assignment: ID EQ • Expr SEMICOLON
+   10 Assignment: ID ASSIGN • Expr SEMICOLON
 
     ID          shift, and go to state 17
     OPEN_PAREN  shift, and go to state 18
@@ -293,7 +291,7 @@ State 19
 
 State 20
 
-   10 Assignment: ID EQ Expr • SEMICOLON
+   10 Assignment: ID ASSIGN Expr • SEMICOLON
    12 Expr: Expr • PLUS Term
    13     | Expr • MINUS Term
 
@@ -327,9 +325,9 @@ State 23
    12 Expr: Expr • PLUS Term
    13     | Expr • MINUS Term
 
+    CLOSE_PAREN  shift, and go to state 31
     PLUS         shift, and go to state 27
     MINUS        shift, and go to state 28
-    CLOSE_PAREN  shift, and go to state 31
 
 
 State 24
@@ -345,14 +343,14 @@ State 25
    13     | Expr • MINUS Term
    18 Factor: OPEN_PAREN Expr • CLOSE_PAREN
 
+    CLOSE_PAREN  shift, and go to state 32
     PLUS         shift, and go to state 27
     MINUS        shift, and go to state 28
-    CLOSE_PAREN  shift, and go to state 32
 
 
 State 26
 
-   10 Assignment: ID EQ Expr SEMICOLON •
+   10 Assignment: ID ASSIGN Expr SEMICOLON •
 
     $default  reduce using rule 10 (Assignment)
 

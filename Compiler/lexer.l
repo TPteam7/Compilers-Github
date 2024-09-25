@@ -84,46 +84,57 @@ ws          {delim}+
 
 "+"         { chars++; 
               printf("%s : PLUS\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return PLUS; }
 
 "-"         { chars++; 
               printf("%s : MINUS\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return MINUS; }
 
 "*"         { chars++; 
               printf("%s : MULT\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return MULT; }
 
 "/"         { chars++; 
               printf("%s : DIV\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return DIV; }
 
 "="         { chars++; 
               printf("%s : ASSIGN\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return ASSIGN; }
 
 "("         { chars++;
               printf("%s : OPEN_PAREN\n", yytext);
+              yylval.character = strdup(yytext); 
               return OPEN_PAREN; }
             
 ")"         { chars++;
               printf("%s : CLOSE_PAREN\n", yytext);
+              yylval.character = strdup(yytext);
               return CLOSE_PAREN; }
 
 "{"         { chars++;
               printf("%s : OPEN_BRACE\n", yytext);
+              yylval.character = strdup(yytext);
               return OPEN_BRACE; }  
 
 "}"         { chars++;
               printf("%s : CLOSE_BRACE\n", yytext);
+              yylval.character = strdup(yytext);
               return CLOSE_BRACE; }
 
 ";"         { chars++; 
-              printf("%s : SEMICOLON\n", yytext); 
+              printf("%s : SEMICOLON\n", yytext);
+              yylval.character = strdup(yytext); 
               return SEMICOLON; }
 
 ","         { chars++;
               printf("%s : COMMA\n", yytext);
+              yylval.character = strdup(yytext);
               return COMMA; }           
 
 

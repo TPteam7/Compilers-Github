@@ -887,98 +887,109 @@ YY_RULE_SETUP
 #line 85 "lexer.l"
 { chars++; 
               printf("%s : PLUS\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return PLUS; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 89 "lexer.l"
+#line 90 "lexer.l"
 { chars++; 
               printf("%s : MINUS\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return MINUS; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 93 "lexer.l"
+#line 95 "lexer.l"
 { chars++; 
               printf("%s : MULT\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return MULT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 97 "lexer.l"
+#line 100 "lexer.l"
 { chars++; 
               printf("%s : DIV\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return DIV; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 101 "lexer.l"
+#line 105 "lexer.l"
 { chars++; 
               printf("%s : ASSIGN\n", yytext); 
+              yylval.operator = strdup(yytext); 
               return ASSIGN; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 105 "lexer.l"
+#line 110 "lexer.l"
 { chars++;
               printf("%s : OPEN_PAREN\n", yytext);
+              yylval.character = strdup(yytext); 
               return OPEN_PAREN; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 109 "lexer.l"
+#line 115 "lexer.l"
 { chars++;
               printf("%s : CLOSE_PAREN\n", yytext);
+              yylval.character = strdup(yytext);
               return CLOSE_PAREN; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 113 "lexer.l"
+#line 120 "lexer.l"
 { chars++;
               printf("%s : OPEN_BRACE\n", yytext);
+              yylval.character = strdup(yytext);
               return OPEN_BRACE; }  
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 117 "lexer.l"
+#line 125 "lexer.l"
 { chars++;
               printf("%s : CLOSE_BRACE\n", yytext);
+              yylval.character = strdup(yytext);
               return CLOSE_BRACE; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 121 "lexer.l"
+#line 130 "lexer.l"
 { chars++; 
-              printf("%s : SEMICOLON\n", yytext); 
+              printf("%s : SEMICOLON\n", yytext);
+              yylval.character = strdup(yytext); 
               return SEMICOLON; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 125 "lexer.l"
+#line 135 "lexer.l"
 { chars++;
               printf("%s : COMMA\n", yytext);
+              yylval.character = strdup(yytext);
               return COMMA; }           
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 130 "lexer.l"
+#line 141 "lexer.l"
 { lines++; chars = 0; }
 	YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 131 "lexer.l"
+#line 142 "lexer.l"
 {lines++; chars=0;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 132 "lexer.l"
+#line 143 "lexer.l"
 {chars++;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 133 "lexer.l"
+#line 144 "lexer.l"
 {chars++;
          printf("%s : Unrecognized symbol at line %d char %d\n", yytext,lines,chars);
 		}
@@ -991,46 +1002,46 @@ YY_RULE_SETUP
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 143 "lexer.l"
+#line 154 "lexer.l"
 { chars++; printf("Error: Invalid symbol after '++' at line %d char %d\n", lines, chars); }
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 144 "lexer.l"
+#line 155 "lexer.l"
 { chars++; printf("Error: Invalid symbol after '--' at line %d char %d\n", lines, chars); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 145 "lexer.l"
+#line 156 "lexer.l"
 { chars++; printf("Error: Invalid symbol after '+' at line %d char %d\n", lines, chars); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 146 "lexer.l"
+#line 157 "lexer.l"
 { chars++; printf("Error: Invalid symbol after '*' at line %d char %d\n", lines, chars); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 147 "lexer.l"
+#line 158 "lexer.l"
 { chars++; printf("Error: Invalid symbol after '/' at line %d char %d\n", lines, chars); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 148 "lexer.l"
+#line 159 "lexer.l"
 { chars++; printf("Error: Invalid symbol after '-' at line %d char %d\n", lines, chars); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 149 "lexer.l"
+#line 160 "lexer.l"
 { chars++; printf("Error: Invalid symbol after '^' at line %d char %d\n", lines, chars); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 151 "lexer.l"
+#line 162 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1034 "lex.yy.c"
+#line 1045 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2035,5 +2046,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 151 "lexer.l"
+#line 162 "lexer.l"
 

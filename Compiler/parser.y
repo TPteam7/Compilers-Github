@@ -16,7 +16,7 @@ void yyerror(const char* s);
 
 %union {
 	int number;
-	char character;
+	char* character;
 	char* string;
 	char* operator;
 }
@@ -24,9 +24,9 @@ void yyerror(const char* s);
 %token <string> ID
 %token INT FLOAT
 %token <string> PRINT IF ELSE WHILE RETURN
-%token <char> SEMICOLON COMMA PLUS MINUS MULT DIV ASSIGN
-%token <char> OPEN_PAREN OPEN_BRACE CLOSE_BRACE CLOSE_PAREN
-%token <operator> EQ
+%token <character> SEMICOLON COMMA
+%token <character> OPEN_PAREN OPEN_BRACE CLOSE_BRACE CLOSE_PAREN
+%token <operator> ASSIGN PLUS MINUS MULT DIV
 %token <number> NUMBER
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
@@ -36,7 +36,7 @@ void yyerror(const char* s);
 
 %%
 
-Program: StmtList { printf("Recieved statement list\n"); };
+Program: StmtList { printf("\nRecieved statement list\n"); };
 
 StmtList:  
 	  {}
@@ -51,7 +51,7 @@ Declaration: Type ID SEMICOLON { printf("Declared variable: %s\n", $2); };
 Type: INT { printf("Parsed INT type\n"); }
     | FLOAT { printf("Parsed FLOAT type\n"); };
 
-Assignment: ID EQ Expr SEMICOLON { printf("Assigned value to variable: %s\n", $1); };
+Assignment: ID ASSIGN Expr SEMICOLON { printf("Assigned value to variable: %s\n", $1); };
 
 Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { printf("Print statement\n"); };
 
