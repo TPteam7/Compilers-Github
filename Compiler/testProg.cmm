@@ -1,2 +1,6 @@
 print(5);
-int x = 5 + 3;
+int x;
+int y;
+int z;
+int x;
+int y;

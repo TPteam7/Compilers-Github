@@ -9,10 +9,10 @@ lex.yy.c: lexer.l parser.tab.h
 lexer: lex.yy.c parser.tab.c parser.tab.h
 	gcc -o lexer lex.yy.c parser.tab.c
 
-parser: lex.yy.c parser.tab.c parser.tab.h
-	gcc -o parser parser.tab.c lex.yy.c
+parser: lex.yy.c parser.tab.c symbolTable.c parser.tab.h
+	gcc -o parser parser.tab.c symbolTable.c lex.yy.c
 	./parser testProg.cmm
 
 clean:
-	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output lex.yy.o parser.tab.o
+	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output symbolTable.o lex.yy.o parser.tab.o
 	ls -l

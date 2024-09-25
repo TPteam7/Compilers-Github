@@ -75,7 +75,7 @@ ws          {delim}+
               yylval.string = strdup(yytext); 
               return ID; }
 
-{ws}        { /* Ignore whitespace */ }
+{ws}        { chars++; }
 
 {NUMBER}    { words++; chars += strlen(yytext); 
               printf("%s : NUMBER\n", yytext);

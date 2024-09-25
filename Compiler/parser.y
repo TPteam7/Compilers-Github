@@ -3,18 +3,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "symbolTable.h"
+
+#define TABLE_SIZE 100
 
 extern int lines;
 extern int chars;
 
-extern int yylex();
-extern int yyparse();
-extern FILE* yyin;
-extern char *yytext;
+extern int yylex(); // Declare yylex, the lexer function
+extern int yyparse(); // Declare yyparse, the parser function
+extern FILE* yyin; // Declare yyin, the file pointer for the input file
+extern int yylineno;  // Declare yylineno, the line number counter
+extern char *yytext;  // The text from the lexer file
 
-extern int yyparse();
 
 void yyerror(const char* s);
+SymbolTable* symTab = NULL;
+Symbol* symbol = NULL;
 
 %}
 
@@ -26,7 +31,7 @@ void yyerror(const char* s);
 }
 
 %token <string> ID
-%token INT FLOAT
+%token <string> INT FLOAT
 %token <string> PRINT IF ELSE WHILE RETURN
 %token <character> SEMICOLON COMMA
 %token <character> OPEN_PAREN OPEN_BRACE CLOSE_BRACE CLOSE_PAREN
@@ -36,6 +41,7 @@ void yyerror(const char* s);
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
 %type <string> Program Stmt StmtList Expr
+%type <string> Type
 %start Program
 
 %%
@@ -50,16 +56,47 @@ Stmt: Declaration {}
 	| Assignment {}
 	| Print {};
 
-Declaration: Type ID SEMICOLON { printf("\nPARSER:\nDeclared variable: %s\n\n", $2); 
+Declaration: Type ID SEMICOLON { 	
+	printf("\nPARSER:\nDeclared variable: %s %s %s\n\n", $1, $2, $3); 
+
+	printf("\nPARSER:\nPrinting symbol table\n");
+	printSymbolTable(symTab);
+
+	printf("\nPARSER:\nChecking if variable has already been declared\n");
+	symbol = lookupSymbol(symTab, $2);
+
+	if (symbol != NULL) {	// Check if variable has already been declared
+									printf("PARSER: Variable %s at line %d has already been declared - COMPILATION HALTED\n", $2, yylineno);
+									exit(0);
+								} else {	
+										// Variable has not been declared yet	
+										// Create AST node for VarDecl
+
+										//$$ = malloc(sizeof(ASTNode));
+										//$$->type = NodeType_VarDecl;
+										//$$->varDecl.varType = strdup($1);
+										//$$->varDecl.varName = strdup($2);
+										// Set other fields as necessary
+
+										// Add variable to symbol table
+										addSymbol(symTab, $2, $1);
+										printSymbolTable(symTab);
+									}
 }
-| error SEMICOLON { 
-    printf("\nPARSER ERROR:\nInvalid declaration near '%s'. Expecting format (INT/FLOAT) ID SEMICOLON.\n", yytext); 
+| error ASSIGN { 
+    printf("Invalid declaration near '%s'. Expecting format (INT/FLOAT) ID SEMICOLON.\n\n", yytext); 
 	exit(1);
     yyerrok; 
 };
 
-Type: INT { printf("\nPARSER:\nParsed INT type\n\n"); }
-    | FLOAT { printf("\nPARSER:\nParsed FLOAT type\n\n"); };
+Type: INT {
+		$$ = strdup($1);
+	 	printf("\nPARSER:\nParsed INT type\n\n"); 
+	 }
+    | FLOAT { 
+			$$ = strdup($1);
+			printf("\nPARSER:\nParsed FLOAT type\n\n"); 
+		};
 
 Assignment: ID ASSIGN Expr SEMICOLON { printf("\nPARSER:\nAssigned value to variable: %s\n\n", $1); };
 
@@ -84,10 +121,23 @@ int main() {
 
 	yydebug = 0;
 
+	// Initialize symbol table
+	symTab = createSymbolTable(TABLE_SIZE);
+    if (symTab == NULL) {
+        // Handle error
+        return EXIT_FAILURE;
+    }
+
+	//not sure if needed
+	symbol = malloc(sizeof(Symbol));
+
 	printf("\nPARSER:\nStarting to parse\n\n");
     int result = yyparse();
 
     if (result == 0) {
+		// Print symbol table for debugging
+		printSymbolTable(symTab);
+
         printf("\nPARSER:\nParsing successful!\n");
     }
 
@@ -96,6 +146,6 @@ int main() {
 }
 
 void yyerror(const char* s) {
-    fprintf(stderr, "Parse error: %s at line %d, column %d\n", s, lines, chars);
+    fprintf(stderr, "\nPARSER ERROR:\n%s at line %d, column %d\n", s, lines, chars);
 }
 

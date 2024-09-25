@@ -872,7 +872,7 @@ case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
 #line 78 "lexer.l"
-{ /* Ignore whitespace */ }
+{ chars++; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP

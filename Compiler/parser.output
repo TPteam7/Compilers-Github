@@ -23,7 +23,7 @@ Grammar
     6     | Print
 
     7 Declaration: Type ID SEMICOLON
-    8            | error SEMICOLON
+    8            | error ASSIGN
 
     9 Type: INT
    10     | FLOAT
@@ -50,20 +50,20 @@ Terminals, with rules where they appear
     $end (0) 0
     error (256) 8
     ID <string> (258) 7 11 20
-    INT (259) 9
-    FLOAT (260) 10
+    INT <string> (259) 9
+    FLOAT <string> (260) 10
     PRINT <string> (261) 12
     IF <string> (262)
     ELSE <string> (263)
     WHILE <string> (264)
     RETURN <string> (265)
-    SEMICOLON <character> (266) 7 8 11 12
+    SEMICOLON <character> (266) 7 11 12
     COMMA <character> (267)
     OPEN_PAREN <character> (268) 12 19
     OPEN_BRACE <character> (269)
     CLOSE_BRACE <character> (270)
     CLOSE_PAREN <character> (271) 12 19
-    ASSIGN <operator> (272) 11
+    ASSIGN <operator> (272) 8 11
     PLUS <operator> (273) 13
     MINUS <operator> (274) 14
     MULT <operator> (275) 16
@@ -87,7 +87,7 @@ Nonterminals, with rules where they appear
     Declaration (27)
         on left: 7 8
         on right: 4
-    Type (28)
+    Type <string> (28)
         on left: 9 10
         on right: 7
     Assignment (29)
@@ -130,9 +130,9 @@ State 0
 
 State 1
 
-    8 Declaration: error • SEMICOLON
+    8 Declaration: error • ASSIGN
 
-    SEMICOLON  shift, and go to state 13
+    ASSIGN  shift, and go to state 13
 
 
 State 2
@@ -227,7 +227,7 @@ State 12
 
 State 13
 
-    8 Declaration: error SEMICOLON •
+    8 Declaration: error ASSIGN •
 
     $default  reduce using rule 8 (Declaration)
 
