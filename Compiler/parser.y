@@ -23,6 +23,10 @@ ASTNode* root = NULL;
 SymbolTable* symTab = NULL;
 Symbol* symbol = NULL;
 
+// Declare global print booleans
+int printSymbolDebug = 0;
+int printParserDebug = 0;
+
 %}
 
 %union {
@@ -65,11 +69,15 @@ Stmt: Declaration { $$ = createStmtNode($1); }
 
 Declaration: Type ID SEMICOLON {  
 
-	printSymbolTable(symTab);
+	if(printSymbolDebug == 1)
+	{
+		printSymbolTable(symTab);
+	}
+
 	symbol = lookupSymbol(symTab, $2);
 
 	if (symbol != NULL) {	
-		printf("PARSER: Variable %s at line %d has already been declared - COMPILATION HALTED\n", $2, yylineno);
+		printf("SYMBOL TABLE ERROR:\nVariable %s at line %d has already been declared - COMPILATION HALTED\n\n", $2, yylineno);
 		exit(0);
 	} 
 	else {	
@@ -77,10 +85,18 @@ Declaration: Type ID SEMICOLON {
 
 		// Add variable to symbol table
 		addSymbol(symTab, $2, $1->id.name);
-		printSymbolTable(symTab);
+		if(printSymbolDebug == 1)
+		{
+			printSymbolTable(symTab);
+		}
 	}
-
-};
+}
+	|
+	error ASSIGN{
+		printf("\nPARSER ERROR:\nInvalid declaration near '%s'. Expecting format (INT/FLOAT) ID SEMICOLON.\n", yytext);
+		
+		exit(0);
+	};
 
 
 
@@ -89,7 +105,18 @@ Type: INT { $$ = createTypeNode("int"); }
 
 
 
-Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); };
+Assignment: ID ASSIGN Expr SEMICOLON { 
+	symbol = lookupSymbol(symTab, $1);
+
+	if (symbol == NULL) {	
+		printf("SYMBOL TABLE ERROR:\nVariable %s at line %d has not been declared yet - COMPILATION HALTED\n\n", $1, yylineno);
+		exit(0);
+	}
+	else
+	{
+		$$ = createAssignmentNode(createIDNode($1), $3);
+	}
+	};
 
 
 
@@ -139,9 +166,14 @@ int main() {
 
     if (result == 0) {
 		// Print symbol table for debugging
-		printSymbolTable(symTab);
+		if(printSymbolDebug == 1)
+		{
+			printSymbolTable(symTab);
+		}
 
         printf("\nPARSER:\nParsing successful!\n");
+
+		printAST(root, 0);
     }
 
     fclose(yyin);

@@ -124,7 +124,7 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
               return CLOSE_BRACE; }
 
 ";"         { chars++; 
-              printf("%s : SEMICOLON\n", yytext);
+              printf("%s : SEMICOLON\n\n", yytext);
               yylval.character = yytext[0];
               return SEMICOLON; }
 

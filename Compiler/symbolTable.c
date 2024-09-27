@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-
+int printDebug = 0;
 
 // Function to create a new symbol table
 SymbolTable* createSymbolTable(int size) {
@@ -52,7 +52,9 @@ void addSymbol(SymbolTable* table, char* name, char* type) {
 }
 // Function to look up a name in the table
 Symbol* lookupSymbol(SymbolTable* table, char* name) {
-    printf("Looking up %s\n", name);
+    if (printDebug == 1)
+        printf("Looking up %s\n", name);
+
     unsigned int hashval = hash(table, name);
     #include <stddef.h> // Include the header file for NULL macro
 
@@ -61,12 +63,15 @@ Symbol* lookupSymbol(SymbolTable* table, char* name) {
 
     
     if (table->table[hashval] == NULL) {
-        printf("No symbol found at hash value %u\n", hashval);
+        if (printDebug == 1)
+            printf("No symbol found at hash value %u\n", hashval);
         return NULL;
     } else {
-            printf("Symbol found at hash value %u\n", hashval);
+            if (printDebug == 1)
+                printf("SYMBOL TABLE ERROR:\nSymbol found at hash value %u\n", hashval);
             for (Symbol* sym = table->table[hashval]; sym != 0; sym = sym->next) {
-                printf("Symbol name: %s\n", sym->name);
+                if(printDebug == 1)
+                    printf("Symbol name: %s\n", sym->name);
                 if (strcmp(name, sym->name) == 0) return sym;
             }
       }   
@@ -92,7 +97,7 @@ void freeSymbolTable(SymbolTable* table) {
 
 // Function to print the symbol table
 void printSymbolTable(SymbolTable* table) {
-    printf("----- SYMBOL TABLE -----\n");
+    printf("\n----- SYMBOL TABLE -----\n");
     for (int i = 0; i < table->size; i++) {
         Symbol* sym = table->table[i];
         while (sym != 0) {
@@ -101,5 +106,5 @@ void printSymbolTable(SymbolTable* table) {
             sym = sym->next;
         }
     }
-    printf("------------------------\n");
+    printf("------------------------\n\n");
 }
