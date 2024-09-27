@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "AST.h"
 #include "symbolTable.h"
 
 #define TABLE_SIZE 100
@@ -16,8 +17,9 @@ extern FILE* yyin; // Declare yyin, the file pointer for the input file
 extern int yylineno;  // Declare yylineno, the line number counter
 extern char *yytext;  // The text from the lexer file
 
-
 void yyerror(const char* s);
+
+ASTNode* root = NULL;
 SymbolTable* symTab = NULL;
 Symbol* symbol = NULL;
 
@@ -25,9 +27,10 @@ Symbol* symbol = NULL;
 
 %union {
 	int number;
-	char* character;
+	char character;
 	char* string;
-	char* operator;
+	char op;
+	struct ASTNode* node;
 }
 
 %token <string> ID
@@ -35,86 +38,86 @@ Symbol* symbol = NULL;
 %token <string> PRINT IF ELSE WHILE RETURN
 %token <character> SEMICOLON COMMA
 %token <character> OPEN_PAREN OPEN_BRACE CLOSE_BRACE CLOSE_PAREN
-%token <operator> ASSIGN PLUS MINUS MULT DIV
+%token <op> ASSIGN PLUS MINUS MULT DIV
 %token <number> NUMBER
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
-%type <string> Program Stmt StmtList Expr
-%type <string> Type
+%type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
 %start Program
 
 %%
 
-Program: StmtList { printf("\nPARSER:\nRecieved statement list\n\n"); };
+Program: StmtList { $$ = createProgramNode($1); root = $$; };
 
-StmtList:  
-	  {}
-	| Stmt StmtList;
 
-Stmt: Declaration {} 
-	| Assignment {}
-	| Print {};
 
-Declaration: Type ID SEMICOLON { 	
-	printf("\nPARSER:\nDeclared variable: %s %s %s\n\n", $1, $2, $3); 
+StmtList:  { $$ = NULL; }
+	| Stmt StmtList { $$ = createStmtListNode($1, $2); };
 
-	printf("\nPARSER:\nPrinting symbol table\n");
+
+
+Stmt: Declaration { $$ = createStmtNode($1); } 
+	| Assignment { $$ = createStmtNode($1); }
+	| Print { $$ = createStmtNode($1); };
+
+
+
+Declaration: Type ID SEMICOLON {  
+
 	printSymbolTable(symTab);
-
-	printf("\nPARSER:\nChecking if variable has already been declared\n");
 	symbol = lookupSymbol(symTab, $2);
 
-	if (symbol != NULL) {	// Check if variable has already been declared
-									printf("PARSER: Variable %s at line %d has already been declared - COMPILATION HALTED\n", $2, yylineno);
-									exit(0);
-								} else {	
-										// Variable has not been declared yet	
-										// Create AST node for VarDecl
+	if (symbol != NULL) {	
+		printf("PARSER: Variable %s at line %d has already been declared - COMPILATION HALTED\n", $2, yylineno);
+		exit(0);
+	} 
+	else {	
+		$$ = createDeclarationNode($1, createIDNode($2));
 
-										//$$ = malloc(sizeof(ASTNode));
-										//$$->type = NodeType_VarDecl;
-										//$$->varDecl.varType = strdup($1);
-										//$$->varDecl.varName = strdup($2);
-										// Set other fields as necessary
+		// Add variable to symbol table
+		addSymbol(symTab, $2, $1->id.name);
+		printSymbolTable(symTab);
+	}
 
-										// Add variable to symbol table
-										addSymbol(symTab, $2, $1);
-										printSymbolTable(symTab);
-									}
-}
-| error ASSIGN { 
-    printf("Invalid declaration near '%s'. Expecting format (INT/FLOAT) ID SEMICOLON.\n\n", yytext); 
-	exit(1);
-    yyerrok; 
 };
 
-Type: INT {
-		$$ = strdup($1);
-	 	printf("\nPARSER:\nParsed INT type\n\n"); 
-	 }
-    | FLOAT { 
-			$$ = strdup($1);
-			printf("\nPARSER:\nParsed FLOAT type\n\n"); 
-		};
 
-Assignment: ID ASSIGN Expr SEMICOLON { printf("\nPARSER:\nAssigned value to variable: %s\n\n", $1); };
 
-Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { printf("\nPARSER:\nPrint statement\n\n"); };
+Type: INT { $$ = createTypeNode("int"); }
+    | FLOAT { $$ = createTypeNode("float"); };
 
-Expr: Expr PLUS Term { }
-	| Expr MINUS Term { }
-	| Term {};
 
-Term: Term MULT Factor { }
-	| Term DIV Factor { }
-	| Factor {};
 
-Factor: OPEN_PAREN Expr CLOSE_PAREN { printf("\nPARSER:\nParenthesized expression\n\n"); }
-	| ID { printf("\nPARSER:\nVariable: %s\n\n", $1); }
-	| NUMBER { };
+Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); };
+
+
+
+Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { $$ = createPrintNode($3); };
+
+
+
+Expr: Expr PLUS Term { $$ = createExprNode($2, $1, $3); }
+	| Expr MINUS Term { $$ = createExprNode($2, $1, $3); }
+	| Term { $$ = $1; };
+
+
+
+Term: Term MULT Factor { $$ = createTermNode($2, $1, $3); }
+	| Term DIV Factor { $$ = createTermNode($2, $1, $3); }
+	| Factor { $$ = $1; };
+
+
+
+Factor: OPEN_PAREN Expr CLOSE_PAREN { $$ = createFactorNode($2); }
+	| ID { $$ = createIDNode($1); }
+	| NUMBER { $$ = createNumberNode($1); };
+
+
 
 %%
+
+
 
 int main() {
     yyin = fopen("testProg.cmm", "r");

@@ -1,0 +1,38 @@
+	printf("\nPARSER:\nDeclared variable: %s %s %s\n\n", $1, $2, $3); 
+
+	printf("\nPARSER:\nPrinting symbol table\n");
+	printSymbolTable(symTab);
+
+	printf("\nPARSER:\nChecking if variable has already been declared\n");
+	symbol = lookupSymbol(symTab, $2);
+
+	if (symbol != NULL) {	// Check if variable has already been declared
+									printf("PARSER: Variable %s at line %d has already been declared - COMPILATION HALTED\n", $2, yylineno);
+									exit(0);
+								} else {	
+										// Variable has not been declared yet	
+										// Create AST node for VarDecl
+
+										//$$ = malloc(sizeof(ASTNode));
+										//$$->type = NodeType_VarDecl;
+										//$$->varDecl.varType = strdup($1);
+										//$$->varDecl.varName = strdup($2);
+										// Set other fields as necessary
+
+										// Add variable to symbol table
+										addSymbol(symTab, $2, $1);
+										printSymbolTable(symTab);
+									}
+
+
+
+
+
+
+
+
+
+| error ASSIGN { 
+		printf("Invalid declaration near '%s'. Expecting format (INT/FLOAT) ID SEMICOLON.\n\n", yytext); 
+		exit(1);
+		yyerrok; }

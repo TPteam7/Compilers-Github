@@ -16,9 +16,7 @@ int lines = 1;
 letter      [a-zA-Z]
 digit       [0-9]
 ID          {letter}({letter}|{digit})*
-delim       [ \t\n]
 NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
-ws          {delim}+
 
 %%
 "/*"        { 
@@ -75,8 +73,6 @@ ws          {delim}+
               yylval.string = strdup(yytext); 
               return ID; }
 
-{ws}        { chars++; }
-
 {NUMBER}    { words++; chars += strlen(yytext); 
               printf("%s : NUMBER\n", yytext);
               yylval.number = atoi(strdup(yytext));  
@@ -84,57 +80,57 @@ ws          {delim}+
 
 "+"         { chars++; 
               printf("%s : PLUS\n", yytext); 
-              yylval.operator = strdup(yytext); 
+              yylval.op = yytext[0]; 
               return PLUS; }
 
 "-"         { chars++; 
               printf("%s : MINUS\n", yytext); 
-              yylval.operator = strdup(yytext); 
+              yylval.op = yytext[0];
               return MINUS; }
 
 "*"         { chars++; 
               printf("%s : MULT\n", yytext); 
-              yylval.operator = strdup(yytext); 
+              yylval.op = yytext[0]; 
               return MULT; }
 
 "/"         { chars++; 
               printf("%s : DIV\n", yytext); 
-              yylval.operator = strdup(yytext); 
+              yylval.op = yytext[0];
               return DIV; }
 
 "="         { chars++; 
               printf("%s : ASSIGN\n", yytext); 
-              yylval.operator = strdup(yytext); 
+              yylval.op = yytext[0]; 
               return ASSIGN; }
 
 "("         { chars++;
               printf("%s : OPEN_PAREN\n", yytext);
-              yylval.character = strdup(yytext); 
+              yylval.character = yytext[0]; 
               return OPEN_PAREN; }
             
 ")"         { chars++;
               printf("%s : CLOSE_PAREN\n", yytext);
-              yylval.character = strdup(yytext);
+              yylval.character = yytext[0];
               return CLOSE_PAREN; }
 
 "{"         { chars++;
               printf("%s : OPEN_BRACE\n", yytext);
-              yylval.character = strdup(yytext);
+              yylval.character = yytext[0];
               return OPEN_BRACE; }  
 
 "}"         { chars++;
               printf("%s : CLOSE_BRACE\n", yytext);
-              yylval.character = strdup(yytext);
+              yylval.character = yytext[0];
               return CLOSE_BRACE; }
 
 ";"         { chars++; 
               printf("%s : SEMICOLON\n", yytext);
-              yylval.character = strdup(yytext); 
+              yylval.character = yytext[0];
               return SEMICOLON; }
 
 ","         { chars++;
               printf("%s : COMMA\n", yytext);
-              yylval.character = strdup(yytext);
+              yylval.character = yytext[0];
               return COMMA; }           
 
 
@@ -144,19 +140,5 @@ ws          {delim}+
 .		{chars++;
          printf("%s : Unrecognized symbol at line %d char %d\n", yytext,lines,chars);
 		}
-
-{
-	/*
-		Debugging for symbols. Don't allow any other symbols then the patterns we define above.
-	*/
-}
-
-"++"[^;] { chars++; printf("Error: Invalid symbol after '++' at line %d char %d\n", lines, chars); }
-"--"[^;] { chars++; printf("Error: Invalid symbol after '--' at line %d char %d\n", lines, chars); }
-"+"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '+' at line %d char %d\n", lines, chars); }
-"*"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '*' at line %d char %d\n", lines, chars); }
-"/"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '/' at line %d char %d\n", lines, chars); }
-"-"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '-' at line %d char %d\n", lines, chars); }
-"^"[^0-9a-zA-Z \t\n] { chars++; printf("Error: Invalid symbol after '^' at line %d char %d\n", lines, chars); }
 
 %%
