@@ -5,6 +5,7 @@
 #include <string.h>
 #include "AST.h"
 #include "symbolTable.h"
+#include "semantic.h"
 
 #define TABLE_SIZE 100
 
@@ -103,8 +104,6 @@ Declaration: Type ID SEMICOLON {
 Type: INT { $$ = createTypeNode("int"); }
     | FLOAT { $$ = createTypeNode("float"); };
 
-
-
 Assignment: ID ASSIGN Expr SEMICOLON { 
 	symbol = lookupSymbol(symTab, $1);
 
@@ -127,8 +126,6 @@ Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { $$ = createPrintNode($3); }
 Expr: Expr PLUS Term { $$ = createExprNode($2, $1, $3); }
 	| Expr MINUS Term { $$ = createExprNode($2, $1, $3); }
 	| Term { $$ = $1; };
-
-
 
 Term: Term MULT Factor { $$ = createTermNode($2, $1, $3); }
 	| Term DIV Factor { $$ = createTermNode($2, $1, $3); }
@@ -174,6 +171,10 @@ int main() {
         printf("\nPARSER:\nParsing successful!\n");
 
 		printAST(root, 0);
+
+		// Semantic analysis
+		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
+		semanticAnalysis(root, symTab);
     }
 
     fclose(yyin);

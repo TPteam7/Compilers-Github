@@ -9,11 +9,11 @@ lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l
 
 # Compile and link all necessary files, including AST.c
-parser: lex.yy.c parser.tab.c symbolTable.c AST.c parser.tab.h
-	gcc -o parser parser.tab.c symbolTable.c lex.yy.c AST.c
+parser: lex.yy.c parser.tab.c symbolTable.c AST.c semantic.c parser.tab.h
+	gcc -o parser parser.tab.c symbolTable.c semantic.c lex.yy.c AST.c
 	./parser testProg.cmm
 
 # Clean up generated files
 clean:
-	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output symbolTable.o lex.yy.o parser.tab.o
+	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output symbolTable.o semantic.o lex.yy.o parser.tab.o
 	ls -l
