@@ -68,54 +68,16 @@ Stmt: Declaration { $$ = createStmtNode($1); }
 
 
 
-Declaration: Type ID SEMICOLON {  
-
-	if(printSymbolDebug == 1)
-	{
-		printSymbolTable(symTab);
-	}
-
-	symbol = lookupSymbol(symTab, $2);
-
-	if (symbol != NULL) {	
-		printf("SYMBOL TABLE ERROR:\nVariable %s at line %d has already been declared - COMPILATION HALTED\n\n", $2, yylineno);
-		exit(0);
-	} 
-	else {	
-		$$ = createDeclarationNode($1, createIDNode($2));
-
-		// Add variable to symbol table
-		addSymbol(symTab, $2, $1->id.name);
-		if(printSymbolDebug == 1)
-		{
-			printSymbolTable(symTab);
-		}
-	}
-}
-	|
-	error ASSIGN{
-		printf("\nPARSER ERROR:\nInvalid declaration near '%s'. Expecting format (INT/FLOAT) ID SEMICOLON.\n", yytext);
-		
-		exit(0);
-	};
+Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); };
 
 
 
 Type: INT { $$ = createTypeNode("int"); }
     | FLOAT { $$ = createTypeNode("float"); };
 
-Assignment: ID ASSIGN Expr SEMICOLON { 
-	symbol = lookupSymbol(symTab, $1);
 
-	if (symbol == NULL) {	
-		printf("SYMBOL TABLE ERROR:\nVariable %s at line %d has not been declared yet - COMPILATION HALTED\n\n", $1, yylineno);
-		exit(0);
-	}
-	else
-	{
-		$$ = createAssignmentNode(createIDNode($1), $3);
-	}
-	};
+
+Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); };
 
 
 

@@ -28,19 +28,26 @@ ARGS:
             break;
         // No check needed
         case NodeType_StmtList:
+            printf("Performing semantic analysis on stmtlist\n");
             semanticAnalysis(node->stmtList.stmt, symTab);
             semanticAnalysis(node->stmtList.stmtList, symTab);
             break;
         // No check needed
         case NodeType_Stmt:
+            printf("Performing semantic analysis on stmt\n");
             semanticAnalysis(node->stmt.child, symTab);
             break;
         // Check for redeclaration of variables
         case NodeType_Declaration:
-            if (lookupSymbol(symTab, node->declaration.id->id.name) == NULL) {
-                fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->declaration.id->id.name);
+            if (lookupSymbol(symTab, node->declaration.id->id.name) != NULL) {
+                fprintf(stderr, "Semantic error: Variable %s has already been declared\n", node->declaration.id->id.name);
                 break;
             }
+            else {	
+                // Add variable to symbol table
+                addSymbol(symTab, node->declaration.id->id.name, node->declaration.type->type.typeName);
+            }
+            printf("Performing semantic analysis on declaration\n");
             semanticAnalysis(node->declaration.type, symTab);
             semanticAnalysis(node->declaration.id, symTab);
             break;
@@ -55,34 +62,44 @@ ARGS:
                 fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->assignment.id->id.name);
                 break;
             }
+            printf("Performing semantic analysis on assignment\n");
             semanticAnalysis(node->assignment.id, symTab);
             semanticAnalysis(node->assignment.expr, symTab);
             break;
         // So this needs a check but I think it will just go to expression first
         case NodeType_Print:
+            printf("Performing semantic analysis on print\n");
             semanticAnalysis(node->print.expr, symTab);
             break;
         // Check needed for declaration of variables
         case NodeType_Expr:
+            printf("Performing semantic analysis on expr\n");
             semanticAnalysis(node->expr.left, symTab);
             semanticAnalysis(node->expr.right, symTab);
+            break;
         // Check needed for declaration of variables
         case NodeType_Term:
+            printf("Performing semantic analysis on term\n");
             semanticAnalysis(node->term.left, symTab);
             semanticAnalysis(node->term.right, symTab);
+            break;
         // Check needed for declaration of variables
         case NodeType_Factor:
+            printf("Performing semantic analysis on factor\n");
             semanticAnalysis(node->factor.child, symTab);
+            break;
         // Check for declaration of variable
         case NodeType_ID:
-        if (lookupSymbol(symTab, node->id.name) == NULL) {
+            if (lookupSymbol(symTab, node->id.name) == NULL) {
                 fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->id.name);
                 break;
             }
-            semanticAnalysis(node->id.name, symTab);
+            fprintf(stderr, "ID: %s\n", node->id.name);
+            break;
         // No check needed
         case NodeType_Number:
-            semanticAnalysis(node->number.value, symTab);
+            fprintf(stderr, "Number: %i\n", node->number.value);
+            break;
         default:
             fprintf(stderr, "Unknown Node Type\n");
     }
