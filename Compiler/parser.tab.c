@@ -87,6 +87,7 @@ extern int yyparse(); // Declare yyparse, the parser function
 extern FILE* yyin; // Declare yyin, the file pointer for the input file
 extern int yylineno;  // Declare yylineno, the line number counter
 extern char *yytext;  // The text from the lexer file
+extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
 
 void yyerror(const char* s);
 
@@ -99,7 +100,7 @@ int printSymbolDebug = 0;
 int printParserDebug = 0;
 
 
-#line 103 "parser.tab.c"
+#line 104 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -548,9 +549,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    56,    56,    60,    61,    65,    66,    67,    71,    75,
-      76,    80,    84,    88,    89,    90,    92,    93,    94,    98,
-      99,   100
+       0,    57,    57,    61,    62,    66,    67,    68,    72,    76,
+      77,    81,    85,    89,    90,    91,    93,    94,    95,    99,
+     100,   101
 };
 #endif
 
@@ -752,9 +753,9 @@ yy_symbol_value_print (FILE *yyo,
   switch (yykind)
     {
     case YYSYMBOL_ID: /* ID  */
-#line 49 "parser.y"
+#line 50 "parser.y"
          { fprintf(yyoutput, "%s", ((*yyvaluep).string)); }
-#line 758 "parser.tab.c"
+#line 759 "parser.tab.c"
         break;
 
       default:
@@ -1142,127 +1143,127 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: StmtList  */
-#line 56 "parser.y"
+#line 57 "parser.y"
                   { (yyval.node) = createProgramNode((yyvsp[0].node)); root = (yyval.node); }
-#line 1148 "parser.tab.c"
+#line 1149 "parser.tab.c"
     break;
 
   case 3: /* StmtList: %empty  */
-#line 60 "parser.y"
+#line 61 "parser.y"
            { (yyval.node) = NULL; }
-#line 1154 "parser.tab.c"
+#line 1155 "parser.tab.c"
     break;
 
   case 4: /* StmtList: Stmt StmtList  */
-#line 61 "parser.y"
+#line 62 "parser.y"
                         { (yyval.node) = createStmtListNode((yyvsp[-1].node), (yyvsp[0].node)); }
-#line 1160 "parser.tab.c"
+#line 1161 "parser.tab.c"
     break;
 
   case 5: /* Stmt: Declaration  */
-#line 65 "parser.y"
+#line 66 "parser.y"
                   { (yyval.node) = createStmtNode((yyvsp[0].node)); }
-#line 1166 "parser.tab.c"
+#line 1167 "parser.tab.c"
     break;
 
   case 6: /* Stmt: Assignment  */
-#line 66 "parser.y"
+#line 67 "parser.y"
                      { (yyval.node) = createStmtNode((yyvsp[0].node)); }
-#line 1172 "parser.tab.c"
+#line 1173 "parser.tab.c"
     break;
 
   case 7: /* Stmt: Print  */
-#line 67 "parser.y"
+#line 68 "parser.y"
                 { (yyval.node) = createStmtNode((yyvsp[0].node)); }
-#line 1178 "parser.tab.c"
+#line 1179 "parser.tab.c"
     break;
 
   case 8: /* Declaration: Type ID SEMICOLON  */
-#line 71 "parser.y"
+#line 72 "parser.y"
                                { (yyval.node) = createDeclarationNode((yyvsp[-2].node), createIDNode((yyvsp[-1].string))); }
-#line 1184 "parser.tab.c"
+#line 1185 "parser.tab.c"
     break;
 
   case 9: /* Type: INT  */
-#line 75 "parser.y"
+#line 76 "parser.y"
           { (yyval.node) = createTypeNode("int"); }
-#line 1190 "parser.tab.c"
+#line 1191 "parser.tab.c"
     break;
 
   case 10: /* Type: FLOAT  */
-#line 76 "parser.y"
+#line 77 "parser.y"
             { (yyval.node) = createTypeNode("float"); }
-#line 1196 "parser.tab.c"
+#line 1197 "parser.tab.c"
     break;
 
   case 11: /* Assignment: ID ASSIGN Expr SEMICOLON  */
-#line 80 "parser.y"
+#line 81 "parser.y"
                                      { (yyval.node) = createAssignmentNode(createIDNode((yyvsp[-3].string)), (yyvsp[-1].node)); }
-#line 1202 "parser.tab.c"
+#line 1203 "parser.tab.c"
     break;
 
   case 12: /* Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON  */
-#line 84 "parser.y"
+#line 85 "parser.y"
                                                    { (yyval.node) = createPrintNode((yyvsp[-2].node)); }
-#line 1208 "parser.tab.c"
+#line 1209 "parser.tab.c"
     break;
 
   case 13: /* Expr: Expr PLUS Term  */
-#line 88 "parser.y"
+#line 89 "parser.y"
                      { (yyval.node) = createExprNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1214 "parser.tab.c"
+#line 1215 "parser.tab.c"
     break;
 
   case 14: /* Expr: Expr MINUS Term  */
-#line 89 "parser.y"
+#line 90 "parser.y"
                           { (yyval.node) = createExprNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1220 "parser.tab.c"
+#line 1221 "parser.tab.c"
     break;
 
   case 15: /* Expr: Term  */
-#line 90 "parser.y"
+#line 91 "parser.y"
                { (yyval.node) = (yyvsp[0].node); }
-#line 1226 "parser.tab.c"
+#line 1227 "parser.tab.c"
     break;
 
   case 16: /* Term: Term MULT Factor  */
-#line 92 "parser.y"
+#line 93 "parser.y"
                        { (yyval.node) = createTermNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1232 "parser.tab.c"
+#line 1233 "parser.tab.c"
     break;
 
   case 17: /* Term: Term DIV Factor  */
-#line 93 "parser.y"
+#line 94 "parser.y"
                           { (yyval.node) = createTermNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1238 "parser.tab.c"
+#line 1239 "parser.tab.c"
     break;
 
   case 18: /* Term: Factor  */
-#line 94 "parser.y"
+#line 95 "parser.y"
                  { (yyval.node) = (yyvsp[0].node); }
-#line 1244 "parser.tab.c"
+#line 1245 "parser.tab.c"
     break;
 
   case 19: /* Factor: OPEN_PAREN Expr CLOSE_PAREN  */
-#line 98 "parser.y"
+#line 99 "parser.y"
                                     { (yyval.node) = createFactorNode((yyvsp[-1].node)); }
-#line 1250 "parser.tab.c"
+#line 1251 "parser.tab.c"
     break;
 
   case 20: /* Factor: ID  */
-#line 99 "parser.y"
+#line 100 "parser.y"
              { (yyval.node) = createIDNode((yyvsp[0].string)); }
-#line 1256 "parser.tab.c"
+#line 1257 "parser.tab.c"
     break;
 
   case 21: /* Factor: NUMBER  */
-#line 100 "parser.y"
+#line 101 "parser.y"
                  { (yyval.node) = createNumberNode((yyvsp[0].number)); }
-#line 1262 "parser.tab.c"
+#line 1263 "parser.tab.c"
     break;
 
 
-#line 1266 "parser.tab.c"
+#line 1267 "parser.tab.c"
 
       default: break;
     }
@@ -1455,7 +1456,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 104 "parser.y"
+#line 105 "parser.y"
 
 
 
@@ -1492,6 +1493,8 @@ int main() {
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
 		semanticAnalysis(root, symTab);
+
+		printTACToFile("TAC.ir", tacHead);
     }
 
     fclose(yyin);

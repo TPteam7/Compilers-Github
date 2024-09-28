@@ -17,6 +17,7 @@ extern int yyparse(); // Declare yyparse, the parser function
 extern FILE* yyin; // Declare yyin, the file pointer for the input file
 extern int yylineno;  // Declare yylineno, the line number counter
 extern char *yytext;  // The text from the lexer file
+extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
 
 void yyerror(const char* s);
 
@@ -137,6 +138,8 @@ int main() {
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
 		semanticAnalysis(root, symTab);
+
+		printTACToFile("TAC.ir", tacHead);
     }
 
     fclose(yyin);
