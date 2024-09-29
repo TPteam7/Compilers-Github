@@ -24,6 +24,8 @@ typedef struct ASTNode {
 
     NodeType nType;
     
+    struct ASTNode* parent; // Pointer to the parent node
+
     union {
         struct {
             struct ASTNode* stmtList;
@@ -79,6 +81,8 @@ typedef struct ASTNode {
         struct {
             int value;
         } number;
+
+        char* tempVar; 
     };
 
 } ASTNode;

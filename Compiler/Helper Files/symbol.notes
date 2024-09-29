@@ -95,5 +95,85 @@ Declaration: Type ID SEMICOLON {
 
 
 
+        // Expression
+        case NodeType_Term: {
+            TAC* leftTAC = generateTAC(expr->expr.left); 
+            TAC* rightTAC = generateTAC(expr->expr.right);
+
+            instruction->arg1 = leftTAC->result; 
+            instruction->arg2 = rightTAC->result;
+            instruction->op = "*";           
+            instruction->result = "t0";           
+
+            break;
+        }
+        // Assignment
+        case NodeType_Assignment: {
+            TAC* exprTAC = generateTAC(expr->assignment.expr); 
+
+            instruction->arg1 = exprTAC->result;
+            instruction->op = "=";
+            instruction->arg2 = NULL;      
+            instruction->result = "x";
+
+            break;
+        }
+        // Print
+        case NodeType_Print: {
+            TAC* exprTAC = generateTAC(expr->print.expr); 
+
+            instruction->arg1 = exprTAC->result;
+            instruction->op = "print";
+            instruction->arg2 = NULL;
+            instruction->result = NULL;
+
+            break;
+        }
 
 
+
+
+
+
+case NodeType_Expr: {
+            TAC* leftTAC;
+            TAC* rightTAC;
+
+            if(expr->expr.left != NULL) {
+                leftTAC = generateTAC(expr->expr.left);
+                instruction->arg1 = leftTAC->result; 
+            } else
+                instruction->arg1 = NULL;
+
+            if(expr->expr.right != NULL) {
+                TAC* rightTAC = generateTAC(expr->expr.right);
+                instruction->arg2 = rightTAC->result; 
+            } else
+                instruction->arg2 = NULL;
+
+            instruction->op = "+";
+
+            if(rightTAC != NULL) {          
+                instruction->result = createTempVar();
+            } else
+                instruction->result = leftTAC->result;
+
+            break;
+        }
+
+
+
+
+int x;
+int y;
+int a;
+int b;
+int c;
+x = 1;
+a = 12;
+b = 23 + 10;
+x = a * 1;
+x = a + a + 1;
+y = x + a + b + c + a + 5;
+print(x);
+print(y);

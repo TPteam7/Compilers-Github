@@ -8,6 +8,7 @@ ASTNode* createNode(NodeType nType) {
         exit(1);
     }
     node->nType = nType;
+    node->parent = NULL;
     return node;
 }
 
@@ -48,6 +49,7 @@ ASTNode* createAssignmentNode(ASTNode* id, ASTNode* expr) {
     ASTNode* node = createNode(NodeType_Assignment);
     node->assignment.id = id;
     node->assignment.expr = expr;
+    if (expr) expr->parent = node;
     return node;
 }
 

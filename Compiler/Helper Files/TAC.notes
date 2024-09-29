@@ -1,7 +1,6 @@
 #include "semantic.h"
 #include <stdio.h>
 
-
 // Perform semantic analysis on the AST
 TAC* tacHead = NULL;
 int printDebugSemantic = 0;
@@ -130,35 +129,15 @@ ARGS:
             fprintf(stderr, "Unknown Node Type\n");
     }
 
-    ASTNode* current = NULL;
-    if(node->nType == NodeType_Expr) {
-        current = node;
-        while (current != NULL && current->nType == NodeType_Expr) {
-            current = current->parent;
-        }
-    }
-
-
-    
     // Generate TAC for the expression node, assignment, declaration, or print
-    if ((node->nType == NodeType_Expr && isUnderAssignmentWithOnlyExprInBetween(node) == 0) || node->nType == NodeType_Assignment || node->nType == NodeType_Print) {
+    if (node->nType == NodeType_Expr || node->nType == NodeType_Assignment ||  node->nType == NodeType_Print) {
         // Generate Three-Address Code (TAC) for the expression node
-        generateTAC(node);
-    }
-}
+        TAC* tac = generateTAC(node);
 
-int isUnderAssignmentWithOnlyExprInBetween(ASTNode* node) {
-    ASTNode* current = node->parent;
-    
-    // Traverse up as long as we encounter Expr nodes
-    while (current != NULL && current->nType == NodeType_Expr) {
-        current = current->parent;
+        // Process or store the generated TAC
+        printTAC(tac);
     }
 
-    if (current != NULL && current->nType == NodeType_Assignment)
-        return 1;
-    else
-        return 0;
 }
 
 
@@ -177,90 +156,89 @@ int isUnderAssignmentWithOnlyExprInBetween(ASTNode* node) {
 
 // Implement functions to generate TAC expressions
 TAC* generateTAC(ASTNode* expr) {
+    // Depending on your AST structure, generate the appropriate TAC
+    // If the TAC is generated successfully, append it to the global TAC list
+    // Return the generated TAC, so that it can be used by the caller, e.g. for printing
 
-    if (expr == NULL) return NULL;
+    //printf("Start: %d\n", expr->nType);
+    if (!expr) return NULL;
 
     TAC* instruction = (TAC*)malloc(sizeof(TAC));
     if (!instruction) return NULL;
 
-    // Initialize fields to avoid garbage values
-    instruction->arg1 = NULL;
-    instruction->arg2 = NULL;
-    instruction->op = NULL;
-    instruction->result = NULL;
-    instruction->nodetype = NULL;
-    instruction->next = NULL;
-
     switch (expr->nType) {
         // Expression
         case NodeType_Expr: {
-            TAC* leftTAC = generateTAC(expr->expr.left);
-            TAC* rightTAC = generateTAC(expr->expr.right);
+            if(printDebugSemantic == 1)
+                printf("Generating TAC for expression\n");      // output: t1 = 2 + 3
+
+            TAC* leftTAC = generateTAC(expr->expr.left); // Generate TAC for the left side of the expression
+            TAC* rightTAC = generateTAC(expr->expr.right); // Generate TAC for the right side of the expression
 
 
-            instruction->arg1 = leftTAC->result; 
-            instruction->arg2 = rightTAC->result;
-            instruction->op = "+";
-            instruction->result = createTempVar();
-            instruction->nodetype = "Expr";
+            instruction->arg1 = leftTAC->result; // The result of the left side of the expression
+            instruction->arg2 = rightTAC->result; // The result of the right side of the expression
 
-            break;
-        }
-        // Term
-        case NodeType_Term: {
-            TAC* leftTAC = generateTAC(expr->term.left);
-            TAC* rightTAC = generateTAC(expr->term.right);
+            // instruction->arg1 = createOperand(expr->expr.left);     // 2. Could also be a temp variable
+            // instruction->arg2 = createOperand(expr->expr.right);    // 3. Could also be a temp variable
+            instruction->op = "+";            // +
+            instruction->result = createTempVar();            // t1
 
-            instruction->arg1 = leftTAC->result;
-            instruction->arg2 = rightTAC->result;
-            instruction->op = "*";
-            instruction->result = createTempVar();
-            instruction->nodetype = "Term";
+            //deallocateTempVar(tempVars, atoi(leftTAC->result + 1));  // Free left temp (assumes temp is "tN")
+            //deallocateTempVar(tempVars, atoi(rightTAC->result + 1)); // Free right temp
 
             break;
         }
         // Assignment
         case NodeType_Assignment: {
-            TAC* exprTAC = generateTAC(expr->assignment.expr); 
+            if(printDebugSemantic == 1)
+                printf("Generating TAC for assignment\n");
 
-            instruction->arg1 = exprTAC->result;
+            TAC* exprTAC = generateTAC(expr->assignment.expr); // Generate TAC for the expression part
+
+            instruction->arg1 = exprTAC->result; // The result of the expression
             instruction->op = "=";
-            instruction->arg2 = NULL;      
-            instruction->result = createOperand(expr->assignment.id);
-            instruction->nodetype = "Assignment";
+            instruction->arg2 = NULL;       // We already have the result of the expression so no need for arg2
+            instruction->result = createOperand(expr->assignment.id); // The variable being assigned to
+            
+            //deallocateTempVar(tempVars, atoi(exprTAC->result + 1));
 
             break;
         }
         // Print
         case NodeType_Print: {
-            TAC* exprTAC = generateTAC(expr->print.expr); 
+            if(printDebugSemantic == 1)
+                printf("Generating TAC for print\n");
 
-            instruction->arg1 = exprTAC->result;
+            // print the print expression
+            TAC* exprTAC = generateTAC(expr->print.expr); // Generate TAC for the expression to print
+
+            instruction->arg1 = exprTAC->result; // The expression to print
             instruction->op = "print";
-            instruction->arg2 = NULL;
-            instruction->result = NULL;
-            instruction->nodetype = "Print";
+            instruction->arg2 = NULL; // No second argument
+            instruction->result = NULL; // No result
             break;
         }
         // Number
         case NodeType_Number: {
-            
-            instruction->op = "=";
-            instruction->arg1 = createOperand(expr);
-            instruction->arg2 = NULL;
-            instruction->result = createTempVar();
-            instruction->nodetype = "Number";
+            if(printDebugSemantic == 1)
+                printf("Generating TAC for number\n");
 
+            instruction->result = createOperand(expr); // The number to assign
+            instruction->op = NULL; // No operation for a number
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
             break;
         }
         // ID
         case NodeType_ID: {
-            instruction->result = createOperand(expr); 
-            instruction->op = NULL; 
+            if(printDebugSemantic == 1)
+                printf("Generating TAC for ID\n");
+
+            instruction->result = createOperand(expr); // The ID to assign
+            instruction->op = NULL; // No operation for an ID
             instruction->arg1 = NULL;
             instruction->arg2 = NULL;
-            instruction->nodetype = "Expr";
-
             break;
         }
         default:
@@ -276,7 +254,6 @@ TAC* generateTAC(ASTNode* expr) {
 
     return instruction;
 }
-
 // Function to create a new temporary variable for TAC
 char* createTempVar() {
     static int count = 0;
@@ -287,78 +264,62 @@ char* createTempVar() {
     return tempVar;
 }
 
-int allocateNextAvailableTempVar(int tempVars[]) {
-   // implement the temp var allocation logic
-   // use the tempVars array to keep track of allocated temp vars
+char* createOperand(ASTNode* node) {
+    // Depending on your AST structure, return the appropriate string
+    // representation of the operand. For example, if the operand is a simple
+    // expression or an identifier, return its string representation.
+    // This function needs to be implemented based on your AST structure.
+    if (!node) return NULL;
 
-    // search for the next available temp var
-    for (int i = 0; i < 60; i++) {
-        if (tempVars[i] == 0) {
-            tempVars[i] = 1;
-            return i;
+    if(printDebugSemantic == 1)
+        printf("Creating operand for node type\n");
+
+    switch (node->nType) {
+        // Return the string representation of the number
+        case NodeType_Number: {
+            char* buffer = malloc(60);
+            snprintf(buffer, 60, "%d", node->number.value);     //converts the number to a string
+            return buffer;
         }
+        // Return the string representation of the identifier
+        case NodeType_ID: {
+            return node->id.name;
+            //return createTempVar();
+        }
+        // Create a temp variable for the expression
+        case NodeType_Expr: {
+            return createTempVar();
+        }
+        // Factor
+        case NodeType_Factor: {
+            return createOperand(node->factor.child);
+        }
+        default:
+            return NULL;
     }
-    return -1; // No available temp var
 }
 
-void appendTAC(TAC** head, TAC* newInstruction) {
-    if (!*head) {
-        *head = newInstruction;
-    } else {
-        TAC* current = *head;
-        while (current->next) {
-            current = current->next;
-        }
-        current->next = newInstruction;
-    }
-}
-
-// Function to print all elements of the TAC linked list
 void printTAC(TAC* tac) {
     if (!tac) return;
-
-    cleanupTAC(&tac);
-
-    // Print header
-    printf("\nRESULT\tARG1\tOP\tARG2\tNodeType\n");
-
-    // Iterate through the linked list using a for loop
-    for (TAC* current = tac; current != NULL; current = current->next) {
-        // Print the fields of the current TAC node, handling null pointers
-        if (current->result != NULL)
-            printf("%s\t", current->result);
-        else
-            printf("NULL\t");
-
-        if (current->arg1 != NULL)
-            printf("%s\t", current->arg1);
-        else
-            printf("NULL\t");
-
-        if (current->op != NULL)
-            printf("%s\t", current->op);
-        else
-            printf("NULL\t");
-
-        if (current->arg2 != NULL)
-            printf("%s\t", current->arg2);
-        else
-            printf("NULL\t");
-
-        if (current->nodetype != NULL)
-            printf("%s\t", current->nodetype);
-        else
-            printf("NULL\t");
-
-        // Print a new line for the current TAC instruction
-        printf("\n");
-    }
     printf("\n");
+    printf("RESULT\tARG1\tOP\tARG2\n");
+
+    // Print the TAC instruction with non-null fields
+    if(tac->result != NULL)
+        printf("%s\t", tac->result);
+    if(tac->arg1 != NULL)
+        printf("%s\t", tac->arg1);
+    if(tac->op != NULL)
+        printf("%s\t", tac->op);
+    if(tac->arg2 != NULL)
+        printf("%s\t", tac->arg2);
+    printf("\n\n");
 }
 
-void printTACToFile(const char* filename, TAC* tac) {
+// Print the TAC list to a file
+// This function is provided for reference, you can modify it as needed
 
-    cleanupTAC(&tac);
+void printTACToFile(const char* filename, TAC* tac) {
     FILE* file = fopen(filename , "w");
     if (!file) {
         perror("Failed to open file");
@@ -386,51 +347,45 @@ void printTACToFile(const char* filename, TAC* tac) {
     printf("TAC written to %s\n", filename);
 }
 
-char* createOperand(ASTNode* node) {
-    if (!node) return NULL;
 
-    switch (node->nType) {
-        // Return the string representation of the number
-        case NodeType_Number: {
-            char* buffer = malloc(60);
-            snprintf(buffer, 60, "%d", node->number.value);     //converts the number to a string
-            return buffer;
-        }
-        // Return the string representation of the identifier
-        case NodeType_ID: {
-            return node->id.name;
-        }
-        default:
-            return NULL;
+// Temporary variable allocation and deallocation functions //
+
+void initializeTempVars() {
+    for (int i = 0; i < 60; i++) {
+        tempVars[i] = 0;
     }
 }
 
-// Function to remove nodes with NULL arg1, arg2, and op
-void cleanupTAC(TAC** head) {
-    if (!head || !*head) return;
+int allocateNextAvailableTempVar(int tempVars[]) {
+   // implement the temp var allocation logic
+   // use the tempVars array to keep track of allocated temp vars
 
-    TAC* current = *head;
-    TAC* prev = NULL;
-
-    while (current != NULL) {
-        TAC* next = current->next;
-        // Check if current node should be removed
-        if (current->arg1 == NULL && current->arg2 == NULL && current->op == NULL) {
-            // Remove current node
-            if (prev == NULL) {
-                // If current is the head, update the head
-                *head = current->next;
-            } else {
-                // Skip the current node
-                prev->next = current->next;
-            }
-            // Free the node's memory
-            free(current);
-        } else {
-            // Move prev pointer only if current node is not removed
-            prev = current;
+    // search for the next available temp var
+    for (int i = 0; i < 60; i++) {
+        if (tempVars[i] == 0) {
+            tempVars[i] = 1;
+            return i;
         }
-        // Move to the next node
-        current = next;
+    }
+    return -1; // No available temp var
+}
+
+void deallocateTempVar(int tempVars[], int index) {
+    // implement the temp var deallocation logic
+    // use the tempVars array to keep track of allocated temp vars
+    if (index >= 0 && index < 60) {
+        tempVars[index] = 0;
+    }
+}
+
+void appendTAC(TAC** head, TAC* newInstruction) {
+    if (!*head) {
+        *head = newInstruction;
+    } else {
+        TAC* current = *head;
+        while (current->next) {
+            current = current->next;
+        }
+        current->next = newInstruction;
     }
 }

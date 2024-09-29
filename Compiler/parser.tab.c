@@ -1494,6 +1494,8 @@ int main() {
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
 		semanticAnalysis(root, symTab);
 
+		printTAC(tacHead);
+
 		printTACToFile("TAC.ir", tacHead);
     }
 
