@@ -6,6 +6,7 @@
 #include "AST.h"
 #include "symbolTable.h"
 #include "semantic.h"
+#include "optimizer.h"
 
 #define TABLE_SIZE 100
 
@@ -142,6 +143,23 @@ int main() {
 		printTAC(tacHead);
 
 		printTACToFile("TAC.ir", tacHead);
+
+		// Code optimization
+		printf("\n\n=== CODE OPTIMIZATION ===\n");
+		// Traverse the linked list of TAC entries and optimize
+		// But - you MIGHT need to traverse the AST again to optimize
+
+		optimizeTAC(&tacHead);
+		printOptimizedTAC("TACOptimized.ir", tacHead);
+
+		// Code generation
+		printf("\n=== CODE GENERATION ===\n");
+		initCodeGenerator("output.s");
+		generateMIPS(tacHead);
+		finalizeCodeGenerator("output.s");
+
+        freeAST(root);
+		freeSymbolTable(symTab);
     }
 
     fclose(yyin);
