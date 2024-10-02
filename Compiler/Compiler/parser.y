@@ -88,12 +88,12 @@ Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { $$ = createPrintNode($3); }
 
 
 
-Expr: Expr PLUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
-	| Expr MINUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
+Expr: Expr PLUS Term { $$ = createExprNode($2, $1, $3); }
+	| Expr MINUS Term { $$ = createExprNode($2, $1, $3); }
 	| Term { $$ = $1; };
 
-Term: Term MULT Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
-	| Term DIV Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
+Term: Term MULT Factor { $$ = createTermNode($2, $1, $3); }
+	| Term DIV Factor { $$ = createTermNode($2, $1, $3); }
 	| Factor { $$ = $1; };
 
 

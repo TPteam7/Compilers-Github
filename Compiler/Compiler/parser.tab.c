@@ -1212,13 +1212,13 @@ yyreduce:
 
   case 13: /* Expr: Expr PLUS Term  */
 #line 91 "parser.y"
-                     { (yyval.node) = createExprNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                     { (yyval.node) = createExprNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1217 "parser.tab.c"
     break;
 
   case 14: /* Expr: Expr MINUS Term  */
 #line 92 "parser.y"
-                          { (yyval.node) = createExprNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                          { (yyval.node) = createExprNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1223 "parser.tab.c"
     break;
 
@@ -1230,13 +1230,13 @@ yyreduce:
 
   case 16: /* Term: Term MULT Factor  */
 #line 95 "parser.y"
-                       { (yyval.node) = createTermNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                       { (yyval.node) = createTermNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1235 "parser.tab.c"
     break;
 
   case 17: /* Term: Term DIV Factor  */
 #line 96 "parser.y"
-                          { (yyval.node) = createTermNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                          { (yyval.node) = createTermNode((yyvsp[-1].op), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1241 "parser.tab.c"
     break;
 

@@ -59,13 +59,13 @@ typedef struct ASTNode {
         } print;
 
         struct {
-            char* op;
+            char op;
             struct ASTNode* left;
             struct ASTNode* right;
         } expr;
 
         struct {
-            char* op;
+            char op;
             struct ASTNode* left;
             struct ASTNode* right;
         } term;
@@ -96,8 +96,8 @@ ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
 ASTNode* createTypeNode(char* typeName);
 ASTNode* createAssignmentNode(ASTNode* id, ASTNode* expr);
 ASTNode* createPrintNode(ASTNode* expr);
-ASTNode* createExprNode(char* op, ASTNode* left, ASTNode* right);
-ASTNode* createTermNode(char* op, ASTNode* left, ASTNode* right);
+ASTNode* createExprNode(char op, ASTNode* left, ASTNode* right);
+ASTNode* createTermNode(char op, ASTNode* left, ASTNode* right);
 ASTNode* createFactorNode(ASTNode* child);
 ASTNode* createIDNode(char* name);
 ASTNode* createNumberNode(int value);

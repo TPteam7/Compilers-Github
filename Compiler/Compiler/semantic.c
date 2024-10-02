@@ -4,7 +4,7 @@
 
 // Perform semantic analysis on the AST
 TAC* tacHead = NULL;
-int printDebugSemantic = 1;
+int printDebugSemantic = 0;
 int tempVars[60];
 
 void semanticAnalysis(ASTNode* node, SymbolTable* symTab) 
@@ -130,20 +130,19 @@ ARGS:
             fprintf(stderr, "Unknown Node Type\n");
     }
 
-    // ASTNode* current = NULL;
-    // if(node->nType == NodeType_Expr) {
-    //     current = node;
-    //     while (current != NULL && current->nType == NodeType_Expr) {
-    //         current = current->parent;
-    //     }
-    // }
+    ASTNode* current = NULL;
+    if(node->nType == NodeType_Expr) {
+        current = node;
+        while (current != NULL && current->nType == NodeType_Expr) {
+            current = current->parent;
+        }
+    }
 
 
-    printf("Break before TAC");
+    
     // Generate TAC for the expression node, assignment, declaration, or print
-    if ((node->nType == NodeType_Expr && (node->parent->nType != NodeType_Assignment && node->parent->nType != NodeType_Expr)) || node->nType == NodeType_Assignment || node->nType == NodeType_Print) {
+    if ((node->nType == NodeType_Expr && isUnderAssignmentWithOnlyExprInBetween(node) == 0) || node->nType == NodeType_Assignment || node->nType == NodeType_Print) {
         // Generate Three-Address Code (TAC) for the expression node
-        printf("Generating TAC");
         generateTAC(node);
     }
 }
@@ -201,7 +200,7 @@ TAC* generateTAC(ASTNode* expr) {
 
             instruction->arg1 = leftTAC->result; 
             instruction->arg2 = rightTAC->result;
-            instruction->op = expr->expr.op;
+            instruction->op = "+";
             instruction->result = createTempVar();
             instruction->nodetype = "Expr";
 
@@ -214,7 +213,7 @@ TAC* generateTAC(ASTNode* expr) {
 
             instruction->arg1 = leftTAC->result;
             instruction->arg2 = rightTAC->result;
-            instruction->op = expr->expr.op;
+            instruction->op = "*";
             instruction->result = createTempVar();
             instruction->nodetype = "Term";
 
@@ -272,36 +271,6 @@ TAC* generateTAC(ASTNode* expr) {
 
     instruction->next = NULL; // Make sure to null-terminate the new instruction
 
-    // Print a new line for the current TAC instruction
-    printf("\n");
-        // Print the fields of the current TAC node, handling null pointers
-    if (instruction->result != NULL)
-        printf("%s\t", instruction->result);
-    else
-        printf("NULL\t");
-
-    if (instruction->arg1 != NULL)
-        printf("%s\t", instruction->arg1);
-    else
-        printf("NULL\t");
-
-    if (instruction->op != NULL)
-        printf("%s\t", instruction->op);
-    else
-        printf("NULL\t");
-
-    if (instruction->arg2 != NULL)
-        printf("%s\t", instruction->arg2);
-    else
-        printf("NULL\t");
-
-    if (instruction->nodetype != NULL)
-        printf("%s\t", instruction->nodetype);
-    else
-        printf("NULL\t");
-
-    // Print a new line for the current TAC instruction
-    printf("\n");
     // Append to the global TAC list
     appendTAC(&tacHead, instruction);
 

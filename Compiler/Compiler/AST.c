@@ -59,17 +59,15 @@ ASTNode* createPrintNode(ASTNode* expr) {
     return node;
 }
 
-ASTNode* createExprNode(char* op, ASTNode* left, ASTNode* right) {
+ASTNode* createExprNode(char op, ASTNode* left, ASTNode* right) {
     ASTNode* node = createNode(NodeType_Expr);
     node->expr.op = op;
     node->expr.left = left;
     node->expr.right = right;
-    if (left) left->parent = node;
-    if (right) right->parent = node;
     return node;
 }
 
-ASTNode* createTermNode(char* op, ASTNode* left, ASTNode* right) {
+ASTNode* createTermNode(char op, ASTNode* left, ASTNode* right) {
     ASTNode* node = createNode(NodeType_Term);
     node->term.op = op;
     node->term.left = left;
@@ -135,12 +133,12 @@ void printAST(ASTNode* node, int indent) {
             printAST(node->print.expr, indent + 1);
             break;
         case NodeType_Expr:
-            printf("Expr: %s\n", node->expr.op);
+            printf("Expr: %c\n", node->expr.op);
             printAST(node->expr.left, indent + 1);
             printAST(node->expr.right, indent + 1);
             break;
         case NodeType_Term:
-            printf("Term: %s\n", node->term.op);
+            printf("Term: %c\n", node->term.op);
             printAST(node->term.left, indent + 1);
             printAST(node->term.right, indent + 1);
             break;
