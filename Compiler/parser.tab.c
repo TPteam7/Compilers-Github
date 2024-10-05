@@ -1188,13 +1188,13 @@ yyreduce:
 
   case 9: /* Type: INT  */
 #line 78 "parser.y"
-          { (yyval.node) = createTypeNode("int"); }
+          { (yyval.node) = createTypeNode((yyvsp[0].string)); }
 #line 1193 "parser.tab.c"
     break;
 
   case 10: /* Type: FLOAT  */
 #line 79 "parser.y"
-            { (yyval.node) = createTypeNode("float"); }
+            { (yyval.node) = createTypeNode((yyvsp[0].string)); }
 #line 1199 "parser.tab.c"
     break;
 

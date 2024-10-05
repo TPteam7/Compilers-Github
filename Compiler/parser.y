@@ -75,8 +75,8 @@ Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)
 
 
 
-Type: INT { $$ = createTypeNode("int"); }
-    | FLOAT { $$ = createTypeNode("float"); };
+Type: INT { $$ = createTypeNode($1); }
+    | FLOAT { $$ = createTypeNode($1); };
 
 
 
