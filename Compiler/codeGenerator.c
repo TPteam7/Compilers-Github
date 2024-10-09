@@ -44,7 +44,8 @@ void generateMIPS(TAC* tacInstructions) {
     // Get the list of variables from the TAC instructions
     while (current != NULL) {
         // Check if the operation is '=', '+', or '*'
-        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || strcmp(current->op, "*") == 0) {
+        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || strcmp(current->op, "*") || strcmp(current->op, "-") || strcmp(current->op, "/") == 0) {
+            printf(current->result);
             // Check if the result is a variable
             if (current->result != NULL && !isConstant(current->result)) {
                 // Check if the variable is already declared
@@ -146,6 +147,44 @@ void generateMIPS(TAC* tacInstructions) {
 
             // Perform addition
             fprintf(outputFile, "\tadd %s, %s, %s\n", tempRegisters[regResult].name, tempRegisters[reg1].name, tempRegisters[reg2].name);
+
+            // Store result in memory
+            fprintf(outputFile, "\tsw %s, %s\n", tempRegisters[regResult].name, current->result);
+
+            // Deallocate registers
+            deallocateRegister(reg1);
+            deallocateRegister(reg2);
+            deallocateRegister(regResult);
+        }
+        // Handle subtraction operation
+        else if (strcmp(current->op, "-") == 0) {
+            // Allocate registers for both operands and the result
+            reg1 = allocateRegister();
+            reg2 = allocateRegister();
+            regResult = allocateRegister();
+
+            if (reg1 == -1 || reg2 == -1 || regResult == -1) {
+                fprintf(stderr, "No available register for addition operation\n");
+                exit(EXIT_FAILURE);
+            }
+
+            // Load both arguments into registers
+            if (isConstant(current->arg1)) {
+                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
+            } 
+            else {
+                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
+            }
+            
+            if (isConstant(current->arg2)) {
+                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
+            } 
+            else {
+                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg2].name, current->arg2);
+            }
+
+            // Perform addition
+            fprintf(outputFile, "\tsubu %s, %s, %s\n", tempRegisters[regResult].name, tempRegisters[reg1].name, tempRegisters[reg2].name);
 
             // Store result in memory
             fprintf(outputFile, "\tsw %s, %s\n", tempRegisters[regResult].name, current->result);
