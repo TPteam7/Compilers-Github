@@ -56,7 +56,73 @@ int printParserDebug = 0;
 
 %%
 
-Program: 
+Program: StmtList { $$ = createProgramNode($1); root = $$; };
+
+
+StmtList:  { $$ = NULL; }
+	| Stmt StmtList { $$ = createStmtListNode($1, $2); }
+	| Function StmtList {  };
+
+
+Function: Type ID LPAREN ParamList RPAREN LBRACKET Block RBRACKET {  }
+	| ID LPAREN ParamList RPAREN SEMICOLON {  };
+
+
+ParamList: {  }
+	| ParamTail {  };
+
+
+ParamTail: Param {  }
+	| Param COMMA ParamTail {  };
+
+
+Param: Type ID {  }
+	| Type ID LBRACE RBRACE {  };
+
+
+Block: RETURN ID SEMICOLON {  }
+	| Stmt Block {  }
+	| Function Block {  }; 
+
+
+Stmt: Declaration { $$ = createStmtNode($1); } 
+	| Assignment { $$ = createStmtNode($1); }
+	| Print { $$ = createStmtNode($1); };
+
+
+
+Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); }
+	| Type ID LBRACE NUMBER RBRACE SEMICOLON {  };
+
+
+
+Type: INT { $$ = createTypeNode($1); }
+    | FLOAT { $$ = createTypeNode($1); }
+	| BOOL { $$ = createTypeNode($1); };
+
+
+
+Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); };
+
+
+
+Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { $$ = createPrintNode($3); };
+
+
+
+Expr: Expr PLUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
+	| Expr MINUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
+	| Term { $$ = $1; };
+
+Term: Term MULT Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
+	| Term DIV Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
+	| Factor { $$ = $1; };
+
+
+
+Factor: OPEN_PAREN Expr CLOSE_PAREN { $$ = createFactorNode($2); }
+	| ID { $$ = createIDNode($1); }
+	| NUMBER { $$ = createNumberNode($1); };
 
 
 %%
