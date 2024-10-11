@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "AST.h"
-#include "symbolTable.h"
-#include "semantic.h"
-#include "optimizer.h"
-#include "codeGenerator.h"
+//#include "AST.h"
+//#include "symbolTable.h"
+//#include "semantic.h"
+//#include "optimizer.h"
+//#include "codeGenerator.h"
 
 #define TABLE_SIZE 100
 
@@ -19,13 +19,13 @@ extern int yyparse(); // Declare yyparse, the parser function
 extern FILE* yyin; // Declare yyin, the file pointer for the input file
 extern int yylineno;  // Declare yylineno, the line number counter
 extern char *yytext;  // The text from the lexer file
-extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
+//extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
 
 void yyerror(const char* s);
 
-ASTNode* root = NULL;
-SymbolTable* symTab = NULL;
-Symbol* symbol = NULL;
+//ASTNode* root = NULL;
+//SymbolTable* symTab = NULL;
+//Symbol* symbol = NULL;
 
 // Declare global print booleans
 int printSymbolDebug = 0;
@@ -56,15 +56,15 @@ int printParserDebug = 0;
 
 %%
 
-Program: StmtList { $$ = createProgramNode($1); root = $$; };
+Program: StmtList {  };
 
 
-StmtList:  { $$ = NULL; }
-	| Stmt StmtList { $$ = createStmtListNode($1, $2); }
+StmtList:  {  }
+	| Stmt StmtList {  }
 	| Function StmtList {  };
 
 
-Function: Type ID LPAREN ParamList RPAREN LBRACKET Block RBRACKET {  }
+Function: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE {  }
 	| ID LPAREN ParamList RPAREN SEMICOLON {  };
 
 
@@ -81,48 +81,47 @@ Param: Type ID {  }
 
 
 Block: RETURN ID SEMICOLON {  }
+	| RETURN NUMBER SEMICOLON {  }
 	| Stmt Block {  }
 	| Function Block {  }; 
 
 
-Stmt: Declaration { $$ = createStmtNode($1); } 
-	| Assignment { $$ = createStmtNode($1); }
-	| Print { $$ = createStmtNode($1); };
+Stmt: Declaration {  } 
+	| Assignment {  }
+	| Print {  };
 
 
-
-Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); }
-	| Type ID LBRACE NUMBER RBRACE SEMICOLON {  };
-
+Declaration: Type ID SEMICOLON {  }
+	| Type ID LBRACKET NUMBER RBRACKET SEMICOLON {  };
 
 
-Type: INT { $$ = createTypeNode($1); }
-    | FLOAT { $$ = createTypeNode($1); }
-	| BOOL { $$ = createTypeNode($1); };
+Type: INT {  }
+    | FLOAT {  }
+	| BOOL {  };
 
 
-
-Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); };
-
-
-
-Print: PRINT OPEN_PAREN Expr CLOSE_PAREN SEMICOLON { $$ = createPrintNode($3); };
+Assignment: ID ASSIGN Expr SEMICOLON {  }
+	| ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON {  }
+	| ID ASSIGN Function SEMICOLON {  }
+	| ID LBRACKET Expr RBRACKET ASSIGN Function SEMICOLON {  };
 
 
-
-Expr: Expr PLUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
-	| Expr MINUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
-	| Term { $$ = $1; };
-
-Term: Term MULT Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
-	| Term DIV Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
-	| Factor { $$ = $1; };
+Print: PRINT LPAREN Expr RPAREN SEMICOLON {  };
 
 
+Expr: Expr PLUS Term {  }
+	| Expr MINUS Term {  }
+	| Term {  };
 
-Factor: OPEN_PAREN Expr CLOSE_PAREN { $$ = createFactorNode($2); }
-	| ID { $$ = createIDNode($1); }
-	| NUMBER { $$ = createNumberNode($1); };
+
+Term: Term MULT Factor {  }
+	| Term DIV Factor {  }
+	| Factor {  };
+
+
+Factor: LPAREN Expr RPAREN {  }
+	| ID {  }
+	| NUMBER {  };
 
 
 %%
@@ -134,54 +133,13 @@ int main() {
 
 	yydebug = 0;
 
-	// Initialize symbol table
-	symTab = createSymbolTable(TABLE_SIZE);
-    if (symTab == NULL) {
-        // Handle error
-        return EXIT_FAILURE;
-    }
-
-	//not sure if needed
-	symbol = malloc(sizeof(Symbol));
-
 	printf("\nPARSER:\nStarting to parse\n\n");
     int result = yyparse();
 
     if (result == 0) {
-		// Print symbol table for debugging
-		if(printSymbolDebug == 1)
-		{
-			printSymbolTable(symTab);
-		}
 
         printf("\nPARSER:\nParsing successful!\n");
 
-		printAST(root, 0);
-
-		// Semantic analysis
-		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
-		semanticAnalysis(root, symTab);
-
-		printTAC(tacHead);
-
-		printTACToFile("TAC.ir", tacHead);
-
-		// Code optimization
-		printf("\n\n=== CODE OPTIMIZATION ===\n");
-		// Traverse the linked list of TAC entries and optimize
-		// But - you MIGHT need to traverse the AST again to optimize
-
-		optimizeTAC(&tacHead);
-		printOptimizedTAC("TACOptimized.ir", tacHead);
-
-		// Code generation
-		printf("\n=== CODE GENERATION ===\n");
-		initCodeGenerator("output.s");
-		generateMIPS(tacHead);
-		finalizeCodeGenerator("output.s");
-
-        freeAST(root);
-		freeSymbolTable(symTab);
     }
 
     fclose(yyin);

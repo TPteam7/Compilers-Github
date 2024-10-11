@@ -156,7 +156,7 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
               return RBRACKET; }
 
 ";"         { chars++; 
-              printf("%s : SEMICOLON\n\n", yytext);
+              printf("%s : SEMICOLON\n", yytext);
               yylval.character = yytext[0];
               return SEMICOLON; }
 
