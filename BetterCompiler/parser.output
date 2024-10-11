@@ -48,52 +48,54 @@ Grammar
 
    25 Assignment: ID ASSIGN Expr SEMICOLON
    26           | ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON
+   27           | ID ASSIGN Function SEMICOLON
+   28           | ID LBRACKET Expr RBRACKET ASSIGN Function SEMICOLON
 
-   27 Print: PRINT LPAREN Expr RPAREN SEMICOLON
+   29 Print: PRINT LPAREN Expr RPAREN SEMICOLON
 
-   28 Expr: Expr PLUS Term
-   29     | Expr MINUS Term
-   30     | Term
+   30 Expr: Expr PLUS Term
+   31     | Expr MINUS Term
+   32     | Term
 
-   31 Term: Term MULT Factor
-   32     | Term DIV Factor
-   33     | Factor
+   33 Term: Term MULT Factor
+   34     | Term DIV Factor
+   35     | Factor
 
-   34 Factor: LPAREN Expr RPAREN
-   35       | ID
-   36       | NUMBER
+   36 Factor: LPAREN Expr RPAREN
+   37       | ID
+   38       | NUMBER
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    ID <string> (258) 5 6 11 12 13 20 21 25 26 35
+    ID <string> (258) 5 6 11 12 13 20 21 25 26 27 28 37
     INT <string> (259) 22
     FLOAT <string> (260) 23
     BOOL <string> (261) 24
     VOID <string> (262)
     TRUE <string> (263)
     FALSE <string> (264)
-    PRINT <string> (265) 27
+    PRINT <string> (265) 29
     IF <string> (266)
     ELSE <string> (267)
     WHILE <string> (268)
     RETURN <string> (269) 13 14
-    SEMICOLON <character> (270) 6 13 14 20 21 25 26 27
+    SEMICOLON <character> (270) 6 13 14 20 21 25 26 27 28 29
     COMMA <character> (271) 10
-    LPAREN <character> (272) 5 6 27 34
-    RPAREN <character> (273) 5 6 27 34
+    LPAREN <character> (272) 5 6 29 36
+    RPAREN <character> (273) 5 6 29 36
     LBRACE <character> (274) 5 12
     RBRACE <character> (275) 5 12
-    LBRACKET <character> (276) 21 26
-    RBRACKET <character> (277) 21 26
-    ASSIGN <op> (278) 25 26
-    PLUS <op> (279) 28
-    MINUS <op> (280) 29
-    MULT <op> (281) 31
-    DIV <op> (282) 32
-    NUMBER <number> (283) 14 21 36
+    LBRACKET <character> (276) 21 26 28
+    RBRACKET <character> (277) 21 26 28
+    ASSIGN <op> (278) 25 26 27 28
+    PLUS <op> (279) 30
+    MINUS <op> (280) 31
+    MULT <op> (281) 33
+    DIV <op> (282) 34
+    NUMBER <number> (283) 14 21 38
 
 
 Nonterminals, with rules where they appear
@@ -108,7 +110,7 @@ Nonterminals, with rules where they appear
         on right: 1 3 4
     Function (32)
         on left: 5 6
-        on right: 4 16
+        on right: 4 16 27 28
     ParamList (33)
         on left: 7 8
         on right: 5 6
@@ -131,20 +133,20 @@ Nonterminals, with rules where they appear
         on left: 22 23 24
         on right: 5 11 12 20 21
     Assignment <node> (40)
-        on left: 25 26
+        on left: 25 26 27 28
         on right: 18
     Print <node> (41)
-        on left: 27
+        on left: 29
         on right: 19
     Expr <node> (42)
-        on left: 28 29 30
-        on right: 25 26 27 28 29 34
+        on left: 30 31 32
+        on right: 25 26 28 29 30 31 36
     Term <node> (43)
-        on left: 31 32 33
-        on right: 28 29 30 31 32
+        on left: 33 34 35
+        on right: 30 31 32 33 34
     Factor <node> (44)
-        on left: 34 35 36
-        on right: 31 32 33
+        on left: 36 37 38
+        on right: 33 34 35
 
 
 State 0
@@ -174,6 +176,8 @@ State 1
     6 Function: ID • LPAREN ParamList RPAREN SEMICOLON
    25 Assignment: ID • ASSIGN Expr SEMICOLON
    26           | ID • LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON
+   27           | ID • ASSIGN Function SEMICOLON
+   28           | ID • LBRACKET Expr RBRACKET ASSIGN Function SEMICOLON
 
     LPAREN    shift, and go to state 14
     LBRACKET  shift, and go to state 15
@@ -203,7 +207,7 @@ State 4
 
 State 5
 
-   27 Print: PRINT • LPAREN Expr RPAREN SEMICOLON
+   29 Print: PRINT • LPAREN Expr RPAREN SEMICOLON
 
     LPAREN  shift, and go to state 17
 
@@ -313,6 +317,7 @@ State 14
 State 15
 
    26 Assignment: ID LBRACKET • Expr RBRACKET ASSIGN Expr SEMICOLON
+   28           | ID LBRACKET • Expr RBRACKET ASSIGN Function SEMICOLON
 
     ID      shift, and go to state 26
     LPAREN  shift, and go to state 27
@@ -326,25 +331,31 @@ State 15
 State 16
 
    25 Assignment: ID ASSIGN • Expr SEMICOLON
+   27           | ID ASSIGN • Function SEMICOLON
 
-    ID      shift, and go to state 26
+    ID      shift, and go to state 32
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    BOOL    shift, and go to state 4
     LPAREN  shift, and go to state 27
     NUMBER  shift, and go to state 28
 
-    Expr    go to state 32
-    Term    go to state 30
-    Factor  go to state 31
+    Function  go to state 33
+    Type      go to state 34
+    Expr      go to state 35
+    Term      go to state 30
+    Factor    go to state 31
 
 
 State 17
 
-   27 Print: PRINT LPAREN • Expr RPAREN SEMICOLON
+   29 Print: PRINT LPAREN • Expr RPAREN SEMICOLON
 
     ID      shift, and go to state 26
     LPAREN  shift, and go to state 27
     NUMBER  shift, and go to state 28
 
-    Expr    go to state 33
+    Expr    go to state 36
     Term    go to state 30
     Factor  go to state 31
 
@@ -376,16 +387,16 @@ State 21
    20 Declaration: Type ID • SEMICOLON
    21            | Type ID • LBRACKET NUMBER RBRACKET SEMICOLON
 
-    SEMICOLON  shift, and go to state 34
-    LPAREN     shift, and go to state 35
-    LBRACKET   shift, and go to state 36
+    SEMICOLON  shift, and go to state 37
+    LPAREN     shift, and go to state 38
+    LBRACKET   shift, and go to state 39
 
 
 State 22
 
     6 Function: ID LPAREN ParamList • RPAREN SEMICOLON
 
-    RPAREN  shift, and go to state 37
+    RPAREN  shift, and go to state 40
 
 
 State 23
@@ -400,7 +411,7 @@ State 24
     9 ParamTail: Param •
    10          | Param • COMMA ParamTail
 
-    COMMA  shift, and go to state 38
+    COMMA  shift, and go to state 41
 
     $default  reduce using rule 9 (ParamTail)
 
@@ -410,96 +421,121 @@ State 25
    11 Param: Type • ID
    12      | Type • ID LBRACE RBRACE
 
-    ID  shift, and go to state 39
+    ID  shift, and go to state 42
 
 
 State 26
 
-   35 Factor: ID •
+   37 Factor: ID •
 
-    $default  reduce using rule 35 (Factor)
+    $default  reduce using rule 37 (Factor)
 
 
 State 27
 
-   34 Factor: LPAREN • Expr RPAREN
+   36 Factor: LPAREN • Expr RPAREN
 
     ID      shift, and go to state 26
     LPAREN  shift, and go to state 27
     NUMBER  shift, and go to state 28
 
-    Expr    go to state 40
+    Expr    go to state 43
     Term    go to state 30
     Factor  go to state 31
 
 
 State 28
 
-   36 Factor: NUMBER •
+   38 Factor: NUMBER •
 
-    $default  reduce using rule 36 (Factor)
+    $default  reduce using rule 38 (Factor)
 
 
 State 29
 
    26 Assignment: ID LBRACKET Expr • RBRACKET ASSIGN Expr SEMICOLON
-   28 Expr: Expr • PLUS Term
-   29     | Expr • MINUS Term
+   28           | ID LBRACKET Expr • RBRACKET ASSIGN Function SEMICOLON
+   30 Expr: Expr • PLUS Term
+   31     | Expr • MINUS Term
 
-    RBRACKET  shift, and go to state 41
-    PLUS      shift, and go to state 42
-    MINUS     shift, and go to state 43
+    RBRACKET  shift, and go to state 44
+    PLUS      shift, and go to state 45
+    MINUS     shift, and go to state 46
 
 
 State 30
 
-   30 Expr: Term •
-   31 Term: Term • MULT Factor
-   32     | Term • DIV Factor
+   32 Expr: Term •
+   33 Term: Term • MULT Factor
+   34     | Term • DIV Factor
 
-    MULT  shift, and go to state 44
-    DIV   shift, and go to state 45
+    MULT  shift, and go to state 47
+    DIV   shift, and go to state 48
 
-    $default  reduce using rule 30 (Expr)
+    $default  reduce using rule 32 (Expr)
 
 
 State 31
 
-   33 Term: Factor •
+   35 Term: Factor •
 
-    $default  reduce using rule 33 (Term)
+    $default  reduce using rule 35 (Term)
 
 
 State 32
 
-   25 Assignment: ID ASSIGN Expr • SEMICOLON
-   28 Expr: Expr • PLUS Term
-   29     | Expr • MINUS Term
+    6 Function: ID • LPAREN ParamList RPAREN SEMICOLON
+   37 Factor: ID •
 
-    SEMICOLON  shift, and go to state 46
-    PLUS       shift, and go to state 42
-    MINUS      shift, and go to state 43
+    LPAREN  shift, and go to state 14
+
+    $default  reduce using rule 37 (Factor)
 
 
 State 33
 
-   27 Print: PRINT LPAREN Expr • RPAREN SEMICOLON
-   28 Expr: Expr • PLUS Term
-   29     | Expr • MINUS Term
+   27 Assignment: ID ASSIGN Function • SEMICOLON
 
-    RPAREN  shift, and go to state 47
-    PLUS    shift, and go to state 42
-    MINUS   shift, and go to state 43
+    SEMICOLON  shift, and go to state 49
 
 
 State 34
+
+    5 Function: Type • ID LPAREN ParamList RPAREN LBRACE Block RBRACE
+
+    ID  shift, and go to state 50
+
+
+State 35
+
+   25 Assignment: ID ASSIGN Expr • SEMICOLON
+   30 Expr: Expr • PLUS Term
+   31     | Expr • MINUS Term
+
+    SEMICOLON  shift, and go to state 51
+    PLUS       shift, and go to state 45
+    MINUS      shift, and go to state 46
+
+
+State 36
+
+   29 Print: PRINT LPAREN Expr • RPAREN SEMICOLON
+   30 Expr: Expr • PLUS Term
+   31     | Expr • MINUS Term
+
+    RPAREN  shift, and go to state 52
+    PLUS    shift, and go to state 45
+    MINUS   shift, and go to state 46
+
+
+State 37
 
    20 Declaration: Type ID SEMICOLON •
 
     $default  reduce using rule 20 (Declaration)
 
 
-State 35
+State 38
 
     5 Function: Type ID LPAREN • ParamList RPAREN LBRACE Block RBRACE
 
@@ -509,27 +545,27 @@ State 35
 
     $default  reduce using rule 7 (ParamList)
 
-    ParamList  go to state 48
+    ParamList  go to state 53
     ParamTail  go to state 23
     Param      go to state 24
     Type       go to state 25
 
 
-State 36
+State 39
 
    21 Declaration: Type ID LBRACKET • NUMBER RBRACKET SEMICOLON
 
-    NUMBER  shift, and go to state 49
+    NUMBER  shift, and go to state 54
 
 
-State 37
+State 40
 
     6 Function: ID LPAREN ParamList RPAREN • SEMICOLON
 
-    SEMICOLON  shift, and go to state 50
+    SEMICOLON  shift, and go to state 55
 
 
-State 38
+State 41
 
    10 ParamTail: Param COMMA • ParamTail
 
@@ -537,232 +573,260 @@ State 38
     FLOAT  shift, and go to state 3
     BOOL   shift, and go to state 4
 
-    ParamTail  go to state 51
+    ParamTail  go to state 56
     Param      go to state 24
     Type       go to state 25
 
 
-State 39
+State 42
 
    11 Param: Type ID •
    12      | Type ID • LBRACE RBRACE
 
-    LBRACE  shift, and go to state 52
+    LBRACE  shift, and go to state 57
 
     $default  reduce using rule 11 (Param)
 
 
-State 40
-
-   28 Expr: Expr • PLUS Term
-   29     | Expr • MINUS Term
-   34 Factor: LPAREN Expr • RPAREN
-
-    RPAREN  shift, and go to state 53
-    PLUS    shift, and go to state 42
-    MINUS   shift, and go to state 43
-
-
-State 41
-
-   26 Assignment: ID LBRACKET Expr RBRACKET • ASSIGN Expr SEMICOLON
-
-    ASSIGN  shift, and go to state 54
-
-
-State 42
-
-   28 Expr: Expr PLUS • Term
-
-    ID      shift, and go to state 26
-    LPAREN  shift, and go to state 27
-    NUMBER  shift, and go to state 28
-
-    Term    go to state 55
-    Factor  go to state 31
-
-
 State 43
 
-   29 Expr: Expr MINUS • Term
+   30 Expr: Expr • PLUS Term
+   31     | Expr • MINUS Term
+   36 Factor: LPAREN Expr • RPAREN
 
-    ID      shift, and go to state 26
-    LPAREN  shift, and go to state 27
-    NUMBER  shift, and go to state 28
-
-    Term    go to state 56
-    Factor  go to state 31
+    RPAREN  shift, and go to state 58
+    PLUS    shift, and go to state 45
+    MINUS   shift, and go to state 46
 
 
 State 44
 
-   31 Term: Term MULT • Factor
+   26 Assignment: ID LBRACKET Expr RBRACKET • ASSIGN Expr SEMICOLON
+   28           | ID LBRACKET Expr RBRACKET • ASSIGN Function SEMICOLON
 
-    ID      shift, and go to state 26
-    LPAREN  shift, and go to state 27
-    NUMBER  shift, and go to state 28
-
-    Factor  go to state 57
+    ASSIGN  shift, and go to state 59
 
 
 State 45
 
-   32 Term: Term DIV • Factor
+   30 Expr: Expr PLUS • Term
 
     ID      shift, and go to state 26
     LPAREN  shift, and go to state 27
     NUMBER  shift, and go to state 28
 
-    Factor  go to state 58
+    Term    go to state 60
+    Factor  go to state 31
 
 
 State 46
+
+   31 Expr: Expr MINUS • Term
+
+    ID      shift, and go to state 26
+    LPAREN  shift, and go to state 27
+    NUMBER  shift, and go to state 28
+
+    Term    go to state 61
+    Factor  go to state 31
+
+
+State 47
+
+   33 Term: Term MULT • Factor
+
+    ID      shift, and go to state 26
+    LPAREN  shift, and go to state 27
+    NUMBER  shift, and go to state 28
+
+    Factor  go to state 62
+
+
+State 48
+
+   34 Term: Term DIV • Factor
+
+    ID      shift, and go to state 26
+    LPAREN  shift, and go to state 27
+    NUMBER  shift, and go to state 28
+
+    Factor  go to state 63
+
+
+State 49
+
+   27 Assignment: ID ASSIGN Function SEMICOLON •
+
+    $default  reduce using rule 27 (Assignment)
+
+
+State 50
+
+    5 Function: Type ID • LPAREN ParamList RPAREN LBRACE Block RBRACE
+
+    LPAREN  shift, and go to state 38
+
+
+State 51
 
    25 Assignment: ID ASSIGN Expr SEMICOLON •
 
     $default  reduce using rule 25 (Assignment)
 
 
-State 47
+State 52
 
-   27 Print: PRINT LPAREN Expr RPAREN • SEMICOLON
+   29 Print: PRINT LPAREN Expr RPAREN • SEMICOLON
 
-    SEMICOLON  shift, and go to state 59
+    SEMICOLON  shift, and go to state 64
 
 
-State 48
+State 53
 
     5 Function: Type ID LPAREN ParamList • RPAREN LBRACE Block RBRACE
 
-    RPAREN  shift, and go to state 60
+    RPAREN  shift, and go to state 65
 
 
-State 49
+State 54
 
    21 Declaration: Type ID LBRACKET NUMBER • RBRACKET SEMICOLON
 
-    RBRACKET  shift, and go to state 61
+    RBRACKET  shift, and go to state 66
 
 
-State 50
+State 55
 
     6 Function: ID LPAREN ParamList RPAREN SEMICOLON •
 
     $default  reduce using rule 6 (Function)
 
 
-State 51
+State 56
 
    10 ParamTail: Param COMMA ParamTail •
 
     $default  reduce using rule 10 (ParamTail)
 
 
-State 52
+State 57
 
    12 Param: Type ID LBRACE • RBRACE
 
-    RBRACE  shift, and go to state 62
-
-
-State 53
-
-   34 Factor: LPAREN Expr RPAREN •
-
-    $default  reduce using rule 34 (Factor)
-
-
-State 54
-
-   26 Assignment: ID LBRACKET Expr RBRACKET ASSIGN • Expr SEMICOLON
-
-    ID      shift, and go to state 26
-    LPAREN  shift, and go to state 27
-    NUMBER  shift, and go to state 28
-
-    Expr    go to state 63
-    Term    go to state 30
-    Factor  go to state 31
-
-
-State 55
-
-   28 Expr: Expr PLUS Term •
-   31 Term: Term • MULT Factor
-   32     | Term • DIV Factor
-
-    MULT  shift, and go to state 44
-    DIV   shift, and go to state 45
-
-    $default  reduce using rule 28 (Expr)
-
-
-State 56
-
-   29 Expr: Expr MINUS Term •
-   31 Term: Term • MULT Factor
-   32     | Term • DIV Factor
-
-    MULT  shift, and go to state 44
-    DIV   shift, and go to state 45
-
-    $default  reduce using rule 29 (Expr)
-
-
-State 57
-
-   31 Term: Term MULT Factor •
-
-    $default  reduce using rule 31 (Term)
+    RBRACE  shift, and go to state 67
 
 
 State 58
 
-   32 Term: Term DIV Factor •
+   36 Factor: LPAREN Expr RPAREN •
 
-    $default  reduce using rule 32 (Term)
+    $default  reduce using rule 36 (Factor)
 
 
 State 59
 
-   27 Print: PRINT LPAREN Expr RPAREN SEMICOLON •
+   26 Assignment: ID LBRACKET Expr RBRACKET ASSIGN • Expr SEMICOLON
+   28           | ID LBRACKET Expr RBRACKET ASSIGN • Function SEMICOLON
 
-    $default  reduce using rule 27 (Print)
+    ID      shift, and go to state 32
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    BOOL    shift, and go to state 4
+    LPAREN  shift, and go to state 27
+    NUMBER  shift, and go to state 28
+
+    Function  go to state 68
+    Type      go to state 34
+    Expr      go to state 69
+    Term      go to state 30
+    Factor    go to state 31
 
 
 State 60
 
-    5 Function: Type ID LPAREN ParamList RPAREN • LBRACE Block RBRACE
+   30 Expr: Expr PLUS Term •
+   33 Term: Term • MULT Factor
+   34     | Term • DIV Factor
 
-    LBRACE  shift, and go to state 64
+    MULT  shift, and go to state 47
+    DIV   shift, and go to state 48
+
+    $default  reduce using rule 30 (Expr)
 
 
 State 61
 
-   21 Declaration: Type ID LBRACKET NUMBER RBRACKET • SEMICOLON
+   31 Expr: Expr MINUS Term •
+   33 Term: Term • MULT Factor
+   34     | Term • DIV Factor
 
-    SEMICOLON  shift, and go to state 65
+    MULT  shift, and go to state 47
+    DIV   shift, and go to state 48
+
+    $default  reduce using rule 31 (Expr)
 
 
 State 62
+
+   33 Term: Term MULT Factor •
+
+    $default  reduce using rule 33 (Term)
+
+
+State 63
+
+   34 Term: Term DIV Factor •
+
+    $default  reduce using rule 34 (Term)
+
+
+State 64
+
+   29 Print: PRINT LPAREN Expr RPAREN SEMICOLON •
+
+    $default  reduce using rule 29 (Print)
+
+
+State 65
+
+    5 Function: Type ID LPAREN ParamList RPAREN • LBRACE Block RBRACE
+
+    LBRACE  shift, and go to state 70
+
+
+State 66
+
+   21 Declaration: Type ID LBRACKET NUMBER RBRACKET • SEMICOLON
+
+    SEMICOLON  shift, and go to state 71
+
+
+State 67
 
    12 Param: Type ID LBRACE RBRACE •
 
     $default  reduce using rule 12 (Param)
 
 
-State 63
+State 68
+
+   28 Assignment: ID LBRACKET Expr RBRACKET ASSIGN Function • SEMICOLON
+
+    SEMICOLON  shift, and go to state 72
+
+
+State 69
 
    26 Assignment: ID LBRACKET Expr RBRACKET ASSIGN Expr • SEMICOLON
-   28 Expr: Expr • PLUS Term
-   29     | Expr • MINUS Term
+   30 Expr: Expr • PLUS Term
+   31     | Expr • MINUS Term
 
-    SEMICOLON  shift, and go to state 66
-    PLUS       shift, and go to state 42
-    MINUS      shift, and go to state 43
+    SEMICOLON  shift, and go to state 73
+    PLUS       shift, and go to state 45
+    MINUS      shift, and go to state 46
 
 
-State 64
+State 70
 
     5 Function: Type ID LPAREN ParamList RPAREN LBRACE • Block RBRACE
 
@@ -771,81 +835,11 @@ State 64
     FLOAT   shift, and go to state 3
     BOOL    shift, and go to state 4
     PRINT   shift, and go to state 5
-    RETURN  shift, and go to state 67
+    RETURN  shift, and go to state 74
 
-    Function     go to state 68
-    Block        go to state 69
-    Stmt         go to state 70
-    Declaration  go to state 10
-    Type         go to state 11
-    Assignment   go to state 12
-    Print        go to state 13
-
-
-State 65
-
-   21 Declaration: Type ID LBRACKET NUMBER RBRACKET SEMICOLON •
-
-    $default  reduce using rule 21 (Declaration)
-
-
-State 66
-
-   26 Assignment: ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON •
-
-    $default  reduce using rule 26 (Assignment)
-
-
-State 67
-
-   13 Block: RETURN • ID SEMICOLON
-   14      | RETURN • NUMBER SEMICOLON
-
-    ID      shift, and go to state 71
-    NUMBER  shift, and go to state 72
-
-
-State 68
-
-   16 Block: Function • Block
-
-    ID      shift, and go to state 1
-    INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
-    BOOL    shift, and go to state 4
-    PRINT   shift, and go to state 5
-    RETURN  shift, and go to state 67
-
-    Function     go to state 68
-    Block        go to state 73
-    Stmt         go to state 70
-    Declaration  go to state 10
-    Type         go to state 11
-    Assignment   go to state 12
-    Print        go to state 13
-
-
-State 69
-
-    5 Function: Type ID LPAREN ParamList RPAREN LBRACE Block • RBRACE
-
-    RBRACE  shift, and go to state 74
-
-
-State 70
-
-   15 Block: Stmt • Block
-
-    ID      shift, and go to state 1
-    INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
-    BOOL    shift, and go to state 4
-    PRINT   shift, and go to state 5
-    RETURN  shift, and go to state 67
-
-    Function     go to state 68
-    Block        go to state 75
-    Stmt         go to state 70
+    Function     go to state 75
+    Block        go to state 76
+    Stmt         go to state 77
     Declaration  go to state 10
     Type         go to state 11
     Assignment   go to state 12
@@ -854,47 +848,124 @@ State 70
 
 State 71
 
-   13 Block: RETURN ID • SEMICOLON
+   21 Declaration: Type ID LBRACKET NUMBER RBRACKET SEMICOLON •
 
-    SEMICOLON  shift, and go to state 76
+    $default  reduce using rule 21 (Declaration)
 
 
 State 72
 
-   14 Block: RETURN NUMBER • SEMICOLON
+   28 Assignment: ID LBRACKET Expr RBRACKET ASSIGN Function SEMICOLON •
 
-    SEMICOLON  shift, and go to state 77
+    $default  reduce using rule 28 (Assignment)
 
 
 State 73
+
+   26 Assignment: ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON •
+
+    $default  reduce using rule 26 (Assignment)
+
+
+State 74
+
+   13 Block: RETURN • ID SEMICOLON
+   14      | RETURN • NUMBER SEMICOLON
+
+    ID      shift, and go to state 78
+    NUMBER  shift, and go to state 79
+
+
+State 75
+
+   16 Block: Function • Block
+
+    ID      shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    BOOL    shift, and go to state 4
+    PRINT   shift, and go to state 5
+    RETURN  shift, and go to state 74
+
+    Function     go to state 75
+    Block        go to state 80
+    Stmt         go to state 77
+    Declaration  go to state 10
+    Type         go to state 11
+    Assignment   go to state 12
+    Print        go to state 13
+
+
+State 76
+
+    5 Function: Type ID LPAREN ParamList RPAREN LBRACE Block • RBRACE
+
+    RBRACE  shift, and go to state 81
+
+
+State 77
+
+   15 Block: Stmt • Block
+
+    ID      shift, and go to state 1
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    BOOL    shift, and go to state 4
+    PRINT   shift, and go to state 5
+    RETURN  shift, and go to state 74
+
+    Function     go to state 75
+    Block        go to state 82
+    Stmt         go to state 77
+    Declaration  go to state 10
+    Type         go to state 11
+    Assignment   go to state 12
+    Print        go to state 13
+
+
+State 78
+
+   13 Block: RETURN ID • SEMICOLON
+
+    SEMICOLON  shift, and go to state 83
+
+
+State 79
+
+   14 Block: RETURN NUMBER • SEMICOLON
+
+    SEMICOLON  shift, and go to state 84
+
+
+State 80
 
    16 Block: Function Block •
 
     $default  reduce using rule 16 (Block)
 
 
-State 74
+State 81
 
     5 Function: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE •
 
     $default  reduce using rule 5 (Function)
 
 
-State 75
+State 82
 
    15 Block: Stmt Block •
 
     $default  reduce using rule 15 (Block)
 
 
-State 76
+State 83
 
    13 Block: RETURN ID SEMICOLON •
 
     $default  reduce using rule 13 (Block)
 
 
-State 77
+State 84
 
    14 Block: RETURN NUMBER SEMICOLON •
 
