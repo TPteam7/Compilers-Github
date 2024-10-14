@@ -2,6 +2,13 @@ int add(int a, int b) {
     return 5;
 }
 
+void arrayCheck(int array[]) {
+    print(5);
+}
+
+int x;
+x = add(4, 5);
+
 int hello[5];
 
 hello[0] = 2;

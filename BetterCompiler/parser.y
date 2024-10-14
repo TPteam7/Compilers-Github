@@ -61,11 +61,13 @@ Program: StmtList {  };
 
 StmtList:  {  }
 	| Stmt StmtList {  }
-	| Function StmtList {  };
+	| FunctionDefinition StmtList {  };x
 
 
-Function: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE {  }
-	| ID LPAREN ParamList RPAREN SEMICOLON {  };
+FunctionDefinition: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { };
+
+
+FunctionCall: ID LPAREN ArgList RPAREN { };
 
 
 ParamList: {  }
@@ -76,34 +78,43 @@ ParamTail: Param {  }
 	| Param COMMA ParamTail {  };
 
 
-Param: Type ID {  }
-	| Type ID LBRACE RBRACE {  };
+Param: Type ID { }
+    | Type ID LBRACKET RBRACKET { }
+    | Type ID LBRACKET NUMBER RBRACKET { };
 
 
-Block: RETURN ID SEMICOLON {  }
-	| RETURN NUMBER SEMICOLON {  }
-	| Stmt Block {  }
-	| Function Block {  }; 
+ArgList:
+       | ArgTail { };
+
+
+ArgTail: Expr { } 
+       | Expr COMMA ArgTail { };
+
+
+Block: StmtList RETURN Expr SEMICOLON { }
+    | StmtList { };
 
 
 Stmt: Declaration {  } 
 	| Assignment {  }
-	| Print {  };
+	| Print {  }
+	| FunctionCall {  };
 
 
 Declaration: Type ID SEMICOLON {  }
-	| Type ID LBRACKET NUMBER RBRACKET SEMICOLON {  };
+	| Type ID LBRACKET Expr RBRACKET SEMICOLON {  };
 
 
 Type: INT {  }
     | FLOAT {  }
-	| BOOL {  };
+	| BOOL {  }
+	| VOID {  };
 
 
 Assignment: ID ASSIGN Expr SEMICOLON {  }
+	| ID ASSIGN FunctionCall SEMICOLON {  }
 	| ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON {  }
-	| ID ASSIGN Function SEMICOLON {  }
-	| ID LBRACKET Expr RBRACKET ASSIGN Function SEMICOLON {  };
+	| ID LBRACKET Expr RBRACKET ASSIGN FunctionCall SEMICOLON {  };
 
 
 Print: PRINT LPAREN Expr RPAREN SEMICOLON {  };
@@ -121,6 +132,7 @@ Term: Term MULT Factor {  }
 
 Factor: LPAREN Expr RPAREN {  }
 	| ID {  }
+	| ID LBRACKET Expr RBRACKET { }
 	| NUMBER {  };
 
 

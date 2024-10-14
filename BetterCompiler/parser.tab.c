@@ -162,19 +162,22 @@ enum yysymbol_kind_t
   YYSYMBOL_YYACCEPT = 29,                  /* $accept  */
   YYSYMBOL_Program = 30,                   /* Program  */
   YYSYMBOL_StmtList = 31,                  /* StmtList  */
-  YYSYMBOL_Function = 32,                  /* Function  */
-  YYSYMBOL_ParamList = 33,                 /* ParamList  */
-  YYSYMBOL_ParamTail = 34,                 /* ParamTail  */
-  YYSYMBOL_Param = 35,                     /* Param  */
-  YYSYMBOL_Block = 36,                     /* Block  */
-  YYSYMBOL_Stmt = 37,                      /* Stmt  */
-  YYSYMBOL_Declaration = 38,               /* Declaration  */
-  YYSYMBOL_Type = 39,                      /* Type  */
-  YYSYMBOL_Assignment = 40,                /* Assignment  */
-  YYSYMBOL_Print = 41,                     /* Print  */
-  YYSYMBOL_Expr = 42,                      /* Expr  */
-  YYSYMBOL_Term = 43,                      /* Term  */
-  YYSYMBOL_Factor = 44                     /* Factor  */
+  YYSYMBOL_FunctionDefinition = 32,        /* FunctionDefinition  */
+  YYSYMBOL_FunctionCall = 33,              /* FunctionCall  */
+  YYSYMBOL_ParamList = 34,                 /* ParamList  */
+  YYSYMBOL_ParamTail = 35,                 /* ParamTail  */
+  YYSYMBOL_Param = 36,                     /* Param  */
+  YYSYMBOL_ArgList = 37,                   /* ArgList  */
+  YYSYMBOL_ArgTail = 38,                   /* ArgTail  */
+  YYSYMBOL_Block = 39,                     /* Block  */
+  YYSYMBOL_Stmt = 40,                      /* Stmt  */
+  YYSYMBOL_Declaration = 41,               /* Declaration  */
+  YYSYMBOL_Type = 42,                      /* Type  */
+  YYSYMBOL_Assignment = 43,                /* Assignment  */
+  YYSYMBOL_Print = 44,                     /* Print  */
+  YYSYMBOL_Expr = 45,                      /* Expr  */
+  YYSYMBOL_Term = 46,                      /* Term  */
+  YYSYMBOL_Factor = 47                     /* Factor  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -500,18 +503,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  18
+#define YYFINAL  20
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   98
+#define YYLAST   95
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  29
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  16
+#define YYNNTS  19
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  39
+#define YYNRULES  45
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  85
+#define YYNSTATES  88
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   283
@@ -561,12 +564,13 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    59,    59,    62,    63,    64,    67,    68,    71,    72,
-      75,    76,    79,    80,    83,    84,    85,    86,    89,    90,
-      91,    94,    95,    98,    99,   100,   103,   104,   105,   106,
-     109,   112,   113,   114,   117,   118,   119,   122,   123,   124
+       0,    59,    59,    62,    63,    64,    67,    70,    73,    74,
+      77,    78,    81,    82,    83,    86,    87,    90,    91,    94,
+      95,    98,    99,   100,   101,   104,   105,   108,   109,   110,
+     111,   114,   115,   116,   117,   120,   123,   124,   125,   128,
+     129,   130,   133,   134,   135,   136
 };
 #endif
 
@@ -586,9 +590,10 @@ static const char *const yytname[] =
   "BOOL", "VOID", "TRUE", "FALSE", "PRINT", "IF", "ELSE", "WHILE",
   "RETURN", "SEMICOLON", "COMMA", "LPAREN", "RPAREN", "LBRACE", "RBRACE",
   "LBRACKET", "RBRACKET", "ASSIGN", "PLUS", "MINUS", "MULT", "DIV",
-  "NUMBER", "$accept", "Program", "StmtList", "Function", "ParamList",
-  "ParamTail", "Param", "Block", "Stmt", "Declaration", "Type",
-  "Assignment", "Print", "Expr", "Term", "Factor", YY_NULLPTR
+  "NUMBER", "$accept", "Program", "StmtList", "FunctionDefinition",
+  "FunctionCall", "ParamList", "ParamTail", "Param", "ArgList", "ArgTail",
+  "Block", "Stmt", "Declaration", "Type", "Assignment", "Print", "Expr",
+  "Term", "Factor", YY_NULLPTR
 };
 
 static const char *
@@ -598,7 +603,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-18)
+#define YYPACT_NINF (-33)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -612,15 +617,15 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      45,     0,   -18,   -18,   -18,     2,    26,   -18,    45,    45,
-     -18,    29,   -18,   -18,    63,    -1,     3,    -1,   -18,   -18,
-     -18,    49,    34,   -18,    41,    62,   -18,    -1,   -18,    20,
-      48,   -18,    55,    64,    75,     9,    12,   -18,    63,    54,
-      68,    63,    65,    38,    66,    -1,    -1,    -1,    -1,   -18,
-      69,   -18,    70,    72,    71,   -18,   -18,    67,   -18,     3,
-      48,    48,   -18,   -18,   -18,    73,    76,   -18,    79,    14,
-       8,   -18,   -18,   -18,     7,     8,    77,     8,    80,    81,
-     -18,   -18,   -18,   -18,   -18
+      36,    32,   -33,   -33,   -33,   -33,    -4,    44,   -33,    36,
+     -33,    36,   -33,    56,   -33,   -33,     4,     4,     8,     4,
+     -33,   -33,   -33,    -3,    48,     4,   -33,    47,   -33,    13,
+      31,   -33,     6,    39,    58,    -5,    -9,   -33,    57,     4,
+       4,    27,   -33,     4,     4,     4,     4,     4,    53,   -33,
+     -33,    64,    65,   -33,    66,    81,    46,    50,   -33,   -33,
+      31,    31,   -33,   -33,     8,   -33,    67,    57,    68,    70,
+     -33,    72,     2,    36,   -33,    26,   -33,   -33,   -33,    74,
+      71,   -33,    73,     4,   -33,   -33,     9,   -33
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -628,29 +633,29 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     0,    23,    24,    25,     0,     0,     2,     3,     3,
-      18,     0,    19,    20,     8,     0,     0,     0,     1,     5,
-       4,     0,     0,     9,    10,     0,    38,     0,    39,     0,
-      33,    36,    38,     0,     0,     0,     0,    21,     8,     0,
-       0,     0,    12,     0,     0,     0,     0,     0,     0,    28,
-       0,    26,     0,     0,     0,     7,    11,     0,    37,     0,
-      31,    32,    34,    35,    30,     0,     0,    13,     0,     0,
-       0,    22,    29,    27,     0,     0,     0,     0,     0,     0,
-      17,     6,    16,    14,    15
+       3,     0,    27,    28,    29,    30,     0,     0,     2,     3,
+      24,     3,    21,     0,    22,    23,    15,     0,     0,     0,
+       1,     5,     4,     0,    43,     0,    45,     0,    16,    17,
+      38,    41,     0,    43,     0,     0,     0,    25,     8,     0,
+       0,     0,     7,     0,     0,     0,     0,     0,     0,    32,
+      31,     0,     0,     9,    10,     0,     0,     0,    42,    18,
+      36,    37,    39,    40,     0,    35,     0,     0,    12,     0,
+      44,     0,     0,     3,    11,     0,    26,    34,    33,    20,
+       0,    13,     0,     0,     6,    14,     0,    19
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -18,   -18,    32,   -16,    50,    57,   -18,    -4,   -17,   -18,
-     -13,   -18,   -18,   -12,    31,    33
+     -33,   -33,    -6,   -33,   -14,   -33,    23,   -33,   -33,    49,
+     -33,   -33,   -33,   -32,   -33,   -33,   -17,    33,    34
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     6,     7,     8,    22,    23,    24,    76,     9,    10,
-      11,    12,    13,    29,    30,    31
+       0,     7,     8,     9,    10,    52,    53,    54,    27,    28,
+      80,    11,    12,    13,    14,    15,    29,    30,    31
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -658,63 +663,65 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      33,    25,    26,    34,    35,    36,    32,     2,     3,     4,
-      78,     1,     2,     3,     4,    43,    27,    14,     5,    17,
-      27,    15,    74,    16,    51,    25,    18,    28,    25,    73,
-      52,    28,    21,    45,    46,    79,    45,    46,    45,    46,
-      19,    20,    44,    68,    45,    46,    34,    69,     1,     2,
-       3,     4,    40,    77,    75,     5,    58,    41,    77,    75,
-      77,    75,    45,    46,    37,    42,    38,     2,     3,     4,
-      39,    80,    14,    82,    47,    48,    60,    61,    50,    49,
-      62,    63,    54,    55,    57,    64,    38,    67,    53,    59,
-      65,    71,    70,    66,    72,    83,    84,    81,    56
+      32,    35,    36,    21,    34,    22,    55,    24,    41,    51,
+      50,    33,    37,    19,    38,    44,    45,    78,    39,    44,
+      45,    25,    56,    57,    87,    25,    44,    45,    48,    43,
+      44,    45,    26,    44,    45,    55,    26,    44,    45,     1,
+       2,     3,     4,     5,    20,    58,     6,    72,    81,    16,
+      71,    44,    45,    17,    82,    18,    16,    46,    47,    23,
+      40,     2,     3,     4,     5,    42,    86,    79,    69,    40,
+      44,    45,    70,    49,    44,    45,    64,    60,    61,    65,
+      62,    63,    67,    66,    68,    76,    73,    77,    83,    75,
+      74,    84,    59,     0,     0,    85
 };
 
 static const yytype_int8 yycheck[] =
 {
-      16,    14,     3,    16,    16,    17,     3,     4,     5,     6,
-       3,     3,     4,     5,     6,    27,    17,    17,    10,    17,
-      17,    21,    14,    23,    15,    38,     0,    28,    41,    15,
-      18,    28,     3,    24,    25,    28,    24,    25,    24,    25,
-       8,     9,    22,    59,    24,    25,    59,    59,     3,     4,
-       5,     6,    18,    70,    70,    10,    18,    16,    75,    75,
-      77,    77,    24,    25,    15,     3,    17,     4,     5,     6,
-      21,    75,    17,    77,    26,    27,    45,    46,     3,    15,
-      47,    48,    28,    15,    19,    15,    17,    20,    38,    23,
-      18,    15,    19,    22,    15,    15,    15,    20,    41
+      17,    18,    19,     9,    18,    11,    38,     3,    25,    18,
+      15,     3,    15,    17,    17,    24,    25,    15,    21,    24,
+      25,    17,    39,    40,    15,    17,    24,    25,    22,    16,
+      24,    25,    28,    24,    25,    67,    28,    24,    25,     3,
+       4,     5,     6,     7,     0,    18,    10,    64,    22,    17,
+      64,    24,    25,    21,    28,    23,    17,    26,    27,     3,
+      21,     4,     5,     6,     7,    18,    83,    73,    22,    21,
+      24,    25,    22,    15,    24,    25,    23,    44,    45,    15,
+      46,    47,    16,    18,     3,    15,    19,    15,    14,    21,
+      67,    20,    43,    -1,    -1,    22
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     4,     5,     6,    10,    30,    31,    32,    37,
-      38,    39,    40,    41,    17,    21,    23,    17,     0,    31,
-      31,     3,    33,    34,    35,    39,     3,    17,    28,    42,
-      43,    44,     3,    32,    39,    42,    42,    15,    17,    21,
-      18,    16,     3,    42,    22,    24,    25,    26,    27,    15,
-       3,    15,    18,    33,    28,    15,    34,    19,    18,    23,
-      43,    43,    44,    44,    15,    18,    22,    20,    32,    42,
-      19,    15,    15,    15,    14,    32,    36,    37,     3,    28,
-      36,    20,    36,    15,    15
+       0,     3,     4,     5,     6,     7,    10,    30,    31,    32,
+      33,    40,    41,    42,    43,    44,    17,    21,    23,    17,
+       0,    31,    31,     3,     3,    17,    28,    37,    38,    45,
+      46,    47,    45,     3,    33,    45,    45,    15,    17,    21,
+      21,    45,    18,    16,    24,    25,    26,    27,    22,    15,
+      15,    18,    34,    35,    36,    42,    45,    45,    18,    38,
+      46,    46,    47,    47,    23,    15,    18,    16,     3,    22,
+      22,    33,    45,    19,    35,    21,    15,    15,    15,    31,
+      39,    22,    28,    14,    20,    22,    45,    15
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    29,    30,    31,    31,    31,    32,    32,    33,    33,
-      34,    34,    35,    35,    36,    36,    36,    36,    37,    37,
-      37,    38,    38,    39,    39,    39,    40,    40,    40,    40,
-      41,    42,    42,    42,    43,    43,    43,    44,    44,    44
+       0,    29,    30,    31,    31,    31,    32,    33,    34,    34,
+      35,    35,    36,    36,    36,    37,    37,    38,    38,    39,
+      39,    40,    40,    40,    40,    41,    41,    42,    42,    42,
+      42,    43,    43,    43,    43,    44,    45,    45,    45,    46,
+      46,    46,    47,    47,    47,    47
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     2,     8,     5,     0,     1,
-       1,     3,     2,     4,     3,     3,     2,     2,     1,     1,
-       1,     3,     6,     1,     1,     1,     4,     7,     4,     7,
-       5,     3,     3,     1,     3,     3,     1,     3,     1,     1
+       0,     2,     1,     0,     2,     2,     8,     4,     0,     1,
+       1,     3,     2,     4,     5,     0,     1,     1,     3,     4,
+       1,     1,     1,     1,     1,     3,     6,     1,     1,     1,
+       1,     4,     4,     7,     7,     5,     3,     3,     1,     3,
+       3,     1,     3,     1,     4,     1
 };
 
 
@@ -800,7 +807,7 @@ yy_symbol_value_print (FILE *yyo,
     case YYSYMBOL_ID: /* ID  */
 #line 52 "parser.y"
          { fprintf(yyoutput, "%s", ((*yyvaluep).string)); }
-#line 804 "parser.tab.c"
+#line 811 "parser.tab.c"
         break;
 
       default:
@@ -1190,233 +1197,263 @@ yyreduce:
   case 2: /* Program: StmtList  */
 #line 59 "parser.y"
                   {  }
-#line 1194 "parser.tab.c"
+#line 1201 "parser.tab.c"
     break;
 
   case 3: /* StmtList: %empty  */
 #line 62 "parser.y"
            {  }
-#line 1200 "parser.tab.c"
+#line 1207 "parser.tab.c"
     break;
 
   case 4: /* StmtList: Stmt StmtList  */
 #line 63 "parser.y"
                         {  }
-#line 1206 "parser.tab.c"
+#line 1213 "parser.tab.c"
     break;
 
-  case 5: /* StmtList: Function StmtList  */
+  case 5: /* StmtList: FunctionDefinition StmtList  */
 #line 64 "parser.y"
-                            {  }
-#line 1212 "parser.tab.c"
+                                      {  }
+#line 1219 "parser.tab.c"
     break;
 
-  case 6: /* Function: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE  */
+  case 6: /* FunctionDefinition: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE  */
 #line 67 "parser.y"
-                                                              {  }
-#line 1218 "parser.tab.c"
+                                                                        { }
+#line 1225 "parser.tab.c"
     break;
 
-  case 7: /* Function: ID LPAREN ParamList RPAREN SEMICOLON  */
-#line 68 "parser.y"
-                                               {  }
-#line 1224 "parser.tab.c"
+  case 7: /* FunctionCall: ID LPAREN ArgList RPAREN  */
+#line 70 "parser.y"
+                                       { }
+#line 1231 "parser.tab.c"
     break;
 
   case 8: /* ParamList: %empty  */
-#line 71 "parser.y"
+#line 73 "parser.y"
            {  }
-#line 1230 "parser.tab.c"
+#line 1237 "parser.tab.c"
     break;
 
   case 9: /* ParamList: ParamTail  */
-#line 72 "parser.y"
+#line 74 "parser.y"
                     {  }
-#line 1236 "parser.tab.c"
+#line 1243 "parser.tab.c"
     break;
 
   case 10: /* ParamTail: Param  */
-#line 75 "parser.y"
+#line 77 "parser.y"
                  {  }
-#line 1242 "parser.tab.c"
+#line 1249 "parser.tab.c"
     break;
 
   case 11: /* ParamTail: Param COMMA ParamTail  */
-#line 76 "parser.y"
+#line 78 "parser.y"
                                 {  }
-#line 1248 "parser.tab.c"
+#line 1255 "parser.tab.c"
     break;
 
   case 12: /* Param: Type ID  */
-#line 79 "parser.y"
-               {  }
-#line 1254 "parser.tab.c"
+#line 81 "parser.y"
+               { }
+#line 1261 "parser.tab.c"
     break;
 
-  case 13: /* Param: Type ID LBRACE RBRACE  */
-#line 80 "parser.y"
-                                {  }
-#line 1260 "parser.tab.c"
+  case 13: /* Param: Type ID LBRACKET RBRACKET  */
+#line 82 "parser.y"
+                                { }
+#line 1267 "parser.tab.c"
     break;
 
-  case 14: /* Block: RETURN ID SEMICOLON  */
+  case 14: /* Param: Type ID LBRACKET NUMBER RBRACKET  */
 #line 83 "parser.y"
-                           {  }
-#line 1266 "parser.tab.c"
+                                       { }
+#line 1273 "parser.tab.c"
     break;
 
-  case 15: /* Block: RETURN NUMBER SEMICOLON  */
-#line 84 "parser.y"
-                                  {  }
-#line 1272 "parser.tab.c"
+  case 16: /* ArgList: ArgTail  */
+#line 87 "parser.y"
+                 { }
+#line 1279 "parser.tab.c"
     break;
 
-  case 16: /* Block: Stmt Block  */
-#line 85 "parser.y"
-                     {  }
-#line 1278 "parser.tab.c"
-    break;
-
-  case 17: /* Block: Function Block  */
-#line 86 "parser.y"
-                         {  }
-#line 1284 "parser.tab.c"
-    break;
-
-  case 18: /* Stmt: Declaration  */
-#line 89 "parser.y"
-                  {  }
-#line 1290 "parser.tab.c"
-    break;
-
-  case 19: /* Stmt: Assignment  */
+  case 17: /* ArgTail: Expr  */
 #line 90 "parser.y"
-                     {  }
-#line 1296 "parser.tab.c"
+              { }
+#line 1285 "parser.tab.c"
     break;
 
-  case 20: /* Stmt: Print  */
+  case 18: /* ArgTail: Expr COMMA ArgTail  */
 #line 91 "parser.y"
-                {  }
-#line 1302 "parser.tab.c"
+                            { }
+#line 1291 "parser.tab.c"
     break;
 
-  case 21: /* Declaration: Type ID SEMICOLON  */
+  case 19: /* Block: StmtList RETURN Expr SEMICOLON  */
 #line 94 "parser.y"
-                               {  }
-#line 1308 "parser.tab.c"
+                                      { }
+#line 1297 "parser.tab.c"
     break;
 
-  case 22: /* Declaration: Type ID LBRACKET NUMBER RBRACKET SEMICOLON  */
+  case 20: /* Block: StmtList  */
 #line 95 "parser.y"
-                                                     {  }
-#line 1314 "parser.tab.c"
+               { }
+#line 1303 "parser.tab.c"
     break;
 
-  case 23: /* Type: INT  */
+  case 21: /* Stmt: Declaration  */
 #line 98 "parser.y"
-          {  }
-#line 1320 "parser.tab.c"
+                  {  }
+#line 1309 "parser.tab.c"
     break;
 
-  case 24: /* Type: FLOAT  */
+  case 22: /* Stmt: Assignment  */
 #line 99 "parser.y"
-            {  }
-#line 1326 "parser.tab.c"
-    break;
-
-  case 25: /* Type: BOOL  */
-#line 100 "parser.y"
-               {  }
-#line 1332 "parser.tab.c"
-    break;
-
-  case 26: /* Assignment: ID ASSIGN Expr SEMICOLON  */
-#line 103 "parser.y"
-                                     {  }
-#line 1338 "parser.tab.c"
-    break;
-
-  case 27: /* Assignment: ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON  */
-#line 104 "parser.y"
-                                                          {  }
-#line 1344 "parser.tab.c"
-    break;
-
-  case 28: /* Assignment: ID ASSIGN Function SEMICOLON  */
-#line 105 "parser.y"
-                                       {  }
-#line 1350 "parser.tab.c"
-    break;
-
-  case 29: /* Assignment: ID LBRACKET Expr RBRACKET ASSIGN Function SEMICOLON  */
-#line 106 "parser.y"
-                                                              {  }
-#line 1356 "parser.tab.c"
-    break;
-
-  case 30: /* Print: PRINT LPAREN Expr RPAREN SEMICOLON  */
-#line 109 "parser.y"
-                                          {  }
-#line 1362 "parser.tab.c"
-    break;
-
-  case 31: /* Expr: Expr PLUS Term  */
-#line 112 "parser.y"
                      {  }
-#line 1368 "parser.tab.c"
+#line 1315 "parser.tab.c"
     break;
 
-  case 32: /* Expr: Expr MINUS Term  */
-#line 113 "parser.y"
-                          {  }
-#line 1374 "parser.tab.c"
+  case 23: /* Stmt: Print  */
+#line 100 "parser.y"
+                {  }
+#line 1321 "parser.tab.c"
     break;
 
-  case 33: /* Expr: Term  */
-#line 114 "parser.y"
-               {  }
-#line 1380 "parser.tab.c"
-    break;
-
-  case 34: /* Term: Term MULT Factor  */
-#line 117 "parser.y"
+  case 24: /* Stmt: FunctionCall  */
+#line 101 "parser.y"
                        {  }
-#line 1386 "parser.tab.c"
+#line 1327 "parser.tab.c"
     break;
 
-  case 35: /* Term: Term DIV Factor  */
-#line 118 "parser.y"
-                          {  }
-#line 1392 "parser.tab.c"
+  case 25: /* Declaration: Type ID SEMICOLON  */
+#line 104 "parser.y"
+                               {  }
+#line 1333 "parser.tab.c"
     break;
 
-  case 36: /* Term: Factor  */
-#line 119 "parser.y"
-                 {  }
-#line 1398 "parser.tab.c"
+  case 26: /* Declaration: Type ID LBRACKET Expr RBRACKET SEMICOLON  */
+#line 105 "parser.y"
+                                                   {  }
+#line 1339 "parser.tab.c"
     break;
 
-  case 37: /* Factor: LPAREN Expr RPAREN  */
-#line 122 "parser.y"
-                           {  }
-#line 1404 "parser.tab.c"
+  case 27: /* Type: INT  */
+#line 108 "parser.y"
+          {  }
+#line 1345 "parser.tab.c"
     break;
 
-  case 38: /* Factor: ID  */
+  case 28: /* Type: FLOAT  */
+#line 109 "parser.y"
+            {  }
+#line 1351 "parser.tab.c"
+    break;
+
+  case 29: /* Type: BOOL  */
+#line 110 "parser.y"
+               {  }
+#line 1357 "parser.tab.c"
+    break;
+
+  case 30: /* Type: VOID  */
+#line 111 "parser.y"
+               {  }
+#line 1363 "parser.tab.c"
+    break;
+
+  case 31: /* Assignment: ID ASSIGN Expr SEMICOLON  */
+#line 114 "parser.y"
+                                     {  }
+#line 1369 "parser.tab.c"
+    break;
+
+  case 32: /* Assignment: ID ASSIGN FunctionCall SEMICOLON  */
+#line 115 "parser.y"
+                                           {  }
+#line 1375 "parser.tab.c"
+    break;
+
+  case 33: /* Assignment: ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON  */
+#line 116 "parser.y"
+                                                          {  }
+#line 1381 "parser.tab.c"
+    break;
+
+  case 34: /* Assignment: ID LBRACKET Expr RBRACKET ASSIGN FunctionCall SEMICOLON  */
+#line 117 "parser.y"
+                                                                  {  }
+#line 1387 "parser.tab.c"
+    break;
+
+  case 35: /* Print: PRINT LPAREN Expr RPAREN SEMICOLON  */
+#line 120 "parser.y"
+                                          {  }
+#line 1393 "parser.tab.c"
+    break;
+
+  case 36: /* Expr: Expr PLUS Term  */
 #line 123 "parser.y"
-             {  }
-#line 1410 "parser.tab.c"
+                     {  }
+#line 1399 "parser.tab.c"
     break;
 
-  case 39: /* Factor: NUMBER  */
+  case 37: /* Expr: Expr MINUS Term  */
 #line 124 "parser.y"
+                          {  }
+#line 1405 "parser.tab.c"
+    break;
+
+  case 38: /* Expr: Term  */
+#line 125 "parser.y"
+               {  }
+#line 1411 "parser.tab.c"
+    break;
+
+  case 39: /* Term: Term MULT Factor  */
+#line 128 "parser.y"
+                       {  }
+#line 1417 "parser.tab.c"
+    break;
+
+  case 40: /* Term: Term DIV Factor  */
+#line 129 "parser.y"
+                          {  }
+#line 1423 "parser.tab.c"
+    break;
+
+  case 41: /* Term: Factor  */
+#line 130 "parser.y"
                  {  }
-#line 1416 "parser.tab.c"
+#line 1429 "parser.tab.c"
+    break;
+
+  case 42: /* Factor: LPAREN Expr RPAREN  */
+#line 133 "parser.y"
+                           {  }
+#line 1435 "parser.tab.c"
+    break;
+
+  case 43: /* Factor: ID  */
+#line 134 "parser.y"
+             {  }
+#line 1441 "parser.tab.c"
+    break;
+
+  case 44: /* Factor: ID LBRACKET Expr RBRACKET  */
+#line 135 "parser.y"
+                                    { }
+#line 1447 "parser.tab.c"
+    break;
+
+  case 45: /* Factor: NUMBER  */
+#line 136 "parser.y"
+                 {  }
+#line 1453 "parser.tab.c"
     break;
 
 
-#line 1420 "parser.tab.c"
+#line 1457 "parser.tab.c"
 
       default: break;
     }
@@ -1609,7 +1646,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 127 "parser.y"
+#line 139 "parser.y"
 
 
 
