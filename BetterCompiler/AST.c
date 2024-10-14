@@ -26,6 +26,55 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList) {
     return node;
 }
 
+//Create a function declaration AST. We need to pass in the type, id, paramList, and block
+ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block) {
+    ASTNode* node = createNode(NodeType_FunctionDeclaration);
+    node->functionDeclaration.type = type;
+    node->functionDeclaration.id = id;
+    node->functionDeclaration.paramList = paramList;
+    node->functionDeclaration.block = block;
+    return node;
+}
+
+ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* paramList) {
+    ASTNode* node = createNode(NodeType_FunctionCall);
+    node->functionCall.id = id;
+    node->functionCall.paramList = paramList;
+    return node;
+}
+
+ASTNode* createParamListNode(ASTNode* paramTail) {
+    ASTNode* node = createNode(NodeType_ParamList);
+    node->paramList.paramTail = paramTail;
+    return node;
+}
+
+ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail) {
+    ASTNode* node = createNode(NodeType_ParamTail);
+    node->paramTail.param = param;
+    node->paramTail.paramTail = paramTail;
+    return node;
+}
+
+ASTNode* createParamNode(ASTNode* type, ASTNode* id) {
+    ASTNode* node = createNode(NodeType_Param);
+    node->param.type = type;
+    node->param.id = id;
+    return node;
+}
+
+ASTNode* createBlockNode(ASTNode* stmtList) {
+    ASTNode* node = createNode(NodeType_Block);
+    node->block.stmtList = stmtList;
+    return node;
+}
+
+ASTNode* createReturnNode(ASTNode* expr) {
+    ASTNode* node = createNode(NodeType_Return);
+    node->returnStmt.expr = expr;
+    return node;
+}
+
 ASTNode* createStmtNode(ASTNode* child) {
     ASTNode* node = createNode(NodeType_Stmt);
     node->stmt.child = child;
@@ -117,6 +166,40 @@ void printAST(ASTNode* node, int indent) {
             printf("Stmt\n");
             printAST(node->stmt.child, indent + 1);
             break;
+        case NodeType_FunctionDeclaration:
+            printf("Function Declaration\n");
+            printAST(node->functionDeclaration.type, indent + 1);
+            printAST(node->functionDeclaration.id, indent + 1);
+            printAST(node->functionDeclaration.paramList, indent + 1);
+            printAST(node->functionDeclaration.block, indent + 1);
+            break;
+        case NodeType_FunctionCall:
+            printf("Function Call\n");
+            printAST(node->functionCall.id, indent + 1);
+            printAST(node->functionCall.paramList, indent + 1);
+            break;
+        case NodeType_ParamList:
+            printf("ParamList\n");
+            printAST(node->paramList.paramTail, indent + 1);
+            break;
+        case NodeType_ParamTail:
+            printf("ParamTail\n");
+            printAST(node->paramTail.param, indent + 1);
+            printAST(node->paramTail.paramTail, indent + 1);
+            break;
+        case NodeType_Param:
+            printf("Param\n");
+            printAST(node->param.type, indent + 1);
+            printAST(node->param.id, indent + 1);
+            break;
+        case NodeType_Block:
+            printf("Block\n");
+            printAST(node->block.stmtList, indent + 1);
+            break;
+        case NodeType_Return:
+            printf("Return\n");
+            printAST(node->returnStmt.expr, indent + 1);
+            break;
         case NodeType_Declaration:
             printf("Declaration\n");
             printAST(node->declaration.type, indent + 1);
@@ -174,6 +257,33 @@ void freeAST(ASTNode* node) {
             break;
         case NodeType_Stmt:
             freeAST(node->stmt.child);
+            break;
+        case NodeType_FunctionDeclaration:
+            freeAST(node->functionDeclaration.type);
+            freeAST(node->functionDeclaration.id);
+            freeAST(node->functionDeclaration.paramList);
+            freeAST(node->functionDeclaration.block);
+            break;
+        case NodeType_FunctionCall:
+            freeAST(node->functionCall.id);
+            freeAST(node->functionCall.paramList);
+            break;
+        case NodeType_ParamList:
+            freeAST(node->paramList.paramTail);
+            break;
+        case NodeType_ParamTail:
+            freeAST(node->paramTail.param);
+            freeAST(node->paramTail.paramTail);
+            break;
+        case NodeType_Param:
+            freeAST(node->param.type);
+            freeAST(node->param.id);
+            break;
+        case NodeType_Block:
+            freeAST(node->block.stmtList);
+            break;
+        case NodeType_Return:
+            freeAST(node->returnStmt.expr);
             break;
         case NodeType_Declaration:
             freeAST(node->declaration.type);
