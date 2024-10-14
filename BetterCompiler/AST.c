@@ -28,6 +28,7 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList) {
 
 //Create a function declaration AST. We need to pass in the type, id, paramList, and block
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block) {
+    printf("Creating function declaration node\n");
     ASTNode* node = createNode(NodeType_FunctionDeclaration);
     node->functionDeclaration.type = type;
     node->functionDeclaration.id = id;
@@ -36,10 +37,10 @@ ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* para
     return node;
 }
 
-ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* paramList) {
+ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList) {
     ASTNode* node = createNode(NodeType_FunctionCall);
     node->functionCall.id = id;
-    node->functionCall.paramList = paramList;
+    node->functionCall.argList = argList;
     return node;
 }
 
@@ -60,6 +61,19 @@ ASTNode* createParamNode(ASTNode* type, ASTNode* id) {
     ASTNode* node = createNode(NodeType_Param);
     node->param.type = type;
     node->param.id = id;
+    return node;
+}
+
+ASTNode* createArgListNode(ASTNode* argTail) {
+    ASTNode* node = createNode(NodeType_ArgList);
+    node->argList.argTail = argTail;
+    return node;
+}
+
+ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail) {
+    ASTNode* node = createNode(NodeType_ArgTail);
+    node->argTail.expr = expr;
+    node->argTail.argTail = argTail;
     return node;
 }
 
@@ -176,7 +190,7 @@ void printAST(ASTNode* node, int indent) {
         case NodeType_FunctionCall:
             printf("Function Call\n");
             printAST(node->functionCall.id, indent + 1);
-            printAST(node->functionCall.paramList, indent + 1);
+            printAST(node->functionCall.argList, indent + 1);
             break;
         case NodeType_ParamList:
             printf("ParamList\n");
@@ -266,7 +280,7 @@ void freeAST(ASTNode* node) {
             break;
         case NodeType_FunctionCall:
             freeAST(node->functionCall.id);
-            freeAST(node->functionCall.paramList);
+            freeAST(node->functionCall.argList);
             break;
         case NodeType_ParamList:
             freeAST(node->paramList.paramTail);

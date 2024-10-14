@@ -13,6 +13,8 @@ typedef enum {
     NodeType_ParamList,
     NodeType_ParamTail,
     NodeType_Param,
+    NodeType_ArgList,
+    NodeType_ArgTail,
     NodeType_Block,
     NodeType_Return,
     NodeType_Declaration,
@@ -56,7 +58,7 @@ typedef struct ASTNode {
 
         struct {
             struct ASTNode* id;
-            struct ASTNode* paramList;      // might need to switch this to argList
+            struct ASTNode* argList;      // switched from paramList to argList
         } functionCall;
 
         struct {
@@ -72,6 +74,15 @@ typedef struct ASTNode {
             struct ASTNode* type;
             struct ASTNode* id;
         } param;
+
+        struct {
+            struct ASTNode* argTail;
+        } argList;
+
+        struct {
+            struct ASTNode* expr;
+            struct ASTNode* argTail;
+        } argTail;
 
         struct {
             struct ASTNode* stmtList;
@@ -133,17 +144,15 @@ typedef struct ASTNode {
 ASTNode* createProgramNode(ASTNode* stmtList);
 ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList);
 ASTNode* createStmtNode(ASTNode* child);
-
-// Added with better compiler
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block);
-ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* paramList);
+ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList);
 ASTNode* createParamListNode(ASTNode* paramTail);
 ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
 ASTNode* createParamNode(ASTNode* type, ASTNode* id);
+ASTNode* createArgListNode(ASTNode* argTail);
+ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail);
 ASTNode* createBlockNode(ASTNode* stmtList);
 ASTNode* createReturnNode(ASTNode* expr);
-// ----------------------------
-
 ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
 ASTNode* createTypeNode(char* typeName);
 ASTNode* createAssignmentNode(ASTNode* id, ASTNode* expr);

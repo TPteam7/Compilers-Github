@@ -9,8 +9,8 @@ lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l
 
 # Compile and link all necessary files, including AST.c
-parser: lex.yy.c parser.tab.c parser.tab.h
-	gcc -o parser parser.tab.c lex.yy.c
+parser: lex.yy.c parser.tab.c AST.c parser.tab.h
+	gcc -o parser parser.tab.c lex.yy.c AST.c
 	./parser testProg.cmm
 
 # Clean up generated files
