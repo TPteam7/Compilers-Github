@@ -7,12 +7,14 @@
 typedef enum {
     NodeType_Program,
     NodeType_StmtList,
-    NodeType_Function,
+    NodeType_Stmt,
+    NodeType_FunctionDeclaration,
+    NodeType_FunctionCall,
     NodeType_ParamList,
     NodeType_ParamTail,
     NodeType_Param,
     NodeType_Block,
-    NodeType_Stmt,
+    NodeType_Return,
     NodeType_Declaration,
     NodeType_Type,
     NodeType_Assignment,
@@ -44,6 +46,40 @@ typedef struct ASTNode {
         struct {
             struct ASTNode* child; // Declaration, assignment, or print
         } stmt;
+
+        struct {
+            struct ASTNode* type;
+            struct ASTNode* id;
+            struct ASTNode* paramList;
+            struct ASTNode* block;
+        } functionDeclaration;
+
+        struct {
+            struct ASTNode* id;
+            struct ASTNode* paramList;      // might need to switch this to argList
+        } functionCall;
+
+        struct {
+            struct ASTNode* paramTail;
+        } paramList;
+
+        struct {
+            struct ASTNode* param;
+            struct ASTNode* paramTail;
+        } paramTail;
+
+        struct {
+            struct ASTNode* type;
+            struct ASTNode* id;
+        } param;
+
+        struct {
+            struct ASTNode* stmtList;
+        } block;
+
+        struct {
+            struct ASTNode* expr;
+        } returnStmt;
 
         struct {
             struct ASTNode* type;
@@ -97,6 +133,17 @@ typedef struct ASTNode {
 ASTNode* createProgramNode(ASTNode* stmtList);
 ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList);
 ASTNode* createStmtNode(ASTNode* child);
+
+// Added with better compiler
+ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block);
+ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* paramList);
+ASTNode* createParamListNode(ASTNode* paramTail);
+ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
+ASTNode* createParamNode(ASTNode* type, ASTNode* id);
+ASTNode* createBlockNode(ASTNode* stmtList);
+ASTNode* createReturnNode(ASTNode* expr);
+// ----------------------------
+
 ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
 ASTNode* createTypeNode(char* typeName);
 ASTNode* createAssignmentNode(ASTNode* id, ASTNode* expr);
