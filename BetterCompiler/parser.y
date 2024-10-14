@@ -56,12 +56,12 @@ int printParserDebug = 0;
 
 %%
 
-Program: StmtList {  };
+Program: StmtList { $$ = createProgramNode($1); root = $$; };
 
 
 StmtList:  {  }
 	| Stmt StmtList {  }
-	| FunctionDefinition StmtList {  };x
+	| FunctionDefinition StmtList {  };
 
 
 FunctionDefinition: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { };
@@ -151,6 +151,10 @@ int main() {
     if (result == 0) {
 
         printf("\nPARSER:\nParsing successful!\n");
+
+		printf("\nPARSER:\nParsing successful!\n");
+
+		printAST(root, 0);
 
     }
 

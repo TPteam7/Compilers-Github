@@ -1196,7 +1196,7 @@ yyreduce:
     {
   case 2: /* Program: StmtList  */
 #line 59 "parser.y"
-                  {  }
+                  { (yyval.node) = createProgramNode((yyvsp[0].node)); root = (yyval.node); }
 #line 1201 "parser.tab.c"
     break;
 
@@ -1662,6 +1662,10 @@ int main() {
     if (result == 0) {
 
         printf("\nPARSER:\nParsing successful!\n");
+
+		printf("\nPARSER:\nParsing successful!\n");
+
+		printAST(root, 0);
 
     }
 
