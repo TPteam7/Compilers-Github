@@ -28,7 +28,6 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList) {
 
 //Create a function declaration AST. We need to pass in the type, id, paramList, and block
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block) {
-    printf("Creating function declaration node\n");
     ASTNode* node = createNode(NodeType_FunctionDeclaration);
     node->functionDeclaration.type = type;
     node->functionDeclaration.id = id;
@@ -206,6 +205,15 @@ void printAST(ASTNode* node, int indent) {
             printAST(node->param.type, indent + 1);
             printAST(node->param.id, indent + 1);
             break;
+        case NodeType_ArgList:
+            printf("ArgList\n");
+            printAST(node->argList.argTail, indent + 1);
+            break;
+        case NodeType_ArgTail:
+            printf("ArgTail\n");
+            printAST(node->argTail.expr, indent + 1);
+            printAST(node->argTail.argTail, indent + 1);
+            break;
         case NodeType_Block:
             printf("Block\n");
             printAST(node->block.stmtList, indent + 1);
@@ -292,6 +300,13 @@ void freeAST(ASTNode* node) {
         case NodeType_Param:
             freeAST(node->param.type);
             freeAST(node->param.id);
+            break;
+        case NodeType_ArgList:
+            freeAST(node->argList.argTail);
+            break;
+        case NodeType_ArgTail:
+            freeAST(node->argTail.expr);
+            freeAST(node->argTail.argTail);
             break;
         case NodeType_Block:
             freeAST(node->block.stmtList);

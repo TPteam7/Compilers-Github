@@ -62,13 +62,13 @@ Program: StmtList { $$ = createProgramNode($1); root = $$; };
 
 StmtList:  { $$ = NULL; }
 	| Stmt StmtList { $$ = createStmtListNode($1, $2); }
-	| FunctionDefinition StmtList { };
+	| FunctionDefinition StmtList { $$ = createStmtListNode($1, $2); };
 
 
 FunctionDefinition: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
 
 
-FunctionCall: ID LPAREN ArgList RPAREN { $$ = createFunctionCallNode(createIDNode($1), $3); };
+FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON{ printf("HERE\n"); $$ = createFunctionCallNode(createIDNode($1), $3); };
 
 
 ParamList: { $$ = NULL; }
@@ -92,12 +92,9 @@ ArgTail: Expr { $$ = createArgTailNode($1, NULL); }
        | Expr COMMA ArgTail { $$ = createArgTailNode($1, $3); };
 
 
-Block: StmtList RETURN Expr SEMICOLON 
-		{
-			$$ = createBlockNode($1);
-			$$ = createReturnNode($3);
-  		}
-    | StmtList { $$ = createBlockNode($1); };
+Block: StmtList RETURN Expr SEMICOLON { $$ = createBlockNode($1); $$ = createReturnNode($3); }
+     | StmtList { $$ = createBlockNode($1); };
+
 
 
 Stmt: Declaration { $$ = createStmtNode($1); } 
@@ -110,16 +107,16 @@ Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)
 	| Type ID LBRACKET Expr RBRACKET SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); };
 
 
-Type: INT { $$ = createTypeNode($1); }
+Type: INT { printf("HERE\n"); $$ = createTypeNode($1); }
     | FLOAT { $$ = createTypeNode($1); }
 	| BOOL { $$ = createTypeNode($1); }
 	| VOID { $$ = createTypeNode($1); };
 
 
 Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); }
-	| ID ASSIGN FunctionCall SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); }
+	| ID ASSIGN FunctionCall { $$ = createAssignmentNode(createIDNode($1), $3); }
 	| ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); }
-	| ID LBRACKET Expr RBRACKET ASSIGN FunctionCall SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); };
+	| ID LBRACKET Expr RBRACKET ASSIGN FunctionCall { $$ = createAssignmentNode(createIDNode($1), $3); };
 
 
 Print: PRINT LPAREN Expr RPAREN SEMICOLON { $$ = createPrintNode($3); };
@@ -154,8 +151,6 @@ int main() {
     int result = yyparse();
 
     if (result == 0) {
-
-        printf("\nPARSER:\nParsing successful!\n");
 
 		printf("\nPARSER:\nParsing successful!\n");
 
