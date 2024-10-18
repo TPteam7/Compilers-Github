@@ -96,7 +96,6 @@ Block: StmtList RETURN Expr SEMICOLON { $$ = createBlockNode($1); $$ = createRet
      | StmtList { $$ = createBlockNode($1); };
 
 
-
 Stmt: Declaration { $$ = createStmtNode($1); } 
 	| Assignment { $$ = createStmtNode($1); }
 	| Print { $$ = createStmtNode($1); }
@@ -104,7 +103,7 @@ Stmt: Declaration { $$ = createStmtNode($1); }
 
 
 Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); }
-	| Type ID LBRACKET Expr RBRACKET SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); };
+	| Type ID LBRACKET Expr RBRACKET SEMICOLON { $$ = createArrayDeclarationNode($1, createIDNode($2), $4); };
 
 
 Type: INT { printf("HERE\n"); $$ = createTypeNode($1); }
@@ -115,8 +114,8 @@ Type: INT { printf("HERE\n"); $$ = createTypeNode($1); }
 
 Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); }
 	| ID ASSIGN FunctionCall { $$ = createAssignmentNode(createIDNode($1), $3); }
-	| ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1), $3); }
-	| ID LBRACKET Expr RBRACKET ASSIGN FunctionCall { $$ = createAssignmentNode(createIDNode($1), $3); };
+	| ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON { $$ = createArrayAssignmentNode(createIDNode($1), $3, $6); }
+	| ID LBRACKET Expr RBRACKET ASSIGN FunctionCall { $$ = createArrayAssignmentNode(createIDNode($1), $3, $6); };
 
 
 Print: PRINT LPAREN Expr RPAREN SEMICOLON { $$ = createPrintNode($3); };
@@ -134,7 +133,7 @@ Term: Term MULT Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
 
 Factor: LPAREN Expr RPAREN { $$ = createFactorNode($2); }
 	| ID { $$ = createIDNode($1); }
-	| ID LBRACKET Expr RBRACKET { $$ = createIDNode($1); }
+	| ID LBRACKET Expr RBRACKET { $$ = createArrayAccessNode(createIDNode($1), $3); }
 	| NUMBER { $$ = createNumberNode($1); };
 
 

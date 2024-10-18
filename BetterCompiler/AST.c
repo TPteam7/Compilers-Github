@@ -101,6 +101,36 @@ ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id) {
     return node;
 }
 
+// Array Declaration Node
+ASTNode* createArrayDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* size) {
+    ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    node->nType = NodeType_ArrayDeclaration;
+    node->arrayDeclaration.type = type;
+    node->arrayDeclaration.id = id;
+    node->arrayDeclaration.size = size;
+    return node;
+}
+
+// Array Access Node
+ASTNode* createArrayAccessNode(ASTNode* id, ASTNode* index) {
+    ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    node->nType = NodeType_ArrayAccess;
+    node->arrayAccess.id = id;
+    node->arrayAccess.index = index;
+    return node;
+}
+
+// Array Assignment Node
+ASTNode* createArrayAssignmentNode(ASTNode* id, ASTNode* index, ASTNode* value) {
+    ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    node->nType = NodeType_ArrayAssignment;
+    node->arrayAssignment.id = id;
+    node->arrayAssignment.index = index;
+    node->arrayAssignment.value = value;
+    return node;
+}
+
+
 ASTNode* createTypeNode(char* typeName) {
     ASTNode* node = createNode(NodeType_Type);
     node->type.typeName = typeName;
@@ -227,6 +257,31 @@ void printAST(ASTNode* node, int indent) {
             printAST(node->declaration.type, indent + 1);
             printAST(node->declaration.id, indent + 1);
             break;
+        case NodeType_ArrayDeclaration:
+            printf("Array Declaration\n");
+            printAST(node->arrayDeclaration.type, indent + 1);
+            printAST(node->arrayDeclaration.id, indent + 1);
+            for (int i = 0; i < indent + 1; i++) printf("  ");
+            printf("Size\n");
+            printAST(node->arrayDeclaration.size, indent + 2);
+            break;
+        case NodeType_ArrayAssignment:
+            printf("Array Assignment\n");
+            printAST(node->arrayAssignment.id, indent + 1);
+            for (int i = 0; i < indent + 1; i++) printf("  ");
+            printf("Index\n");
+            printAST(node->arrayAssignment.index, indent + 2);
+            for (int i = 0; i < indent + 1; i++) printf("  ");
+            printf("Value\n");
+            printAST(node->arrayAssignment.value, indent + 2);
+            break;
+        case NodeType_ArrayAccess:
+            printf("Array Access\n");
+            printAST(node->arrayAccess.id, indent + 1);
+            for (int i = 0; i < indent + 1; i++) printf("  ");
+            printf("Index\n");
+            printAST(node->arrayAccess.index, indent + 2);
+            break;
         case NodeType_Type:
             printf("Type: %s\n", node->type.typeName);
             break;
@@ -317,6 +372,20 @@ void freeAST(ASTNode* node) {
         case NodeType_Declaration:
             freeAST(node->declaration.type);
             freeAST(node->declaration.id);
+            break;
+        case NodeType_ArrayDeclaration:
+            freeAST(node->arrayDeclaration.type);
+            freeAST(node->arrayDeclaration.id);
+            freeAST(node->arrayDeclaration.size);
+            break;
+        case NodeType_ArrayAssignment:
+            freeAST(node->arrayAssignment.id);
+            freeAST(node->arrayAssignment.index);
+            freeAST(node->arrayAssignment.value);
+            break;
+        case NodeType_ArrayAccess:
+            freeAST(node->arrayAccess.id);
+            freeAST(node->arrayAccess.index);
             break;
         case NodeType_Assignment:
             freeAST(node->assignment.id);

@@ -12,3 +12,9 @@ int y;
 x = add(4, 5);
 
 arrayCheck();
+
+int a[5];
+
+a[0] = 1;
+
+y = a[0];

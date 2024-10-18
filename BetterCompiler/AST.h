@@ -18,6 +18,9 @@ typedef enum {
     NodeType_Block,
     NodeType_Return,
     NodeType_Declaration,
+    NodeType_ArrayDeclaration,
+    NodeType_ArrayAccess,
+    NodeType_ArrayAssignment,
     NodeType_Type,
     NodeType_Assignment,
     NodeType_Print,
@@ -98,6 +101,23 @@ typedef struct ASTNode {
         } declaration;
 
         struct {
+            struct ASTNode* type;
+            struct ASTNode* id;
+            struct ASTNode* size;
+        } arrayDeclaration;
+
+        struct {
+            struct ASTNode* id;
+            struct ASTNode* index;
+        } arrayAccess;
+
+        struct {
+            struct ASTNode* id;
+            struct ASTNode* index;
+            struct ASTNode* value;
+        } arrayAssignment;
+
+        struct {
             char* typeName;
         } type;
 
@@ -154,6 +174,9 @@ ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail);
 ASTNode* createBlockNode(ASTNode* stmtList);
 ASTNode* createReturnNode(ASTNode* expr);
 ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
+ASTNode* createArrayDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* size);
+ASTNode* createArrayAccessNode(ASTNode* id, ASTNode* index);
+ASTNode* createArrayAssignmentNode(ASTNode* id, ASTNode* index, ASTNode* value);
 ASTNode* createTypeNode(char* typeName);
 ASTNode* createAssignmentNode(ASTNode* id, ASTNode* expr);
 ASTNode* createPrintNode(ASTNode* expr);
