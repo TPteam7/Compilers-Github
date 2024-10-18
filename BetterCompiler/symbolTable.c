@@ -24,6 +24,25 @@ SymbolTable* createSymbolTable(int size) {
     return newTable;
 }
 
+// Function to create a new variable symbol table
+variableSymbolTable* createVariableSymbolTable(int size) {
+    variableSymbolTable* newTable = (variableSymbolTable*)malloc(sizeof(variableSymbolTable));
+    if (!newTable) return 0;
+
+    newTable->size = size;
+    newTable->table = (Variable**)malloc(sizeof(Variable*) * size);
+    if (!newTable->table) {
+        free(newTable);
+        return 0;
+    }
+
+    for (int i = 0; i < size; i++) {
+        newTable->table[i] = 0;
+    }
+
+    return newTable;
+}
+
 // Hash function to map a name to an index
 unsigned int hash(SymbolTable* table, char* name) {
     unsigned int hashval = 0;
@@ -31,31 +50,54 @@ unsigned int hash(SymbolTable* table, char* name) {
     return hashval % table->size;
 }
 
-// Function to add a symbol to the table
-void addSymbol(SymbolTable* table, char* name, char* type) {
+// Function to add a function to the table
+void addSymbol(SymbolTable* table, char* functionName, char* returnType) {
     Symbol* newSymbol = (Symbol*)malloc(sizeof(Symbol));
     if (!newSymbol) return;
-    newSymbol->name = strdup(name);
-    newSymbol->type = strdup(type);
-    // Initialize other fields of Symbol
+
+    // Initialize the new symbol
+    newSymbol->functionName = strdup(functionName);
+    newSymbol->returnType = strdup(returnType);
+
+    // Create the variableSymbolTable for the function
+    newSymbol->variables = createVariableSymbolTable(100);
 
     if (table == NULL || table->table == NULL) {
         fprintf(stderr, "Symbol table or table array not initialized\n");
         // Handle the error, possibly free newSymbol and return
     }
 
-
-
-    unsigned int hashval = hash(table, name);
+    unsigned int hashval = hash(table, functionName);
     newSymbol->next = table->table[hashval];  
     table->table[hashval] = newSymbol;
 }
-// Function to look up a name in the table
-Symbol* lookupSymbol(SymbolTable* table, char* name) {
-    if (printDebug == 1)
-        printf("Looking up %s\n", name);
 
-    unsigned int hashval = hash(table, name);
+// Function to add a variable to the table
+void addVariable(variableSymbolTable* table, char* variableName, char* variableType, int arraySize) {
+    Variable* newVariable = (Variable*)malloc(sizeof(Variable));
+    if (!newVariable) return;
+
+    // Initialize the new variable
+    newVariable->variableName = strdup(variableName);
+    newVariable->variableType = strdup(variableType);
+    newVariable->arraySize = arraySize;
+
+    if (table == NULL || table->table == NULL) {
+        fprintf(stderr, "Variable table or table array not initialized\n");
+        // Handle the error, possibly free newVariable and return
+    }
+
+    unsigned int hashval = hash(table, variableName);
+    newVariable->next = table->table[hashval];  
+    table->table[hashval] = newVariable;
+}
+
+// Function to look up a functionName in the SymbolTable
+Symbol* lookupSymbol(SymbolTable* table, char* functionName) {
+    if (printDebug == 1)
+        printf("Looking up %s\n", functionName);
+
+    unsigned int hashval = hash(table, functionName);
     #include <stddef.h> // Include the header file for NULL macro
 
     // Search the linked list at table->table[hashval]
@@ -71,24 +113,74 @@ Symbol* lookupSymbol(SymbolTable* table, char* name) {
                 printf("SYMBOL TABLE ERROR:\nSymbol found at hash value %u\n", hashval);
             for (Symbol* sym = table->table[hashval]; sym != 0; sym = sym->next) {
                 if(printDebug == 1)
-                    printf("Symbol name: %s\n", sym->name);
-                if (strcmp(name, sym->name) == 0) return sym;
+                    printf("Symbol Function Name: %s\n", sym->functionName);
+                if (strcmp(functionName, sym->functionName) == 0) return sym;
             }
       }   
     
     return NULL;
 }
+
+// Function to look up a variable in the variableSymbolTable
+Variable* lookupVariable(variableSymbolTable* table, char* variableName) {
+    if (printDebug == 1)
+        printf("Looking up %s\n", variableName);
+
+    unsigned int hashval = hash(table, variableName);
+    #include <stddef.h> // Include the header file for NULL macro
+
+    // Search the linked list at table->table[hashval]
+    // Check if the entry at hashval is null
+    if (table->table[hashval] == NULL) {
+        if (printDebug == 1)
+            printf("No variable found at hash value %u\n", hashval);
+        return NULL;
+    } else {
+            if (printDebug == 1)
+                printf("VARIABLE SYMBOL TABLE ERROR:\nVariable found at hash value %u\n", hashval);
+            for (Variable* var = table->table[hashval]; var != 0; var = var->next) {
+                if(printDebug == 1)
+                    printf("Variable Name: %s\n", var->variableName);
+                if (strcmp(variableName, var->variableName) == 0) return var;
+            }
+      }   
+    
+    return NULL;
+}
+
 // Function to free the symbol table
 void freeSymbolTable(SymbolTable* table) {
     for (int i = 0; i < table->size; i++) {
         Symbol* sym = table->table[i];
         while (sym != 0) {
             Symbol* nextSym = sym->next;
-            free(sym->name);
-            free(sym->type);
+
+            // Free dynamically allocated fields of Symbol
+            free(sym->functionName);
+            free(sym->returnType);
+            freeVariableSymbolTable(sym->variables);
+
             // Free other dynamically allocated fields of Symbol
             free(sym);
             sym = nextSym;
+        }
+    }
+    free(table->table);
+    free(table);
+}
+
+// Function to free the variable symbol table
+void freeVariableSymbolTable(variableSymbolTable* table) {
+    for (int i = 0; i < table->size; i++) {
+        Variable* var = table->table[i];
+        while (var != 0) {
+            Variable* nextVar = var->next;
+            free(var->variableName);
+            free(var->variableType);
+
+            // Free other dynamically allocated fields of Variable
+            free(var);
+            var = nextVar;
         }
     }
     free(table->table);
@@ -101,9 +193,28 @@ void printSymbolTable(SymbolTable* table) {
     for (int i = 0; i < table->size; i++) {
         Symbol* sym = table->table[i];
         while (sym != 0) {
-            printf("Name: %s, Type: %s\n", sym->name, sym->type);
+            printf("Name: %s, Type: %s\n", sym->functionName, sym->returnType);
+
+            // Print the variable symbol table
+            printVariableSymbolTable(sym->variables);
+
             // Print other fields of Symbol
             sym = sym->next;
+        }
+    }
+    printf("------------------------\n\n");
+}
+
+// Function to print the variable symbol table
+void printVariableSymbolTable(variableSymbolTable* table) {
+    printf("\n----- VARIABLE SYMBOL TABLE -----\n");
+    for (int i = 0; i < table->size; i++) {
+        Variable* var = table->table[i];
+        while (var != 0) {
+            printf("Name: %s, Type: %s, Array Size: %d\n", var->variableName, var->variableType, var->arraySize);
+
+            // Print other fields of Variable
+            var = var->next;
         }
     }
     printf("------------------------\n\n");
