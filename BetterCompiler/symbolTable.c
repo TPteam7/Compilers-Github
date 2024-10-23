@@ -7,6 +7,8 @@ int printDebug = 0;
 
 // Function to create a new symbol table
 SymbolTable* createSymbolTable(int size) {
+    printf("Creating symbol table\n");
+
     SymbolTable* newTable = (SymbolTable*)malloc(sizeof(SymbolTable));
     if (!newTable) return 0;
 
@@ -43,8 +45,15 @@ variableSymbolTable* createVariableSymbolTable(int size) {
     return newTable;
 }
 
-// Hash function to map a name to an index
-unsigned int hash(SymbolTable* table, char* name) {
+// Hash function to map a name to an index in the SymbolTable
+unsigned int hashSymbolTable(SymbolTable* table, char* name) {
+    unsigned int hashval = 0;
+    for (; *name != '\0'; name++) hashval = *name + (hashval << 5) - hashval;
+    return hashval % table->size;
+}
+
+// Hash function to map a name to an index in the variableSymbolTable
+unsigned int hashVariableTable(variableSymbolTable* table, char* name) {
     unsigned int hashval = 0;
     for (; *name != '\0'; name++) hashval = *name + (hashval << 5) - hashval;
     return hashval % table->size;
@@ -67,7 +76,7 @@ void addSymbol(SymbolTable* table, char* functionName, char* returnType) {
         // Handle the error, possibly free newSymbol and return
     }
 
-    unsigned int hashval = hash(table, functionName);
+    unsigned int hashval = hashSymbolTable(table, functionName);
     newSymbol->next = table->table[hashval];  
     table->table[hashval] = newSymbol;
 }
@@ -87,7 +96,7 @@ void addVariable(variableSymbolTable* table, char* variableName, char* variableT
         // Handle the error, possibly free newVariable and return
     }
 
-    unsigned int hashval = hash(table, variableName);
+    unsigned int hashval = hashVariableTable(table, variableName);
     newVariable->next = table->table[hashval];  
     table->table[hashval] = newVariable;
 }
@@ -97,7 +106,7 @@ Symbol* lookupSymbol(SymbolTable* table, char* functionName) {
     if (printDebug == 1)
         printf("Looking up %s\n", functionName);
 
-    unsigned int hashval = hash(table, functionName);
+    unsigned int hashval = hashSymbolTable(table, functionName);
     #include <stddef.h> // Include the header file for NULL macro
 
     // Search the linked list at table->table[hashval]
@@ -126,7 +135,7 @@ Variable* lookupVariable(variableSymbolTable* table, char* variableName) {
     if (printDebug == 1)
         printf("Looking up %s\n", variableName);
 
-    unsigned int hashval = hash(table, variableName);
+    unsigned int hashval = hashVariableTable(table, variableName);
     #include <stddef.h> // Include the header file for NULL macro
 
     // Search the linked list at table->table[hashval]
