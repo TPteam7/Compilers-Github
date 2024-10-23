@@ -3,7 +3,7 @@
 
 
 // Perform semantic analysis on the AST
-TAC* tacHead = NULL;
+//TAC* tacHead = NULL;
 int printDebugSemantic = 1;
 int tempVars[60];
 
@@ -45,22 +45,137 @@ ARGS:
 
             semanticAnalysis(node->stmt.child, symTab);
             break;
-        // Check for redeclaration of variables
+        // Check to see if the function has already been declared TODO
+        case NodeType_FunctionDeclaration:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on function declaration\n");
+
+            semanticAnalysis(node->functionDeclaration.type, symTab);
+            semanticAnalysis(node->functionDeclaration.id, symTab);
+            semanticAnalysis(node->functionDeclaration.paramList, symTab);
+            semanticAnalysis(node->functionDeclaration.block, symTab);
+            break;
+        // Check that function exists here  TODO
+        case NodeType_FunctionCall:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on function call\n");
+
+            semanticAnalysis(node->functionCall.id, symTab);
+            semanticAnalysis(node->functionCall.argList, symTab);
+            break;
+        // No check needed
+        case NodeType_ParamList:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on paramlist\n");
+
+            semanticAnalysis(node->paramList.paramTail, symTab);
+            break;
+        // No check needed
+        case NodeType_ParamTail:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on paramtail\n");
+
+            semanticAnalysis(node->paramTail.param, symTab);
+            semanticAnalysis(node->paramTail.paramTail, symTab);
+            break;
+        // Check that param exists here  TODO
+        case NodeType_Param:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on param\n");
+
+            semanticAnalysis(node->param.type, symTab);
+            semanticAnalysis(node->param.id, symTab);
+            break;
+        // No check needed
+        case NodeType_ArgList:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on arglist\n");
+
+            semanticAnalysis(node->argList.argTail, symTab);
+            break;
+        // Check that arg exists here  TODO
+        case NodeType_ArgTail:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on argtail\n");
+
+            semanticAnalysis(node->argTail.expr, symTab);
+            semanticAnalysis(node->argTail.argTail, symTab);
+            break;
+        // No check needed
+        case NodeType_Block:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on block\n");
+
+            semanticAnalysis(node->block.stmtList, symTab);
+            break;
+        // No check needed
+        case NodeType_Return:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on return\n");
+
+            semanticAnalysis(node->returnStmt.expr, symTab);
+            break;
+        // Check for redeclaration of variables TODO
         case NodeType_Declaration:
-            if (lookupSymbol(symTab, node->declaration.id->id.name) != NULL) {
-                fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has already been declared\n\n", node->declaration.id->id.name);
-                exit(0);
-                break;
-            }
-            else {	
-                // Add variable to symbol table
-                addSymbol(symTab, node->declaration.id->id.name, node->declaration.type->type.typeName);
-            }
+            // if (lookupSymbol(symTab, node->declaration.id->id.name) != NULL) {
+            //     fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has already been declared\n\n", node->declaration.id->id.name);
+            //     exit(0);
+            //     break;
+            // }
+            // else {	
+            //     // Add variable to symbol table
+            //     addSymbol(symTab, node->declaration.id->id.name, node->declaration.type->type.typeName);
+            // }
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on declaration\n");
 
             semanticAnalysis(node->declaration.type, symTab);
             semanticAnalysis(node->declaration.id, symTab);
+            break;
+        // Check if array has been declared TODO
+        case NodeType_ArrayDeclaration:
+            // if (lookupSymbol(symTab, node->arrayDeclaration.id->id.name) != NULL) {
+            //     fprintf(stderr, "\nSEMANTIC ERROR:\nArray %s has already been declared\n\n", node->arrayDeclaration.id->id.name);
+            //     exit(0);
+            //     break;
+            // }
+            // else {	
+            //     // Add variable to symbol table
+            //     addSymbol(symTab, node->arrayDeclaration.id->id.name, node->arrayDeclaration.type->type.typeName);
+            // }
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on array declaration\n");
+
+            semanticAnalysis(node->arrayDeclaration.type, symTab);
+            semanticAnalysis(node->arrayDeclaration.id, symTab);
+            semanticAnalysis(node->arrayDeclaration.size, symTab);
+            break;
+        // Check that array has been declared TODO
+        case NodeType_ArrayAssignment:
+            // if (lookupSymbol(symTab, node->arrayAssignment.id->id.name) == NULL) {
+            //     fprintf(stderr, "\nSEMANTIC ERROR:\nArray %s has not been declared\n\n", node->arrayAssignment.id->id.name);
+            //     exit(0);
+            //     break;
+            // }
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on array assignment\n");
+
+            semanticAnalysis(node->arrayAssignment.id, symTab);
+            semanticAnalysis(node->arrayAssignment.index, symTab);
+            semanticAnalysis(node->arrayAssignment.value, symTab);
+            break;
+        // Check that array has been declared TODO
+        case NodeType_ArrayAccess:
+            // if (lookupSymbol(symTab, node->arrayAccess.id->id.name) == NULL) {
+            //     fprintf(stderr, "\nSEMANTIC ERROR:\nArray %s has not been declared\n\n", node->arrayAccess.id->id.name);
+            //     exit(0);
+            //     break;
+            // }
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on array access\n");
+
+            semanticAnalysis(node->arrayAccess.id, symTab);
+            semanticAnalysis(node->arrayAccess.index, symTab);
             break;
         // No check needed
         case NodeType_Type:
@@ -68,13 +183,13 @@ ARGS:
                 printf("Performing semantic analysis on type: %s\n", node->type.typeName);
 
             break;
-        // Check for declaration of variables
+        // Check for declaration of variables TODO
         case NodeType_Assignment:
-            if (lookupSymbol(symTab, node->assignment.id->id.name) == NULL) {
-                fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has already been declared\n\n", node->assignment.id->id.name);
-                exit(0);
-                break;
-            }
+            // if (lookupSymbol(symTab, node->assignment.id->id.name) == NULL) {
+            //     fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has already been declared\n\n", node->assignment.id->id.name);
+            //     exit(0);
+            //     break;
+            // }
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on assignment\n");
 
@@ -111,13 +226,13 @@ ARGS:
 
             semanticAnalysis(node->factor.child, symTab);
             break;
-        // Check for declaration of variable
+        // Check for declaration of variable TODO
         case NodeType_ID:
-            if (lookupSymbol(symTab, node->id.name) == NULL) {
-                fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->id.name);
-                exit(0);
-                break;
-            }
+            // if (lookupSymbol(symTab, node->id.name) == NULL) {
+            //     fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->id.name);
+            //     exit(0);
+            //     break;
+            // }
             if (printDebugSemantic == 1)
                 printf("ID: %s\n", node->id.name);
             break;
@@ -130,22 +245,13 @@ ARGS:
             fprintf(stderr, "Unknown Node Type\n");
     }
 
-    // ASTNode* current = NULL;
-    // if(node->nType == NodeType_Expr) {
-    //     current = node;
-    //     while (current != NULL && current->nType == NodeType_Expr) {
-    //         current = current->parent;
-    //     }
-    // }
-
-
     printf("Break before TAC");
-    // Generate TAC for the expression node, assignment, declaration, or print
-    if ((node->nType == NodeType_Expr && (node->parent->nType != NodeType_Assignment && node->parent->nType != NodeType_Expr)) || node->nType == NodeType_Assignment || node->nType == NodeType_Print) {
-        // Generate Three-Address Code (TAC) for the expression node
-        printf("Generating TAC");
-        generateTAC(node);
-    }
+    // Generate TAC for the expression node, assignment, declaration, or print TODO
+    // if ((node->nType == NodeType_Expr && (node->parent->nType != NodeType_Assignment && node->parent->nType != NodeType_Expr)) || node->nType == NodeType_Assignment || node->nType == NodeType_Print) {
+    //     // Generate Three-Address Code (TAC) for the expression node
+    //     printf("Generating TAC");
+    //     generateTAC(node);
+    // }
 }
 
 int isUnderAssignmentWithOnlyExprInBetween(ASTNode* node) {
