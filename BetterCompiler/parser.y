@@ -61,8 +61,7 @@ Program: StmtList { $$ = createProgramNode($1); root = $$; };
 
 
 StmtList:  { $$ = NULL; }
-	| Stmt StmtList { $$ = createStmtListNode($1, $2); }
-	| FunctionDefinition StmtList { $$ = createStmtListNode($1, $2); };
+	| Stmt StmtList { $$ = createStmtListNode($1, $2); };
 
 
 FunctionDefinition: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
@@ -99,7 +98,8 @@ Block: StmtList RETURN Expr SEMICOLON { $$ = createBlockNode($1); $$ = createRet
 Stmt: Declaration { $$ = createStmtNode($1); } 
 	| Assignment { $$ = createStmtNode($1); }
 	| Print { $$ = createStmtNode($1); }
-	| FunctionCall { $$ = createStmtNode($1); };
+	| FunctionCall { $$ = createStmtNode($1); }
+	| FunctionDefinition StmtList { $$ = createStmtListNode($1, $2); };
 
 
 Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); }
