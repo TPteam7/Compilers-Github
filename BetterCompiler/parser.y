@@ -52,7 +52,7 @@ int printParserDebug = 0;
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
 %type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
-%type <node> FunctionDefinition FunctionCall ParamList ParamTail Param ArgList ArgTail Block
+%type <node> FunctionDeclaration FunctionCall ParamList ParamTail Param ArgList ArgTail BlockStmtList BlockStmt Block ReturnStmt
 %start Program
 
 %%
@@ -64,7 +64,14 @@ StmtList:  { $$ = NULL; }
 	| Stmt StmtList { $$ = createStmtListNode($1, $2); };
 
 
-FunctionDefinition: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
+Stmt: Declaration { $$ = createStmtNode($1); } 
+	| Assignment { $$ = createStmtNode($1); }
+	| Print { $$ = createStmtNode($1); }
+	| FunctionCall { $$ = createStmtNode($1); }
+	| FunctionDeclaration { $$ = createStmtNode($1); };
+
+
+FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
 
 
 FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON{ printf("HERE\n"); $$ = createFunctionCallNode(createIDNode($1), $3); };
@@ -91,15 +98,21 @@ ArgTail: Expr { $$ = createArgTailNode($1, NULL); }
        | Expr COMMA ArgTail { $$ = createArgTailNode($1, $3); };
 
 
-Block: StmtList RETURN Expr SEMICOLON { $$ = createBlockNode($1); $$ = createReturnNode($3); }
-     | StmtList { $$ = createBlockNode($1); };
+Block: BlockStmtList ReturnStmt { $$ = createBlockNode($1, $2); }
+     | BlockStmtList { $$ = createBlockNode($1, NULL); };
 
 
-Stmt: Declaration { $$ = createStmtNode($1); } 
+BlockStmtList:  { $$ = NULL; }
+	| BlockStmt BlockStmtList { $$ = createStmtListNode($1, $2); };
+
+
+BlockStmt: Declaration { $$ = createStmtNode($1); } 
 	| Assignment { $$ = createStmtNode($1); }
 	| Print { $$ = createStmtNode($1); }
-	| FunctionCall { $$ = createStmtNode($1); }
-	| FunctionDefinition StmtList { $$ = createStmtListNode($1, $2); };
+	| FunctionCall { $$ = createStmtNode($1); };
+
+
+ReturnStmt: RETURN Expr SEMICOLON { $$ = createReturnNode($2); };
 
 
 Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); }

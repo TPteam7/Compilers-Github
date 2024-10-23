@@ -49,7 +49,7 @@ typedef struct ASTNode {
         } stmtList;
 
         struct {
-            struct ASTNode* child; // Declaration, assignment, or print
+            struct ASTNode* child; // Declaration, assignment, print, functionCall, functionDeclaration
         } stmt;
 
         struct {
@@ -89,6 +89,7 @@ typedef struct ASTNode {
 
         struct {
             struct ASTNode* stmtList;
+            struct ASTNode* returnStmt;
         } block;
 
         struct {
@@ -171,7 +172,7 @@ ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
 ASTNode* createParamNode(ASTNode* type, ASTNode* id);
 ASTNode* createArgListNode(ASTNode* argTail);
 ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail);
-ASTNode* createBlockNode(ASTNode* stmtList);
+ASTNode* createBlockNode(ASTNode* stmtList, ASTNode* returnStmt);
 ASTNode* createReturnNode(ASTNode* expr);
 ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
 ASTNode* createArrayDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* size);
