@@ -26,6 +26,7 @@ typedef struct Variable {
 typedef struct SymbolTable {
     int size;
     struct Symbol** table;
+    variableSymbolTable* topLevelStatements;  // Holds non-function variables
 } SymbolTable;
 
 // Define the variableTable struct

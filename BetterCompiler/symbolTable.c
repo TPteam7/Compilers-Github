@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#define DEFAULT_VAR_TABLE_SIZE 100
 
 int printDebug = 0;
 
@@ -69,7 +70,7 @@ void addSymbol(SymbolTable* table, char* functionName, char* returnType) {
     newSymbol->returnType = strdup(returnType);
 
     // Create the variableSymbolTable for the function
-    newSymbol->variables = createVariableSymbolTable(100);
+    newSymbol->variables = createVariableSymbolTable(DEFAULT_VAR_TABLE_SIZE);
 
     if (table == NULL || table->table == NULL) {
         fprintf(stderr, "Symbol table or table array not initialized\n");

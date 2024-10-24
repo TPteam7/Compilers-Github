@@ -3,5 +3,3 @@ int add(int a, int b) {
     a = 5;
     return a;
 }
-
-int a[5];
