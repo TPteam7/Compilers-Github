@@ -107,6 +107,7 @@ ARGS:
                 printf("Performing semantic analysis on block\n");
 
             semanticAnalysis(node->block.stmtList, symTab);
+            semanticAnalysis(node->block.returnStmt, symTab);
             break;
         // No check needed
         case NodeType_Return:

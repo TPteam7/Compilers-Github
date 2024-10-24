@@ -367,6 +367,7 @@ void freeAST(ASTNode* node) {
             break;
         case NodeType_Block:
             freeAST(node->block.stmtList);
+            freeAST(node->block.returnStmt);
             break;
         case NodeType_Return:
             freeAST(node->returnStmt.expr);
