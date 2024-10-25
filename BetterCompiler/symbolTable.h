@@ -10,7 +10,7 @@
 typedef struct Symbol {
     char* functionName;
     char* returnType;
-    struct variableSymbolTable* variables;
+    struct VariableSymbolTable* variables;
     struct Symbol* next;
 } Symbol;
 
@@ -22,33 +22,33 @@ typedef struct Variable {
     struct Variable* next;
 } Variable;
 
+// Define the variableTable struct
+typedef struct VariableSymbolTable {
+    int size;
+    struct Variable** table;
+} VariableSymbolTable;
+
 // Define the SymbolTable struct
 typedef struct SymbolTable {
     int size;
     struct Symbol** table;
-    variableSymbolTable* topLevelStatements;  // Holds non-function variables
+    VariableSymbolTable* topLevelStatements;  // Holds non-function variables
 } SymbolTable;
-
-// Define the variableTable struct
-typedef struct variableSymbolTable {
-    int size;
-    struct Variable** table;
-} variableSymbolTable;
 
 // Function declarations
 SymbolTable* createSymbolTable(int size);
-variableSymbolTable* createVariableSymbolTable(int size);
+VariableSymbolTable* createVariableSymbolTable(int size);
 
 void addSymbol(SymbolTable* table, char* name, char* type);
-void addVariable(variableSymbolTable* table, char* name, char* type, int arraySize);
+void addVariable(VariableSymbolTable* table, char* name, char* type, int arraySize);
 
 Symbol* lookupSymbol(SymbolTable* table, char* name);
-Variable* lookupVariable(variableSymbolTable* table, char* name);
+Variable* lookupVariable(VariableSymbolTable* table, char* name);
 
 void freeSymbolTable(SymbolTable* table);
-void freeVariableSymbolTable(variableSymbolTable* table);
+void freeVariableSymbolTable(VariableSymbolTable* table);
 
 void printSymbolTable(SymbolTable* table);  // For debugging
-void printVariableSymbolTable(variableSymbolTable* table);  // For debugging
+void printVariableSymbolTable(VariableSymbolTable* table);  // For debugging
 
 #endif // SYMBOL_TABL1_H

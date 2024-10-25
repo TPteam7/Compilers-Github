@@ -21,7 +21,7 @@ typedef struct TAC {
 extern TAC* tacHead; // Global head of the TAC instructions list
 
 int allocateNextAvailableTempVar(int tempVars[]);
-void semanticAnalysis(ASTNode* node, SymbolTable* symTab);
+void semanticAnalysis(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab);
 TAC* generateTAC(ASTNode* expr); //returns the TAC for the expression to print on console
 int isUnderAssignmentWithOnlyExprInBetween(ASTNode* node);
 char* findOrCreateTemp(ASTNode* node);

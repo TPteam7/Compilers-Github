@@ -28,8 +28,8 @@ SymbolTable* createSymbolTable(int size) {
 }
 
 // Function to create a new variable symbol table
-variableSymbolTable* createVariableSymbolTable(int size) {
-    variableSymbolTable* newTable = (variableSymbolTable*)malloc(sizeof(variableSymbolTable));
+VariableSymbolTable* createVariableSymbolTable(int size) {
+    VariableSymbolTable* newTable = (VariableSymbolTable*)malloc(sizeof(VariableSymbolTable));
     if (!newTable) return 0;
 
     newTable->size = size;
@@ -53,8 +53,8 @@ unsigned int hashSymbolTable(SymbolTable* table, char* name) {
     return hashval % table->size;
 }
 
-// Hash function to map a name to an index in the variableSymbolTable
-unsigned int hashVariableTable(variableSymbolTable* table, char* name) {
+// Hash function to map a name to an index in the VariableSymbolTable
+unsigned int hashVariableTable(VariableSymbolTable* table, char* name) {
     unsigned int hashval = 0;
     for (; *name != '\0'; name++) hashval = *name + (hashval << 5) - hashval;
     return hashval % table->size;
@@ -69,7 +69,7 @@ void addSymbol(SymbolTable* table, char* functionName, char* returnType) {
     newSymbol->functionName = strdup(functionName);
     newSymbol->returnType = strdup(returnType);
 
-    // Create the variableSymbolTable for the function
+    // Create the VariableSymbolTable for the function
     newSymbol->variables = createVariableSymbolTable(DEFAULT_VAR_TABLE_SIZE);
 
     if (table == NULL || table->table == NULL) {
@@ -83,7 +83,7 @@ void addSymbol(SymbolTable* table, char* functionName, char* returnType) {
 }
 
 // Function to add a variable to the table
-void addVariable(variableSymbolTable* table, char* variableName, char* variableType, int arraySize) {
+void addVariable(VariableSymbolTable* table, char* variableName, char* variableType, int arraySize) {
     Variable* newVariable = (Variable*)malloc(sizeof(Variable));
     if (!newVariable) return;
 
@@ -131,8 +131,8 @@ Symbol* lookupSymbol(SymbolTable* table, char* functionName) {
     return NULL;
 }
 
-// Function to look up a variable in the variableSymbolTable
-Variable* lookupVariable(variableSymbolTable* table, char* variableName) {
+// Function to look up a variable in the VariableSymbolTable
+Variable* lookupVariable(VariableSymbolTable* table, char* variableName) {
     if (printDebug == 1)
         printf("Looking up %s\n", variableName);
 
@@ -180,7 +180,7 @@ void freeSymbolTable(SymbolTable* table) {
 }
 
 // Function to free the variable symbol table
-void freeVariableSymbolTable(variableSymbolTable* table) {
+void freeVariableSymbolTable(VariableSymbolTable* table) {
     for (int i = 0; i < table->size; i++) {
         Variable* var = table->table[i];
         while (var != 0) {
@@ -216,7 +216,7 @@ void printSymbolTable(SymbolTable* table) {
 }
 
 // Function to print the variable symbol table
-void printVariableSymbolTable(variableSymbolTable* table) {
+void printVariableSymbolTable(VariableSymbolTable* table) {
     printf("\n----- VARIABLE SYMBOL TABLE -----\n");
     for (int i = 0; i < table->size; i++) {
         Variable* var = table->table[i];

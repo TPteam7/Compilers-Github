@@ -183,7 +183,7 @@ int main() {
 
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
-		semanticAnalysis(root, symTab);
+		semanticAnalysis(root, symTab, NULL);
 
     }
 

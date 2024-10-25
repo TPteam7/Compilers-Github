@@ -16,6 +16,8 @@ typedef enum {
     NodeType_ArgList,
     NodeType_ArgTail,
     NodeType_Block,
+    NodeType_BlockStmtList,
+    NodeType_BlockStmt,
     NodeType_Return,
     NodeType_Declaration,
     NodeType_ArrayDeclaration,
@@ -91,6 +93,15 @@ typedef struct ASTNode {
             struct ASTNode* stmtList;
             struct ASTNode* returnStmt;
         } block;
+
+        struct {
+            struct ASTNode* blockStmt;
+            struct ASTNode* blockStmtList;
+        } blockStmtList;
+
+        struct {
+            struct ASTNode* child; // Declaration, assignment, print, functionCall, functionDeclaration
+        } blockStmt;
 
         struct {
             struct ASTNode* expr;
@@ -173,6 +184,8 @@ ASTNode* createParamNode(ASTNode* type, ASTNode* id);
 ASTNode* createArgListNode(ASTNode* argTail);
 ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail);
 ASTNode* createBlockNode(ASTNode* stmtList, ASTNode* returnStmt);
+ASTNode* createBlockStmtListNode(ASTNode* blockStmt, ASTNode* blockStmtList);
+ASTNode* createBlockStmtNode(ASTNode* child);
 ASTNode* createReturnNode(ASTNode* expr);
 ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
 ASTNode* createArrayDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* size);
@@ -190,6 +203,5 @@ ASTNode* createNumberNode(int value);
 // Functions to print and free the AST
 void printAST(ASTNode* node, int indent);
 void freeAST(ASTNode* node);
-void traverseAST(ASTNode* node, int level);
 
 #endif

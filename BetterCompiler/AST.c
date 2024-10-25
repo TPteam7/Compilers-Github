@@ -26,6 +26,12 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList) {
     return node;
 }
 
+ASTNode* createStmtNode(ASTNode* child) {
+    ASTNode* node = createNode(NodeType_Stmt);
+    node->stmt.child = child;
+    return node;
+}
+
 //Create a function declaration AST. We need to pass in the type, id, paramList, and block
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block) {
     ASTNode* node = createNode(NodeType_FunctionDeclaration);
@@ -83,15 +89,22 @@ ASTNode* createBlockNode(ASTNode* stmtList, ASTNode* returnStmt) {
     return node;
 }
 
-ASTNode* createReturnNode(ASTNode* expr) {
-    ASTNode* node = createNode(NodeType_Return);
-    node->returnStmt.expr = expr;
+ASTNode* createBlockStmtListNode(ASTNode* blockStmt, ASTNode* blockStmtList) {
+    ASTNode* node = createNode(NodeType_BlockStmtList);
+    node->blockStmtList.blockStmt = blockStmt;
+    node->blockStmtList.blockStmtList = blockStmtList;
     return node;
 }
 
-ASTNode* createStmtNode(ASTNode* child) {
-    ASTNode* node = createNode(NodeType_Stmt);
-    node->stmt.child = child;
+ASTNode* createBlockStmtNode(ASTNode* child) {
+    ASTNode* node = createNode(NodeType_BlockStmt);
+    node->blockStmt.child = child;
+    return node;
+}
+
+ASTNode* createReturnNode(ASTNode* expr) {
+    ASTNode* node = createNode(NodeType_Return);
+    node->returnStmt.expr = expr;
     return node;
 }
 
