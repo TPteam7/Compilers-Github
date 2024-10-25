@@ -1300,7 +1300,7 @@ yyreduce:
 
   case 17: /* Param: Type ID LBRACKET RBRACKET  */
 #line 89 "parser.y"
-                                { (yyval.node) = createParamNode(createArrayDeclarationNode((yyvsp[-3].node), createIDNode((yyvsp[-2].string)), NULL)); }
+                                { (yyval.node) = createParamNode(createArrayDeclarationNode((yyvsp[-3].node), createIDNode((yyvsp[-2].string)), 0)); }
 #line 1305 "parser.tab.c"
     break;
 

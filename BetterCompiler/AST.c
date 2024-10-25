@@ -81,9 +81,9 @@ ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail) {
     return node;
 }
 
-ASTNode* createBlockNode(ASTNode* stmtList, ASTNode* returnStmt) {
+ASTNode* createBlockNode(ASTNode* blockStmtList, ASTNode* returnStmt) {
     ASTNode* node = createNode(NodeType_Block);
-    node->block.stmtList = stmtList;
+    node->block.blockStmtList = blockStmtList;
     node->block.returnStmt = returnStmt;
     return node;
 }
@@ -258,7 +258,7 @@ void printAST(ASTNode* node, int indent) {
             break;
         case NodeType_Block:
             printf("Block\n");
-            printAST(node->block.stmtList, indent + 1);
+            printAST(node->block.blockStmtList, indent + 1);
             printAST(node->block.returnStmt, indent + 1);
             break;
         case NodeType_BlockStmtList:
@@ -385,7 +385,7 @@ void freeAST(ASTNode* node) {
             freeAST(node->argTail.argTail);
             break;
         case NodeType_Block:
-            freeAST(node->block.stmtList);
+            freeAST(node->block.blockStmtList);
             freeAST(node->block.returnStmt);
             break;
         case NodeType_Return:

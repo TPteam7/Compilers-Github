@@ -89,7 +89,7 @@ typedef struct ASTNode {
         } argTail;
 
         struct {
-            struct ASTNode* stmtList;
+            struct ASTNode* blockStmtList;
             struct ASTNode* returnStmt;
         } block;
 
@@ -182,7 +182,7 @@ ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
 ASTNode* createParamNode(ASTNode* child);
 ASTNode* createArgListNode(ASTNode* argTail);
 ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail);
-ASTNode* createBlockNode(ASTNode* stmtList, ASTNode* returnStmt);
+ASTNode* createBlockNode(ASTNode* blockStmtList, ASTNode* returnStmt);
 ASTNode* createBlockStmtListNode(ASTNode* blockStmt, ASTNode* blockStmtList);
 ASTNode* createBlockStmtNode(ASTNode* child);
 ASTNode* createReturnNode(ASTNode* expr);
