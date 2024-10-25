@@ -103,13 +103,13 @@ Block: BlockStmtList ReturnStmt { $$ = createBlockNode($1, $2); }
 
 
 BlockStmtList:  { $$ = NULL; }
-	| BlockStmt BlockStmtList { $$ = createStmtListNode($1, $2); };
+	| BlockStmt BlockStmtList { $$ = createBlockStmtListNode($1, $2); };
 
 
-BlockStmt: Declaration { $$ = createStmtNode($1); } 
-	| Assignment { $$ = createStmtNode($1); }
-	| Print { $$ = createStmtNode($1); }
-	| FunctionCall { $$ = createStmtNode($1); };
+BlockStmt: Declaration { $$ = createBlockStmtNode($1); } 
+	| Assignment { $$ = createBlockStmtNode($1); }
+	| Print { $$ = createBlockStmtNode($1); }
+	| FunctionCall { $$ = createBlockStmtNode($1); };
 
 
 ReturnStmt: RETURN Expr SEMICOLON { $$ = createReturnNode($2); };

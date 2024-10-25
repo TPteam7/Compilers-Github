@@ -47,14 +47,15 @@ ARGS:
             break;
         // Check to see if the function has already been declared TODO
         case NodeType_FunctionDeclaration:
-            // if (lookupSymbol(symTab, node->functionDeclaration.id->id.name) != NULL) {
-            //     fprintf(stderr, "\nSEMANTIC ERROR:\nFunction %s has already been declared\n\n", node->functionDeclaration.id->id.name);
-            //     exit(0);
-            //     break;
-            // }
-            // else {	
-            //     // Add variable to symbol table
-            //     addSymbol(symTab, node->functionDeclaration.id->id.name, node->functionDeclaration.type->type.typeName);            }
+            if (lookupSymbol(symTab, node->functionDeclaration.id->id.name) != NULL) {
+                fprintf(stderr, "\nSEMANTIC ERROR:\nFunction %s has already been declared\n\n", node->functionDeclaration.id->id.name);
+                exit(0);
+                break;
+            }
+            else {	
+                // Add variable to symbol table
+                addSymbol(symTab, node->functionDeclaration.id->id.name, node->functionDeclaration.type->type.typeName); 
+            }
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on function declaration\n");
 
@@ -116,6 +117,21 @@ ARGS:
 
             semanticAnalysis(node->block.stmtList, symTab, NULL);
             semanticAnalysis(node->block.returnStmt, symTab, NULL);
+            break;
+        // No check needed
+        case NodeType_BlockStmtList:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on blockStmtlist\n");
+
+            semanticAnalysis(node->blockStmtList.blockStmt, symTab, NULL);
+            semanticAnalysis(node->blockStmtList.blockStmtList, symTab, NULL);
+            break;
+        // No check needed
+        case NodeType_BlockStmt:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on blockStmt\n");
+
+            semanticAnalysis(node->blockStmt.child, symTab, NULL);
             break;
         // No check needed
         case NodeType_Return:

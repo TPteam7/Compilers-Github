@@ -1354,31 +1354,31 @@ yyreduce:
 
   case 26: /* BlockStmtList: BlockStmt BlockStmtList  */
 #line 106 "parser.y"
-                                  { (yyval.node) = createStmtListNode((yyvsp[-1].node), (yyvsp[0].node)); }
+                                  { (yyval.node) = createBlockStmtListNode((yyvsp[-1].node), (yyvsp[0].node)); }
 #line 1359 "parser.tab.c"
     break;
 
   case 27: /* BlockStmt: Declaration  */
 #line 109 "parser.y"
-                       { (yyval.node) = createStmtNode((yyvsp[0].node)); }
+                       { (yyval.node) = createBlockStmtNode((yyvsp[0].node)); }
 #line 1365 "parser.tab.c"
     break;
 
   case 28: /* BlockStmt: Assignment  */
 #line 110 "parser.y"
-                     { (yyval.node) = createStmtNode((yyvsp[0].node)); }
+                     { (yyval.node) = createBlockStmtNode((yyvsp[0].node)); }
 #line 1371 "parser.tab.c"
     break;
 
   case 29: /* BlockStmt: Print  */
 #line 111 "parser.y"
-                { (yyval.node) = createStmtNode((yyvsp[0].node)); }
+                { (yyval.node) = createBlockStmtNode((yyvsp[0].node)); }
 #line 1377 "parser.tab.c"
     break;
 
   case 30: /* BlockStmt: FunctionCall  */
 #line 112 "parser.y"
-                       { (yyval.node) = createStmtNode((yyvsp[0].node)); }
+                       { (yyval.node) = createBlockStmtNode((yyvsp[0].node)); }
 #line 1383 "parser.tab.c"
     break;
 
