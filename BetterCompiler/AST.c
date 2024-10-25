@@ -62,10 +62,9 @@ ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail) {
     return node;
 }
 
-ASTNode* createParamNode(ASTNode* type, ASTNode* id) {
+ASTNode* createParamNode(ASTNode* child) {
     ASTNode* node = createNode(NodeType_Param);
-    node->param.type = type;
-    node->param.id = id;
+    node->param.child = child;
     return node;
 }
 
@@ -246,8 +245,7 @@ void printAST(ASTNode* node, int indent) {
             break;
         case NodeType_Param:
             printf("Param\n");
-            printAST(node->param.type, indent + 1);
-            printAST(node->param.id, indent + 1);
+            printAST(node->param.child, indent + 1);
             break;
         case NodeType_ArgList:
             printf("ArgList\n");
@@ -262,6 +260,15 @@ void printAST(ASTNode* node, int indent) {
             printf("Block\n");
             printAST(node->block.stmtList, indent + 1);
             printAST(node->block.returnStmt, indent + 1);
+            break;
+        case NodeType_BlockStmtList:
+            printf("BlockStmtList\n");
+            printAST(node->blockStmtList.blockStmt, indent + 1);
+            printAST(node->blockStmtList.blockStmtList, indent + 1);
+            break;
+        case NodeType_BlockStmt:
+            printf("BlockStmt\n");
+            printAST(node->blockStmt.child, indent + 1);
             break;
         case NodeType_Return:
             printf("Return\n");
@@ -368,8 +375,7 @@ void freeAST(ASTNode* node) {
             freeAST(node->paramTail.paramTail);
             break;
         case NodeType_Param:
-            freeAST(node->param.type);
-            freeAST(node->param.id);
+            freeAST(node->param.child);
             break;
         case NodeType_ArgList:
             freeAST(node->argList.argTail);

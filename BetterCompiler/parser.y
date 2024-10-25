@@ -85,9 +85,8 @@ ParamTail: Param { $$ = createParamTailNode($1, NULL); }
 	| Param COMMA ParamTail { $$ = createParamTailNode($1, $3); };
 
 
-Param: Type ID { $$ = createParamNode($1, createIDNode($2) ); }
-    | Type ID LBRACKET RBRACKET { $$ = createParamNode($1, createIDNode($2) ); }
-    | Type ID LBRACKET NUMBER RBRACKET { $$ = createParamNode($1, createIDNode($2) ); };
+Param: Type ID { $$ = createParamNode(createDeclarationNode($1, createIDNode($2))); }
+    | Type ID LBRACKET RBRACKET { $$ = createParamNode(createArrayDeclarationNode($1, createIDNode($2), NULL)); };
 
 
 ArgList: { $$ = NULL; }

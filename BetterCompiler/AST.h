@@ -76,8 +76,7 @@ typedef struct ASTNode {
         } paramTail;
 
         struct {
-            struct ASTNode* type;
-            struct ASTNode* id;
+            struct ASTNode* child;          // Declaration or Array Declaration
         } param;
 
         struct {
@@ -180,7 +179,7 @@ ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* para
 ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList);
 ASTNode* createParamListNode(ASTNode* paramTail);
 ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
-ASTNode* createParamNode(ASTNode* type, ASTNode* id);
+ASTNode* createParamNode(ASTNode* child);
 ASTNode* createArgListNode(ASTNode* argTail);
 ASTNode* createArgTailNode(ASTNode* expr, ASTNode* argTail);
 ASTNode* createBlockNode(ASTNode* stmtList, ASTNode* returnStmt);

@@ -53,7 +53,7 @@ ARGS:
                 break;
             }
             else {	
-                // Add variable to symbol table
+                // Add function Symbol to symbol table
                 addSymbol(symTab, node->functionDeclaration.id->id.name, node->functionDeclaration.type->type.typeName); 
             }
             if (printDebugSemantic == 1)
@@ -92,8 +92,7 @@ ARGS:
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on param\n");
 
-            semanticAnalysis(node->param.type, symTab, NULL);
-            semanticAnalysis(node->param.id, symTab, NULL);
+            semanticAnalysis(node->param.child, symTab, NULL);
             break;
         // No check needed
         case NodeType_ArgList:
