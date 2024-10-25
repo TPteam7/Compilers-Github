@@ -1,5 +1,24 @@
+int var1;
+
 int add(int a[], int b) {
-    int a;
-    a = 5;
-    return a;
+    a[0] = 5;
+    return a[0];
 }
+
+
+int array[5];
+int b;
+
+int arr2[17];
+int c;
+
+b = 3;
+
+add(array, b);
+
+int sub(int c[], int d) {
+    c[0] = 5;
+    return c[0];
+}
+
+sub(arr2, c);

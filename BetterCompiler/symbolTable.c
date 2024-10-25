@@ -15,6 +15,7 @@ SymbolTable* createSymbolTable(int size) {
 
     newTable->size = size;
     newTable->table = (Symbol**)malloc(sizeof(Symbol*) * size);
+    newTable->topLevelStatements = createVariableSymbolTable(DEFAULT_VAR_TABLE_SIZE);
     if (!newTable->table) {
         free(newTable);
         return 0;
@@ -203,6 +204,7 @@ void printSymbolTable(SymbolTable* table) {
     for (int i = 0; i < table->size; i++) {
         Symbol* sym = table->table[i];
         while (sym != 0) {
+            printf("\n----- FUNCTION -----\n");
             printf("Name: %s, Type: %s\n", sym->functionName, sym->returnType);
 
             // Print the variable symbol table
@@ -212,6 +214,9 @@ void printSymbolTable(SymbolTable* table) {
             sym = sym->next;
         }
     }
+    // Print the top level statements
+    printf("\n----- TOP LEVEL STATEMENTS -----\n");
+    printVariableSymbolTable(table->topLevelStatements);
     printf("------------------------\n\n");
 }
 

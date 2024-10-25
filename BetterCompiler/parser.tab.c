@@ -1300,7 +1300,7 @@ yyreduce:
 
   case 17: /* Param: Type ID LBRACKET RBRACKET  */
 #line 89 "parser.y"
-                                { (yyval.node) = createParamNode(createArrayDeclarationNode((yyvsp[-3].node), createIDNode((yyvsp[-2].string)), 0)); }
+                                { (yyval.node) = createParamNode(createArrayDeclarationNode((yyvsp[-3].node), createIDNode((yyvsp[-2].string)), NULL)); }
 #line 1305 "parser.tab.c"
     break;
 
@@ -1736,7 +1736,10 @@ int main() {
 
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
-		semanticAnalysis(root, symTab, NULL);
+		semanticAnalysis(root, symTab, symTab->topLevelStatements);
+
+		//print symbolTable
+		printSymbolTable(symTab);
 
     }
 
