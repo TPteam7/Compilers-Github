@@ -1,24 +1,7 @@
 int var1;
+int var2;
 
-int add(int a[], int b) {
-    a[0] = 5;
-    return a[0];
-}
+var1 = 3;
+var2 = var1 + var1 + var1;
 
-
-int array[5];
-int b;
-
-int arr2[17];
-int c;
-
-b = 3;
-
-add(array, b);
-
-int sub(int c[], int d) {
-    c[0] = 5;
-    return c[0];
-}
-
-sub(arr2, c);
+int arr[5];

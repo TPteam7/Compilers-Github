@@ -165,6 +165,7 @@ ASTNode* createPrintNode(ASTNode* expr) {
 }
 
 ASTNode* createExprNode(char* op, ASTNode* left, ASTNode* right) {
+    printf("Creating Expr Node %s\n", op);
     ASTNode* node = createNode(NodeType_Expr);
     node->expr.op = op;
     node->expr.left = left;

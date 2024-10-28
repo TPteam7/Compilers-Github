@@ -89,7 +89,7 @@ extern int yyparse(); // Declare yyparse, the parser function
 extern FILE* yyin; // Declare yyin, the file pointer for the input file
 extern int yylineno;  // Declare yylineno, the line number counter
 extern char *yytext;  // The text from the lexer file
-//extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
+extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
 
 void yyerror(const char* s);
 
@@ -1450,13 +1450,13 @@ yyreduce:
 
   case 42: /* Expr: Expr PLUS Term  */
 #line 136 "parser.y"
-                     { (yyval.node) = createExprNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                     { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", (yyvsp[-1].op));(yyval.node) = createExprNode(strdup(opStr), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1455 "parser.tab.c"
     break;
 
   case 43: /* Expr: Expr MINUS Term  */
 #line 137 "parser.y"
-                          { (yyval.node) = createExprNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                          { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", (yyvsp[-1].op));(yyval.node) = createExprNode(strdup(opStr), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1461 "parser.tab.c"
     break;
 
@@ -1468,13 +1468,13 @@ yyreduce:
 
   case 45: /* Term: Term MULT Factor  */
 #line 141 "parser.y"
-                       { (yyval.node) = createTermNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                       { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", (yyvsp[-1].op));(yyval.node) = createExprNode(strdup(opStr), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1473 "parser.tab.c"
     break;
 
   case 46: /* Term: Term DIV Factor  */
 #line 142 "parser.y"
-                          { (yyval.node) = createTermNode(strdup(&((yyvsp[-1].op))), (yyvsp[-2].node), (yyvsp[0].node)); }
+                          { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", (yyvsp[-1].op));(yyval.node) = createExprNode(strdup(opStr), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1479 "parser.tab.c"
     break;
 
@@ -1733,13 +1733,21 @@ int main() {
 		printf("\nPARSER:\nParsing successful!\n");
 
 		printAST(root, 0);
+		
 
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
 		semanticAnalysis(root, symTab, symTab->topLevelStatements);
 
+		freeAST(root);
+
 		//print symbolTable
 		printSymbolTable(symTab);
+
+		printf("\n=== THREE ADDRESS CODE ===\n");
+		printTAC(tacHead);
+
+		printTACToFile("TAC.ir", tacHead);
 
     }
 

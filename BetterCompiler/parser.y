@@ -133,13 +133,13 @@ Assignment: ID ASSIGN Expr SEMICOLON { $$ = createAssignmentNode(createIDNode($1
 Print: PRINT LPAREN Expr RPAREN SEMICOLON { $$ = createPrintNode($3); };
 
 
-Expr: Expr PLUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
-	| Expr MINUS Term { $$ = createExprNode(strdup(&($2)), $1, $3); }
+Expr: Expr PLUS Term { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", $2);$$ = createExprNode(strdup(opStr), $1, $3); }
+	| Expr MINUS Term { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", $2);$$ = createExprNode(strdup(opStr), $1, $3); }
 	| Term { $$ = $1; };
 
 
-Term: Term MULT Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
-	| Term DIV Factor { $$ = createTermNode(strdup(&($2)), $1, $3); }
+Term: Term MULT Factor { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", $2);$$ = createExprNode(strdup(opStr), $1, $3); }
+	| Term DIV Factor { char opStr[2]; snprintf(opStr, sizeof(opStr), "%c", $2);$$ = createExprNode(strdup(opStr), $1, $3); }
 	| Factor { $$ = $1; };
 
 
@@ -191,7 +191,7 @@ int main() {
 		printSymbolTable(symTab);
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
-		//printTAC(tacHead);
+		printTAC(tacHead);
 
 		printTACToFile("TAC.ir", tacHead);
 

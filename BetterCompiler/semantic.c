@@ -283,9 +283,46 @@ ARGS:
 
     //printf("Break before TAC\n");
     // Generate TAC for the expression node, assignment, declaration, or print TODO
-    // if ((node->nType == NodeType_Expr && (node->parent->nType != NodeType_Assignment && node->parent->nType != NodeType_Expr)) || node->nType == NodeType_Assignment || node->nType == NodeType_Print) {
-    //     // Generate Three-Address Code (TAC) for the expression node
-    //     printf("Generating TAC");
+    // Generate TAC for the expression node, assignment, declaration, or print TODO
+    if ((node->nType == NodeType_Expr && (node->parent->nType != NodeType_Assignment && node->parent->nType != NodeType_Expr))) 
+    {
+        printf("Generating TAC for standalone expression");
+        generateTAC(node);
+    }
+    else if(node->nType == NodeType_Assignment) {
+        printf("Generating TAC for assignment");
+        generateTAC(node);
+    }
+    else if(node->nType == NodeType_Print) {
+        printf("Generating TAC for print");
+        generateTAC(node);
+    }
+    // else if(node->nType == NodeType_FunctionCall) {
+    //     printf("Generating TAC for function call");
+    //     generateTAC(node);
+    // }
+    // else if(node->nType == NodeType_FunctionDeclaration) {
+    //     printf("Generating TAC for function declaration");
+    //     generateTAC(node);
+    // }
+    // else if(node->nType == NodeType_ParamList) {
+    //     printf("Generating TAC for param list");
+    //     generateTAC(node);
+    // }
+    // else if(node->nType == NodeType_ArgList) {
+    //     printf("Generating TAC for arg list");
+    //     generateTAC(node);
+    // }
+    else if(node->nType == NodeType_ArrayDeclaration) {
+        printf("Generating TAC for array declaration");
+        generateTAC(node);
+    }
+    // else if(node->nType == NodeType_ArrayAccess) {
+    //     printf("Generating TAC for array access");
+    //     generateTAC(node);
+    // }
+    // else if(node->nType == NodeType_ArrayAssignment) {
+    //     printf("Generating TAC for array assignment");
     //     generateTAC(node);
     // }
 }
