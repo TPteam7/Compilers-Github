@@ -301,10 +301,10 @@ ARGS:
     //     printf("Generating TAC for function call\n");
     //     generateTAC(node);
     // }
-    // else if(node->nType == NodeType_FunctionDeclaration) {
-    //     printf("Generating TAC for function declaration\n");
-    //     generateTAC(node);
-    // }
+    else if(node->nType == NodeType_FunctionDeclaration) {
+        printf("Generating TAC for function declaration\n");
+        generateTAC(node);
+    }
     // else if(node->nType == NodeType_ParamList) {
     //     printf("Generating TAC for param list\n");
     //     generateTAC(node);
@@ -440,6 +440,19 @@ TAC* generateTAC(ASTNode* expr) {
             instruction->arg1 = NULL;
             instruction->arg2 = NULL;
             instruction->nodetype = "Expr";
+
+            break;
+        }
+        // FunctionDeclaration
+        case NodeType_FunctionDeclaration: {
+            // Generate TAC for the block of the function
+            //TAC* blockTAC = generateTAC(expr->functionDeclaration.block);
+
+            //instruction->arg1 = blockTAC->result;
+            instruction->op = "function";
+            //instruction->arg2 = createOperand(expr->functionDeclaration.id);
+            //instruction->result = createTempVar();
+            //instruction->nodetype = "FunctionDeclaration";
 
             break;
         }

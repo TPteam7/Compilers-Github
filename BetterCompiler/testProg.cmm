@@ -4,6 +4,11 @@ int var2;
 var1 = 3;
 var2 = var1 + var1 + var1;
 
+int add(int a)
+{
+    return a;
+}
+
 int arr[5];
 
 arr[3] = 7;
