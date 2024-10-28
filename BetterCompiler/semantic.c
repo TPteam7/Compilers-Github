@@ -4,7 +4,7 @@
 
 // Perform semantic analysis on the AST
 TAC* tacHead = NULL;
-int printDebugSemantic = 1;
+int printDebugSemantic = 0;
 int tempVars[60];
 
 void semanticAnalysis(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab) 
@@ -286,45 +286,45 @@ ARGS:
     // Generate TAC for the expression node, assignment, declaration, or print TODO
     if ((node->nType == NodeType_Expr && (node->parent->nType != NodeType_Assignment && node->parent->nType != NodeType_Expr))) 
     {
-        printf("Generating TAC for standalone expression");
+        printf("Generating TAC for standalone expression\n");
         generateTAC(node);
     }
     else if(node->nType == NodeType_Assignment) {
-        printf("Generating TAC for assignment");
+        printf("Generating TAC for assignment\n");
         generateTAC(node);
     }
     else if(node->nType == NodeType_Print) {
-        printf("Generating TAC for print");
+        printf("Generating TAC for print\n");
         generateTAC(node);
     }
     // else if(node->nType == NodeType_FunctionCall) {
-    //     printf("Generating TAC for function call");
+    //     printf("Generating TAC for function call\n");
     //     generateTAC(node);
     // }
     // else if(node->nType == NodeType_FunctionDeclaration) {
-    //     printf("Generating TAC for function declaration");
+    //     printf("Generating TAC for function declaration\n");
     //     generateTAC(node);
     // }
     // else if(node->nType == NodeType_ParamList) {
-    //     printf("Generating TAC for param list");
+    //     printf("Generating TAC for param list\n");
     //     generateTAC(node);
     // }
     // else if(node->nType == NodeType_ArgList) {
-    //     printf("Generating TAC for arg list");
+    //     printf("Generating TAC for arg list\n");
     //     generateTAC(node);
     // }
     else if(node->nType == NodeType_ArrayDeclaration) {
-        printf("Generating TAC for array declaration");
+        printf("Generating TAC for array declaration\n");
         generateTAC(node);
     }
     // else if(node->nType == NodeType_ArrayAccess) {
-    //     printf("Generating TAC for array access");
+    //     printf("Generating TAC for array access\n");
     //     generateTAC(node);
     // }
-    // else if(node->nType == NodeType_ArrayAssignment) {
-    //     printf("Generating TAC for array assignment");
-    //     generateTAC(node);
-    // }
+    else if(node->nType == NodeType_ArrayAssignment) {
+        printf("Generating TAC for array assignment\n");
+        generateTAC(node);
+    }
 }
 
 int isUnderAssignmentWithOnlyExprInBetween(ASTNode* node) {
@@ -443,6 +443,110 @@ TAC* generateTAC(ASTNode* expr) {
 
             break;
         }
+        // // FunctionCall
+        // case NodeType_FunctionCall: {
+        //     // Generate TAC for each argument
+        //     TAC* argListTAC = generateTAC(expr->functionCall.argList);
+
+        //     instruction->arg1 = argListTAC->result;
+        //     instruction->op = "call";
+        //     instruction->arg2 = createOperand(expr->functionCall.id);
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "FunctionCall";
+
+        //     break;
+        // }
+        // // ParamList
+        // case NodeType_ParamList: {
+        //     TAC* paramTailTAC = generateTAC(expr->paramList.paramTail);
+
+        //     instruction->arg1 = paramTailTAC->result;
+        //     instruction->op = "param";
+        //     instruction->arg2 = NULL;
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ParamList";
+
+        //     break;
+        // }
+        // // ParamTail
+        // case NodeType_ParamTail: {
+        //     TAC* paramTAC = generateTAC(expr->paramTail.param);
+        //     TAC* paramTailTAC = generateTAC(expr->paramTail.paramTail);
+
+        //     instruction->arg1 = paramTAC->result;
+        //     instruction->arg2 = paramTailTAC->result;
+        //     instruction->op = "param";
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ParamTail";
+
+        //     break;
+        // }
+        // ArrayDeclaration
+        case NodeType_ArrayDeclaration: {
+            // Generate TAC for the size of the array
+            TAC* sizeTAC = generateTAC(expr->arrayDeclaration.size);
+
+            instruction->arg1 = NULL;
+            instruction->op = "alloc";
+            instruction->arg2 = sizeTAC->result;
+            instruction->result = createOperand(expr->arrayDeclaration.id);
+            instruction->nodetype = "ArrayDeclaration";
+
+            break;
+        }
+        // ArrayAccess
+        case NodeType_ArrayAccess: {
+            // Generate TAC for the index of the array
+            TAC* indexTAC = generateTAC(expr->arrayAccess.index);
+
+            instruction->arg1 = createOperand(expr->arrayAccess.id);
+            instruction->op = "access";
+            instruction->arg2 = indexTAC->result;
+            instruction->result = createTempVar();
+            instruction->nodetype = "ArrayAccess";
+
+            break;
+        }
+        // ArrayAssignment. Will need to multiply the index by 4 to get the correct memory location
+        case NodeType_ArrayAssignment: {
+            // Generate TAC for the value to be assigned
+            TAC* valueTAC = generateTAC(expr->arrayAssignment.value);
+            // Generate TAC for the index of the array.
+            TAC* indexTAC = generateTAC(expr->arrayAssignment.index);
+
+            instruction->arg1 = valueTAC->result;
+            instruction->op = "assign";
+            instruction->arg2 = indexTAC->result;
+            instruction->result = createOperand(expr->arrayAssignment.id);
+            instruction->nodetype = "ArrayAssignment";
+
+            break;
+        }
+        // // ArgList
+        // case NodeType_ArgList: {
+        //     TAC* argTailTAC = generateTAC(expr->argList.argTail);
+
+        //     instruction->arg1 = argTailTAC->result;
+        //     instruction->op = "arg";
+        //     instruction->arg2 = NULL;
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ArgList";
+
+        //     break;
+        // }
+        // // ArgTail
+        // case NodeType_ArgTail: {
+        //     TAC* exprTAC = generateTAC(expr->argTail.expr);
+        //     TAC* argTailTAC = generateTAC(expr->argTail.argTail);
+
+        //     instruction->arg1 = exprTAC->result;
+        //     instruction->arg2 = argTailTAC->result;
+        //     instruction->op = "arg";
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ArgTail";
+
+        //     break;
+        // }
         default:
             fprintf(stderr, "Unknown Node Type: %d\n", expr->nType);
             free(instruction);
@@ -451,36 +555,6 @@ TAC* generateTAC(ASTNode* expr) {
 
     instruction->next = NULL; // Make sure to null-terminate the new instruction
 
-    // Print a new line for the current TAC instruction
-    printf("\n");
-        // Print the fields of the current TAC node, handling null pointers
-    if (instruction->result != NULL)
-        printf("%s\t", instruction->result);
-    else
-        printf("NULL\t");
-
-    if (instruction->arg1 != NULL)
-        printf("%s\t", instruction->arg1);
-    else
-        printf("NULL\t");
-
-    if (instruction->op != NULL)
-        printf("%s\t", instruction->op);
-    else
-        printf("NULL\t");
-
-    if (instruction->arg2 != NULL)
-        printf("%s\t", instruction->arg2);
-    else
-        printf("NULL\t");
-
-    if (instruction->nodetype != NULL)
-        printf("%s\t", instruction->nodetype);
-    else
-        printf("NULL\t");
-
-    // Print a new line for the current TAC instruction
-    printf("\n");
     // Append to the global TAC list
     appendTAC(&tacHead, instruction);
 
