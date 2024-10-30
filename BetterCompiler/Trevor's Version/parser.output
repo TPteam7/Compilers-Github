@@ -1,0 +1,1095 @@
+Terminals unused in grammar
+
+    TRUE
+    FALSE
+    IF
+    ELSE
+    WHILE
+
+
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: StmtList
+
+    2 StmtList: ε
+    3         | Stmt StmtList
+
+    4 Stmt: Declaration
+    5     | Assignment
+    6     | Print
+    7     | FunctionCall
+    8     | FunctionDeclaration
+
+    9 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE
+
+   10 FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON
+
+   11 ParamList: ε
+   12          | ParamTail
+
+   13 ParamTail: Param
+   14          | Param COMMA ParamTail
+
+   15 Param: Type ID
+   16      | Type ID LBRACKET RBRACKET
+
+   17 ArgList: ε
+   18        | ArgTail
+
+   19 ArgTail: Expr
+   20        | Expr COMMA ArgTail
+
+   21 Block: BlockStmtList ReturnStmt
+   22      | BlockStmtList
+
+   23 BlockStmtList: ε
+   24              | BlockStmt BlockStmtList
+
+   25 BlockStmt: Declaration
+   26          | Assignment
+   27          | Print
+   28          | FunctionCall
+
+   29 ReturnStmt: RETURN Expr SEMICOLON
+
+   30 Declaration: Type ID SEMICOLON
+   31            | Type ID LBRACKET Expr RBRACKET SEMICOLON
+
+   32 Type: INT
+   33     | FLOAT
+   34     | BOOL
+   35     | VOID
+
+   36 Assignment: ID ASSIGN Expr SEMICOLON
+   37           | ID ASSIGN FunctionCall
+   38           | ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON
+   39           | ID LBRACKET Expr RBRACKET ASSIGN FunctionCall
+
+   40 Print: PRINT LPAREN Expr RPAREN SEMICOLON
+
+   41 Expr: Expr PLUS Term
+   42     | Expr MINUS Term
+   43     | Term
+
+   44 Term: Term MULT Factor
+   45     | Term DIV Factor
+   46     | Factor
+
+   47 Factor: LPAREN Expr RPAREN
+   48       | ID
+   49       | ID LBRACKET Expr RBRACKET
+   50       | NUMBER
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    ID <string> (258) 9 10 15 16 30 31 36 37 38 39 48 49
+    INT <string> (259) 32
+    FLOAT <string> (260) 33
+    BOOL <string> (261) 34
+    VOID <string> (262) 35
+    TRUE <string> (263)
+    FALSE <string> (264)
+    PRINT <string> (265) 40
+    IF <string> (266)
+    ELSE <string> (267)
+    WHILE <string> (268)
+    RETURN <string> (269) 29
+    SEMICOLON <character> (270) 10 29 30 31 36 38 40
+    COMMA <character> (271) 14 20
+    LPAREN <character> (272) 9 10 40 47
+    RPAREN <character> (273) 9 10 40 47
+    LBRACE <character> (274) 9
+    RBRACE <character> (275) 9
+    LBRACKET <character> (276) 16 31 38 39 49
+    RBRACKET <character> (277) 16 31 38 39 49
+    ASSIGN <op> (278) 36 37 38 39
+    PLUS <op> (279) 41
+    MINUS <op> (280) 42
+    MULT <op> (281) 44
+    DIV <op> (282) 45
+    NUMBER <number> (283) 50
+
+
+Nonterminals, with rules where they appear
+
+    $accept (29)
+        on left: 0
+    Program <node> (30)
+        on left: 1
+        on right: 0
+    StmtList <node> (31)
+        on left: 2 3
+        on right: 1 3
+    Stmt <node> (32)
+        on left: 4 5 6 7 8
+        on right: 3
+    FunctionDeclaration <node> (33)
+        on left: 9
+        on right: 8
+    FunctionCall <node> (34)
+        on left: 10
+        on right: 7 28 37 39
+    ParamList <node> (35)
+        on left: 11 12
+        on right: 9
+    ParamTail <node> (36)
+        on left: 13 14
+        on right: 12 14
+    Param <node> (37)
+        on left: 15 16
+        on right: 13 14
+    ArgList <node> (38)
+        on left: 17 18
+        on right: 10
+    ArgTail <node> (39)
+        on left: 19 20
+        on right: 18 20
+    Block <node> (40)
+        on left: 21 22
+        on right: 9
+    BlockStmtList <node> (41)
+        on left: 23 24
+        on right: 21 22 24
+    BlockStmt <node> (42)
+        on left: 25 26 27 28
+        on right: 24
+    ReturnStmt <node> (43)
+        on left: 29
+        on right: 21
+    Declaration <node> (44)
+        on left: 30 31
+        on right: 4 25
+    Type <node> (45)
+        on left: 32 33 34 35
+        on right: 9 15 16 30 31
+    Assignment <node> (46)
+        on left: 36 37 38 39
+        on right: 5 26
+    Print <node> (47)
+        on left: 40
+        on right: 6 27
+    Expr <node> (48)
+        on left: 41 42 43
+        on right: 19 20 29 31 36 38 39 40 41 42 47 49
+    Term <node> (49)
+        on left: 44 45 46
+        on right: 41 42 43 44 45
+    Factor <node> (50)
+        on left: 47 48 49 50
+        on right: 44 45 46
+
+
+State 0
+
+    0 $accept: • Program $end
+
+    ID     shift, and go to state 1
+    INT    shift, and go to state 2
+    FLOAT  shift, and go to state 3
+    BOOL   shift, and go to state 4
+    VOID   shift, and go to state 5
+    PRINT  shift, and go to state 6
+
+    $default  reduce using rule 2 (StmtList)
+
+    Program              go to state 7
+    StmtList             go to state 8
+    Stmt                 go to state 9
+    FunctionDeclaration  go to state 10
+    FunctionCall         go to state 11
+    Declaration          go to state 12
+    Type                 go to state 13
+    Assignment           go to state 14
+    Print                go to state 15
+
+
+State 1
+
+   10 FunctionCall: ID • LPAREN ArgList RPAREN SEMICOLON
+   36 Assignment: ID • ASSIGN Expr SEMICOLON
+   37           | ID • ASSIGN FunctionCall
+   38           | ID • LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON
+   39           | ID • LBRACKET Expr RBRACKET ASSIGN FunctionCall
+
+    LPAREN    shift, and go to state 16
+    LBRACKET  shift, and go to state 17
+    ASSIGN    shift, and go to state 18
+
+
+State 2
+
+   32 Type: INT •
+
+    $default  reduce using rule 32 (Type)
+
+
+State 3
+
+   33 Type: FLOAT •
+
+    $default  reduce using rule 33 (Type)
+
+
+State 4
+
+   34 Type: BOOL •
+
+    $default  reduce using rule 34 (Type)
+
+
+State 5
+
+   35 Type: VOID •
+
+    $default  reduce using rule 35 (Type)
+
+
+State 6
+
+   40 Print: PRINT • LPAREN Expr RPAREN SEMICOLON
+
+    LPAREN  shift, and go to state 19
+
+
+State 7
+
+    0 $accept: Program • $end
+
+    $end  shift, and go to state 20
+
+
+State 8
+
+    1 Program: StmtList •
+
+    $default  reduce using rule 1 (Program)
+
+
+State 9
+
+    3 StmtList: Stmt • StmtList
+
+    ID     shift, and go to state 1
+    INT    shift, and go to state 2
+    FLOAT  shift, and go to state 3
+    BOOL   shift, and go to state 4
+    VOID   shift, and go to state 5
+    PRINT  shift, and go to state 6
+
+    $default  reduce using rule 2 (StmtList)
+
+    StmtList             go to state 21
+    Stmt                 go to state 9
+    FunctionDeclaration  go to state 10
+    FunctionCall         go to state 11
+    Declaration          go to state 12
+    Type                 go to state 13
+    Assignment           go to state 14
+    Print                go to state 15
+
+
+State 10
+
+    8 Stmt: FunctionDeclaration •
+
+    $default  reduce using rule 8 (Stmt)
+
+
+State 11
+
+    7 Stmt: FunctionCall •
+
+    $default  reduce using rule 7 (Stmt)
+
+
+State 12
+
+    4 Stmt: Declaration •
+
+    $default  reduce using rule 4 (Stmt)
+
+
+State 13
+
+    9 FunctionDeclaration: Type • ID LPAREN ParamList RPAREN LBRACE Block RBRACE
+   30 Declaration: Type • ID SEMICOLON
+   31            | Type • ID LBRACKET Expr RBRACKET SEMICOLON
+
+    ID  shift, and go to state 22
+
+
+State 14
+
+    5 Stmt: Assignment •
+
+    $default  reduce using rule 5 (Stmt)
+
+
+State 15
+
+    6 Stmt: Print •
+
+    $default  reduce using rule 6 (Stmt)
+
+
+State 16
+
+   10 FunctionCall: ID LPAREN • ArgList RPAREN SEMICOLON
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    $default  reduce using rule 17 (ArgList)
+
+    ArgList  go to state 26
+    ArgTail  go to state 27
+    Expr     go to state 28
+    Term     go to state 29
+    Factor   go to state 30
+
+
+State 17
+
+   38 Assignment: ID LBRACKET • Expr RBRACKET ASSIGN Expr SEMICOLON
+   39           | ID LBRACKET • Expr RBRACKET ASSIGN FunctionCall
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Expr    go to state 31
+    Term    go to state 29
+    Factor  go to state 30
+
+
+State 18
+
+   36 Assignment: ID ASSIGN • Expr SEMICOLON
+   37           | ID ASSIGN • FunctionCall
+
+    ID      shift, and go to state 32
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    FunctionCall  go to state 33
+    Expr          go to state 34
+    Term          go to state 29
+    Factor        go to state 30
+
+
+State 19
+
+   40 Print: PRINT LPAREN • Expr RPAREN SEMICOLON
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Expr    go to state 35
+    Term    go to state 29
+    Factor  go to state 30
+
+
+State 20
+
+    0 $accept: Program $end •
+
+    $default  accept
+
+
+State 21
+
+    3 StmtList: Stmt StmtList •
+
+    $default  reduce using rule 3 (StmtList)
+
+
+State 22
+
+    9 FunctionDeclaration: Type ID • LPAREN ParamList RPAREN LBRACE Block RBRACE
+   30 Declaration: Type ID • SEMICOLON
+   31            | Type ID • LBRACKET Expr RBRACKET SEMICOLON
+
+    SEMICOLON  shift, and go to state 36
+    LPAREN     shift, and go to state 37
+    LBRACKET   shift, and go to state 38
+
+
+State 23
+
+   48 Factor: ID •
+   49       | ID • LBRACKET Expr RBRACKET
+
+    LBRACKET  shift, and go to state 39
+
+    $default  reduce using rule 48 (Factor)
+
+
+State 24
+
+   47 Factor: LPAREN • Expr RPAREN
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Expr    go to state 40
+    Term    go to state 29
+    Factor  go to state 30
+
+
+State 25
+
+   50 Factor: NUMBER •
+
+    $default  reduce using rule 50 (Factor)
+
+
+State 26
+
+   10 FunctionCall: ID LPAREN ArgList • RPAREN SEMICOLON
+
+    RPAREN  shift, and go to state 41
+
+
+State 27
+
+   18 ArgList: ArgTail •
+
+    $default  reduce using rule 18 (ArgList)
+
+
+State 28
+
+   19 ArgTail: Expr •
+   20        | Expr • COMMA ArgTail
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+
+    COMMA  shift, and go to state 42
+    PLUS   shift, and go to state 43
+    MINUS  shift, and go to state 44
+
+    $default  reduce using rule 19 (ArgTail)
+
+
+State 29
+
+   43 Expr: Term •
+   44 Term: Term • MULT Factor
+   45     | Term • DIV Factor
+
+    MULT  shift, and go to state 45
+    DIV   shift, and go to state 46
+
+    $default  reduce using rule 43 (Expr)
+
+
+State 30
+
+   46 Term: Factor •
+
+    $default  reduce using rule 46 (Term)
+
+
+State 31
+
+   38 Assignment: ID LBRACKET Expr • RBRACKET ASSIGN Expr SEMICOLON
+   39           | ID LBRACKET Expr • RBRACKET ASSIGN FunctionCall
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+
+    RBRACKET  shift, and go to state 47
+    PLUS      shift, and go to state 43
+    MINUS     shift, and go to state 44
+
+
+State 32
+
+   10 FunctionCall: ID • LPAREN ArgList RPAREN SEMICOLON
+   48 Factor: ID •
+   49       | ID • LBRACKET Expr RBRACKET
+
+    LPAREN    shift, and go to state 16
+    LBRACKET  shift, and go to state 39
+
+    $default  reduce using rule 48 (Factor)
+
+
+State 33
+
+   37 Assignment: ID ASSIGN FunctionCall •
+
+    $default  reduce using rule 37 (Assignment)
+
+
+State 34
+
+   36 Assignment: ID ASSIGN Expr • SEMICOLON
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+
+    SEMICOLON  shift, and go to state 48
+    PLUS       shift, and go to state 43
+    MINUS      shift, and go to state 44
+
+
+State 35
+
+   40 Print: PRINT LPAREN Expr • RPAREN SEMICOLON
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+
+    RPAREN  shift, and go to state 49
+    PLUS    shift, and go to state 43
+    MINUS   shift, and go to state 44
+
+
+State 36
+
+   30 Declaration: Type ID SEMICOLON •
+
+    $default  reduce using rule 30 (Declaration)
+
+
+State 37
+
+    9 FunctionDeclaration: Type ID LPAREN • ParamList RPAREN LBRACE Block RBRACE
+
+    INT    shift, and go to state 2
+    FLOAT  shift, and go to state 3
+    BOOL   shift, and go to state 4
+    VOID   shift, and go to state 5
+
+    $default  reduce using rule 11 (ParamList)
+
+    ParamList  go to state 50
+    ParamTail  go to state 51
+    Param      go to state 52
+    Type       go to state 53
+
+
+State 38
+
+   31 Declaration: Type ID LBRACKET • Expr RBRACKET SEMICOLON
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Expr    go to state 54
+    Term    go to state 29
+    Factor  go to state 30
+
+
+State 39
+
+   49 Factor: ID LBRACKET • Expr RBRACKET
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Expr    go to state 55
+    Term    go to state 29
+    Factor  go to state 30
+
+
+State 40
+
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+   47 Factor: LPAREN Expr • RPAREN
+
+    RPAREN  shift, and go to state 56
+    PLUS    shift, and go to state 43
+    MINUS   shift, and go to state 44
+
+
+State 41
+
+   10 FunctionCall: ID LPAREN ArgList RPAREN • SEMICOLON
+
+    SEMICOLON  shift, and go to state 57
+
+
+State 42
+
+   20 ArgTail: Expr COMMA • ArgTail
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    ArgTail  go to state 58
+    Expr     go to state 28
+    Term     go to state 29
+    Factor   go to state 30
+
+
+State 43
+
+   41 Expr: Expr PLUS • Term
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Term    go to state 59
+    Factor  go to state 30
+
+
+State 44
+
+   42 Expr: Expr MINUS • Term
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Term    go to state 60
+    Factor  go to state 30
+
+
+State 45
+
+   44 Term: Term MULT • Factor
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Factor  go to state 61
+
+
+State 46
+
+   45 Term: Term DIV • Factor
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Factor  go to state 62
+
+
+State 47
+
+   38 Assignment: ID LBRACKET Expr RBRACKET • ASSIGN Expr SEMICOLON
+   39           | ID LBRACKET Expr RBRACKET • ASSIGN FunctionCall
+
+    ASSIGN  shift, and go to state 63
+
+
+State 48
+
+   36 Assignment: ID ASSIGN Expr SEMICOLON •
+
+    $default  reduce using rule 36 (Assignment)
+
+
+State 49
+
+   40 Print: PRINT LPAREN Expr RPAREN • SEMICOLON
+
+    SEMICOLON  shift, and go to state 64
+
+
+State 50
+
+    9 FunctionDeclaration: Type ID LPAREN ParamList • RPAREN LBRACE Block RBRACE
+
+    RPAREN  shift, and go to state 65
+
+
+State 51
+
+   12 ParamList: ParamTail •
+
+    $default  reduce using rule 12 (ParamList)
+
+
+State 52
+
+   13 ParamTail: Param •
+   14          | Param • COMMA ParamTail
+
+    COMMA  shift, and go to state 66
+
+    $default  reduce using rule 13 (ParamTail)
+
+
+State 53
+
+   15 Param: Type • ID
+   16      | Type • ID LBRACKET RBRACKET
+
+    ID  shift, and go to state 67
+
+
+State 54
+
+   31 Declaration: Type ID LBRACKET Expr • RBRACKET SEMICOLON
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+
+    RBRACKET  shift, and go to state 68
+    PLUS      shift, and go to state 43
+    MINUS     shift, and go to state 44
+
+
+State 55
+
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+   49 Factor: ID LBRACKET Expr • RBRACKET
+
+    RBRACKET  shift, and go to state 69
+    PLUS      shift, and go to state 43
+    MINUS     shift, and go to state 44
+
+
+State 56
+
+   47 Factor: LPAREN Expr RPAREN •
+
+    $default  reduce using rule 47 (Factor)
+
+
+State 57
+
+   10 FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON •
+
+    $default  reduce using rule 10 (FunctionCall)
+
+
+State 58
+
+   20 ArgTail: Expr COMMA ArgTail •
+
+    $default  reduce using rule 20 (ArgTail)
+
+
+State 59
+
+   41 Expr: Expr PLUS Term •
+   44 Term: Term • MULT Factor
+   45     | Term • DIV Factor
+
+    MULT  shift, and go to state 45
+    DIV   shift, and go to state 46
+
+    $default  reduce using rule 41 (Expr)
+
+
+State 60
+
+   42 Expr: Expr MINUS Term •
+   44 Term: Term • MULT Factor
+   45     | Term • DIV Factor
+
+    MULT  shift, and go to state 45
+    DIV   shift, and go to state 46
+
+    $default  reduce using rule 42 (Expr)
+
+
+State 61
+
+   44 Term: Term MULT Factor •
+
+    $default  reduce using rule 44 (Term)
+
+
+State 62
+
+   45 Term: Term DIV Factor •
+
+    $default  reduce using rule 45 (Term)
+
+
+State 63
+
+   38 Assignment: ID LBRACKET Expr RBRACKET ASSIGN • Expr SEMICOLON
+   39           | ID LBRACKET Expr RBRACKET ASSIGN • FunctionCall
+
+    ID      shift, and go to state 32
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    FunctionCall  go to state 70
+    Expr          go to state 71
+    Term          go to state 29
+    Factor        go to state 30
+
+
+State 64
+
+   40 Print: PRINT LPAREN Expr RPAREN SEMICOLON •
+
+    $default  reduce using rule 40 (Print)
+
+
+State 65
+
+    9 FunctionDeclaration: Type ID LPAREN ParamList RPAREN • LBRACE Block RBRACE
+
+    LBRACE  shift, and go to state 72
+
+
+State 66
+
+   14 ParamTail: Param COMMA • ParamTail
+
+    INT    shift, and go to state 2
+    FLOAT  shift, and go to state 3
+    BOOL   shift, and go to state 4
+    VOID   shift, and go to state 5
+
+    ParamTail  go to state 73
+    Param      go to state 52
+    Type       go to state 53
+
+
+State 67
+
+   15 Param: Type ID •
+   16      | Type ID • LBRACKET RBRACKET
+
+    LBRACKET  shift, and go to state 74
+
+    $default  reduce using rule 15 (Param)
+
+
+State 68
+
+   31 Declaration: Type ID LBRACKET Expr RBRACKET • SEMICOLON
+
+    SEMICOLON  shift, and go to state 75
+
+
+State 69
+
+   49 Factor: ID LBRACKET Expr RBRACKET •
+
+    $default  reduce using rule 49 (Factor)
+
+
+State 70
+
+   39 Assignment: ID LBRACKET Expr RBRACKET ASSIGN FunctionCall •
+
+    $default  reduce using rule 39 (Assignment)
+
+
+State 71
+
+   38 Assignment: ID LBRACKET Expr RBRACKET ASSIGN Expr • SEMICOLON
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+
+    SEMICOLON  shift, and go to state 76
+    PLUS       shift, and go to state 43
+    MINUS      shift, and go to state 44
+
+
+State 72
+
+    9 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE • Block RBRACE
+
+    ID     shift, and go to state 1
+    INT    shift, and go to state 2
+    FLOAT  shift, and go to state 3
+    BOOL   shift, and go to state 4
+    VOID   shift, and go to state 5
+    PRINT  shift, and go to state 6
+
+    $default  reduce using rule 23 (BlockStmtList)
+
+    FunctionCall   go to state 77
+    Block          go to state 78
+    BlockStmtList  go to state 79
+    BlockStmt      go to state 80
+    Declaration    go to state 81
+    Type           go to state 82
+    Assignment     go to state 83
+    Print          go to state 84
+
+
+State 73
+
+   14 ParamTail: Param COMMA ParamTail •
+
+    $default  reduce using rule 14 (ParamTail)
+
+
+State 74
+
+   16 Param: Type ID LBRACKET • RBRACKET
+
+    RBRACKET  shift, and go to state 85
+
+
+State 75
+
+   31 Declaration: Type ID LBRACKET Expr RBRACKET SEMICOLON •
+
+    $default  reduce using rule 31 (Declaration)
+
+
+State 76
+
+   38 Assignment: ID LBRACKET Expr RBRACKET ASSIGN Expr SEMICOLON •
+
+    $default  reduce using rule 38 (Assignment)
+
+
+State 77
+
+   28 BlockStmt: FunctionCall •
+
+    $default  reduce using rule 28 (BlockStmt)
+
+
+State 78
+
+    9 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block • RBRACE
+
+    RBRACE  shift, and go to state 86
+
+
+State 79
+
+   21 Block: BlockStmtList • ReturnStmt
+   22      | BlockStmtList •
+
+    RETURN  shift, and go to state 87
+
+    $default  reduce using rule 22 (Block)
+
+    ReturnStmt  go to state 88
+
+
+State 80
+
+   24 BlockStmtList: BlockStmt • BlockStmtList
+
+    ID     shift, and go to state 1
+    INT    shift, and go to state 2
+    FLOAT  shift, and go to state 3
+    BOOL   shift, and go to state 4
+    VOID   shift, and go to state 5
+    PRINT  shift, and go to state 6
+
+    $default  reduce using rule 23 (BlockStmtList)
+
+    FunctionCall   go to state 77
+    BlockStmtList  go to state 89
+    BlockStmt      go to state 80
+    Declaration    go to state 81
+    Type           go to state 82
+    Assignment     go to state 83
+    Print          go to state 84
+
+
+State 81
+
+   25 BlockStmt: Declaration •
+
+    $default  reduce using rule 25 (BlockStmt)
+
+
+State 82
+
+   30 Declaration: Type • ID SEMICOLON
+   31            | Type • ID LBRACKET Expr RBRACKET SEMICOLON
+
+    ID  shift, and go to state 90
+
+
+State 83
+
+   26 BlockStmt: Assignment •
+
+    $default  reduce using rule 26 (BlockStmt)
+
+
+State 84
+
+   27 BlockStmt: Print •
+
+    $default  reduce using rule 27 (BlockStmt)
+
+
+State 85
+
+   16 Param: Type ID LBRACKET RBRACKET •
+
+    $default  reduce using rule 16 (Param)
+
+
+State 86
+
+    9 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE •
+
+    $default  reduce using rule 9 (FunctionDeclaration)
+
+
+State 87
+
+   29 ReturnStmt: RETURN • Expr SEMICOLON
+
+    ID      shift, and go to state 23
+    LPAREN  shift, and go to state 24
+    NUMBER  shift, and go to state 25
+
+    Expr    go to state 91
+    Term    go to state 29
+    Factor  go to state 30
+
+
+State 88
+
+   21 Block: BlockStmtList ReturnStmt •
+
+    $default  reduce using rule 21 (Block)
+
+
+State 89
+
+   24 BlockStmtList: BlockStmt BlockStmtList •
+
+    $default  reduce using rule 24 (BlockStmtList)
+
+
+State 90
+
+   30 Declaration: Type ID • SEMICOLON
+   31            | Type ID • LBRACKET Expr RBRACKET SEMICOLON
+
+    SEMICOLON  shift, and go to state 36
+    LBRACKET   shift, and go to state 38
+
+
+State 91
+
+   29 ReturnStmt: RETURN Expr • SEMICOLON
+   41 Expr: Expr • PLUS Term
+   42     | Expr • MINUS Term
+
+    SEMICOLON  shift, and go to state 92
+    PLUS       shift, and go to state 43
+    MINUS      shift, and go to state 44
+
+
+State 92
+
+   29 ReturnStmt: RETURN Expr SEMICOLON •
+
+    $default  reduce using rule 29 (ReturnStmt)

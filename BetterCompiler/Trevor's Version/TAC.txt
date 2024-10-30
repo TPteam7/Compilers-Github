@@ -1,0 +1,71 @@
+        // FunctionDeclaration
+        
+        // // FunctionCall
+        // case NodeType_FunctionCall: {
+        //     // Generate TAC for each argument
+        //     TAC* argListTAC = generateTAC(node->functionCall.argList);
+
+        //     instruction->arg1 = argListTAC->result;
+        //     instruction->op = "call";
+        //     instruction->arg2 = createOperand(node->functionCall.id);
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "FunctionCall";
+
+        //     break;
+        // }
+        // // ParamList
+        // case NodeType_ParamList: {
+        //     TAC* paramTailTAC = generateTAC(node->paramList.paramTail);
+
+        //     instruction->arg1 = paramTailTAC->result;
+        //     instruction->op = "param";
+        //     instruction->arg2 = NULL;
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ParamList";
+
+        //     break;
+        // }
+        // // ParamTail
+        // case NodeType_ParamTail: {
+        //     TAC* paramTAC = generateTAC(node->paramTail.param);
+        //     TAC* paramTailTAC = generateTAC(node->paramTail.paramTail);
+
+        //     instruction->arg1 = paramTAC->result;
+        //     instruction->arg2 = paramTailTAC->result;
+        //     instruction->op = "param";
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ParamTail";
+
+        //     break;
+        // }
+        // ArrayDeclaration
+        
+        // ArrayAccess
+        
+        // ArrayAssignment. Will need to multiply the index by 4 to get the correct memory location
+        
+        // // ArgList
+        // case NodeType_ArgList: {
+        //     TAC* argTailTAC = generateTAC(node->argList.argTail);
+
+        //     instruction->arg1 = argTailTAC->result;
+        //     instruction->op = "arg";
+        //     instruction->arg2 = NULL;
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ArgList";
+
+        //     break;
+        // }
+        // // ArgTail
+        // case NodeType_ArgTail: {
+        //     TAC* exprTAC = generateTAC(node->argTail.expr);
+        //     TAC* argTailTAC = generateTAC(node->argTail.argTail);
+
+        //     instruction->arg1 = exprTAC->result;
+        //     instruction->arg2 = argTailTAC->result;
+        //     instruction->op = "arg";
+        //     instruction->result = createTempVar();
+        //     instruction->nodetype = "ArgTail";
+
+        //     break;
+        // }
