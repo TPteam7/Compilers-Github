@@ -59,6 +59,9 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg2 = createOperand(node->functionDeclaration.id);
             instruction->nodetype = "FunctionDeclaration";
 
+            instruction->next = NULL;
+            appendTAC(&tacHead, instruction);
+
             generateTAC(node->functionDeclaration.type);
             generateTAC(node->functionDeclaration.id);
             generateTAC(node->functionDeclaration.paramList);
@@ -339,10 +342,11 @@ TAC* generateTAC(ASTNode* node) {
             return NULL;
     }
 
-
-    instruction->next = NULL;  // Make sure to null-terminate the new instruction
-    appendTAC(&tacHead, instruction);
-
+    if (node->nType != NodeType_FunctionDeclaration) {
+        instruction->next = NULL;  // Make sure to null-terminate the new instruction
+        appendTAC(&tacHead, instruction);
+    }
+        
     return instruction;
 }
 
