@@ -6,6 +6,7 @@
 #include "AST.h"
 #include "symbolTable.h"
 #include "semantic.h"
+#include "TAC.h"
 //#include "optimizer.h"
 //#include "codeGenerator.h"
 
@@ -185,15 +186,19 @@ int main() {
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
 		semanticAnalysis(root, symTab, symTab->topLevelStatements);
 
-		freeAST(root);
 
 		//print symbolTable
 		printSymbolTable(symTab);
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
-		printTAC(tacHead);
+		generateTAC(root);
+		printTAC(&tacHead);
 
-		printTACToFile("TAC.ir", tacHead);
+		printTACToFile("TAC.ir", &tacHead);
+
+		//freeTAC(tacHead);
+
+		//freeAST(root);
 
     }
 

@@ -1,15 +1,6 @@
 t0 = 3
-var1 = t0
-t1 = var1 + var1 
-t2 = t1 + var1 
-var2 = t2
-function int:
-    
-t3 = 5
-arr = alloc t3 
-t4 = 7
-t5 = 3
-arr = t4 assign t5 
-t6 = 3
-t7 = arr access t6 
-t7 print 
+b = t0
+b return 
+
+
+function sub 

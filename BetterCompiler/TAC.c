@@ -4,6 +4,7 @@
 
 TAC* tacHead = NULL;
 int tempVars[60];
+int printDebugTAC = 1;
 
 // Implement functions to generate TAC expressions
 TAC* generateTAC(ASTNode* node) {
@@ -21,87 +22,165 @@ TAC* generateTAC(ASTNode* node) {
     instruction->nodetype = NULL;
     instruction->next = NULL;
 
-    printf("Processing Node Type: %d\n", node->nType);  // Debug Statement
+    //printf("Processing Node Type: %d\n", node->nType);  // Debug Statement
 
     switch (node->nType) {
         case NodeType_Program: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on program\n");
+
             generateTAC(node->program.stmtList);
             break;
         }
         case NodeType_StmtList: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on stmtlist\n");
+
             generateTAC(node->stmtList.stmt);
             generateTAC(node->stmtList.stmtList);
             break;
         }
         case NodeType_Stmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on stmt\n");
+
             generateTAC(node->stmt.child);
             break;
         }
         case NodeType_FunctionDeclaration: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on function declaration\n");
+
+            instruction->op = "function";
+            instruction->arg2 = createOperand(node->functionDeclaration.id);
+            instruction->nodetype = "FunctionDeclaration";
+
             generateTAC(node->functionDeclaration.type);
             generateTAC(node->functionDeclaration.id);
             generateTAC(node->functionDeclaration.paramList);
             generateTAC(node->functionDeclaration.block);
 
-            //instruction->arg1 = blockTAC->result;
-            instruction->op = "function";
-            //instruction->arg2 = createOperand(node->functionDeclaration.id);
-            //instruction->result = createTempVar();
-            //instruction->nodetype = "FunctionDeclaration";
-
             break;
         }
         case NodeType_FunctionCall: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on function call\n");
+
             generateTAC(node->functionCall.id);
             generateTAC(node->functionCall.argList);
+
+            instruction->op = "call";
+            instruction->arg2 = createOperand(node->functionCall.id);
+            instruction->nodetype = "FunctionCall";
             break;
         }
         case NodeType_ParamList: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on paramlist\n");
+
             generateTAC(node->paramList.paramTail);
             break;
         }
         case NodeType_ParamTail: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on paramtail\n");
+            
             generateTAC(node->paramTail.param);
             generateTAC(node->paramTail.paramTail);
             break;
         }
         case NodeType_Param: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on param\n");
+
             generateTAC(node->param.child);
             break;
         }
         case NodeType_ArgList: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on arglist\n");
+
             generateTAC(node->argList.argTail);
             break;
         }
         case NodeType_ArgTail: {
-            generateTAC(node->argTail.expr);
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on argtail\n");
+
             generateTAC(node->argTail.argTail);
+            TAC* exprTAC = generateTAC(node->argTail.expr);
+
+            instruction->arg1 = exprTAC->result;
+            instruction->arg2 = NULL;
+            instruction->op = "arg";
+            instruction->result = NULL;
+            instruction->nodetype = "ArgTail";
             break;
         }
         case NodeType_Block: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on block\n");
+
             generateTAC(node->block.blockStmtList);
             generateTAC(node->block.returnStmt);
             break;
         }
         case NodeType_BlockStmtList: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on blockStmtlist\n");
+
             generateTAC(node->blockStmtList.blockStmt);
             generateTAC(node->blockStmtList.blockStmtList);
             break;
         }
         case NodeType_BlockStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on blockStmt\n");
+
             generateTAC(node->blockStmt.child);
             break;
         }
         case NodeType_Return: {
-            generateTAC(node->returnStmt.expr);
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on return\n");
+
+            TAC* exprTAC = generateTAC(node->returnStmt.expr);
+
+            instruction->arg1 = exprTAC->result;
+            instruction->op = "return";
+            instruction->arg2 = NULL;
+            instruction->result = NULL;
+            instruction->nodetype = "Return";
             break;
         }
         case NodeType_Declaration: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on declaration\n");
+
             generateTAC(node->declaration.type);
             generateTAC(node->declaration.id);
             break;
         }
         case NodeType_ArrayDeclaration: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on array declaration\n");
+
             // Generate TAC for the size of the array
             generateTAC(node->arrayDeclaration.type);
             generateTAC(node->arrayDeclaration.id);
@@ -116,6 +195,10 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_ArrayAssignment: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on array assignment\n");
+
             generateTAC(node->arrayAssignment.id);
             TAC* indexTAC = generateTAC(node->arrayAssignment.index);
             TAC* valueTAC = generateTAC(node->arrayAssignment.value);
@@ -129,6 +212,10 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_ArrayAccess: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on array access\n");
+
             generateTAC(node->arrayAccess.id);
             TAC* indexTAC = generateTAC(node->arrayAccess.index);
 
@@ -141,9 +228,17 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_Type: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on type: %s\n", node->type.typeName);
+
             break;
         }
         case NodeType_Assignment: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on assignment\n");
+
             generateTAC(node->assignment.id);
             TAC* exprTAC = generateTAC(node->assignment.expr); 
 
@@ -156,6 +251,10 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_Print: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on print\n");
+
             generateTAC(node->print.expr);
             TAC* exprTAC = generateTAC(node->print.expr); 
             
@@ -167,6 +266,10 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_Expr: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on expr\n");
+
             TAC* leftTAC = generateTAC(node->expr.left);
             TAC* rightTAC = generateTAC(node->expr.right);
 
@@ -179,6 +282,10 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_Term: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on term\n");
+
             TAC* leftTAC = generateTAC(node->term.left);
             TAC* rightTAC = generateTAC(node->term.right);
 
@@ -191,10 +298,18 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_Factor: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on factor\n");
+
             generateTAC(node->factor.child);
             break;
         }
         case NodeType_ID: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on ID\n");
+
             instruction->result = createOperand(node); 
             instruction->op = NULL; 
             instruction->arg1 = NULL;
@@ -204,6 +319,10 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_Number: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on number\n");
+
             instruction->op = "=";
             instruction->arg1 = createOperand(node);
             instruction->arg2 = NULL;
@@ -317,6 +436,11 @@ void printTACToFile(const char* filename, TAC** tac) {
     }
     TAC* current = *(tac);
     while (current != NULL) {
+        //if operator is function add a line
+        if (strcmp(current->op,"function") == 0) {
+            fprintf(file, "\n");
+        }
+
         if (strcmp(current->op,"=") == 0) {
             fprintf(file, "%s = %s\n", current->result, current->arg1);
         }
@@ -330,7 +454,12 @@ void printTACToFile(const char* filename, TAC** tac) {
             if(current->arg2 != NULL)
                 fprintf(file, "%s ", current->arg2);
             fprintf(file, "\n");
-    }
+        }
+        //if operator is return add a line
+        if (strcmp(current->op,"return") == 0) {
+            fprintf(file, "\n");
+        }
+
         current = current->next;
     }
     fclose(file);

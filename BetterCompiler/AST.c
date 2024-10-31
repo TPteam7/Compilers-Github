@@ -420,6 +420,11 @@ void freeAST(ASTNode* node) {
         case NodeType_Expr:
             freeAST(node->expr.left);
             freeAST(node->expr.right);
+            // Free the operator string if allocated
+            if (node->expr.op != NULL) {
+                free(node->expr.op);
+                node->expr.op = NULL;
+            }
             break;
         case NodeType_Term:
             freeAST(node->term.left);
@@ -429,7 +434,17 @@ void freeAST(ASTNode* node) {
             freeAST(node->factor.child);
             break;
         case NodeType_ID:
+            // Free the identifier string
+            if (node->id.name != NULL) {
+                free(node->id.name);
+                node->id.name = NULL;
+            }
         case NodeType_Type:
+            // Free the type string
+            if (node->type.typeName != NULL) {
+                free(node->type.typeName);
+                node->type.typeName = NULL;
+            }
         case NodeType_Number:
             // No children to free in these cases
             break;

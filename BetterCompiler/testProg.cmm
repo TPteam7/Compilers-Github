@@ -1,17 +1,5 @@
-int var1;
-int var2;
-
-var1 = 3;
-var2 = var1 + var1 + var1;
-
-int add(int a)
+int sub(int b)
 {
-    return a;
+    b = 3;
+    return b;
 }
-
-int arr[5];
-
-arr[3] = 7;
-
-print(arr[3]);
-
