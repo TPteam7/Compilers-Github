@@ -10,14 +10,18 @@ TAC* generateTAC(ASTNode* node) {
 
     if (node == NULL) return NULL;
 
-    TAC* instruction = NULL;
+    TAC* instruction = (TAC*)malloc(sizeof(TAC));
+    if (!instruction) return NULL;
+
+    // Initialize fields to avoid garbage values
+    instruction->arg1 = NULL;
+    instruction->arg2 = NULL;
+    instruction->op = NULL;
+    instruction->result = NULL;
+    instruction->nodetype = NULL;
+    instruction->next = NULL;
 
     printf("Processing Node Type: %d\n", node->nType);  // Debug Statement
-
-    // Add this line to check if node->number is accessible
-    if (node->nType == NodeType_Number) {
-        printf("NodeType_Number: node->number.value is %d\n", node->number.value);
-    }
 
     switch (node->nType) {
         case NodeType_Program: {
@@ -38,9 +42,6 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->functionDeclaration.id);
             generateTAC(node->functionDeclaration.paramList);
             generateTAC(node->functionDeclaration.block);
-
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
 
             //instruction->arg1 = blockTAC->result;
             instruction->op = "function";
@@ -106,9 +107,6 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->arrayDeclaration.id);
             TAC* sizeTAC = generateTAC(node->arrayDeclaration.size);
 
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
-
             instruction->arg1 = NULL;
             instruction->op = "alloc";
             instruction->arg2 = sizeTAC->result;
@@ -122,9 +120,6 @@ TAC* generateTAC(ASTNode* node) {
             TAC* indexTAC = generateTAC(node->arrayAssignment.index);
             TAC* valueTAC = generateTAC(node->arrayAssignment.value);
 
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
-
             instruction->arg1 = valueTAC->result;
             instruction->op = "assign";
             instruction->arg2 = indexTAC->result;
@@ -136,9 +131,6 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ArrayAccess: {
             generateTAC(node->arrayAccess.id);
             TAC* indexTAC = generateTAC(node->arrayAccess.index);
-
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
 
             instruction->arg1 = createOperand(node->arrayAccess.id);
             instruction->op = "access";
@@ -155,12 +147,6 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->assignment.id);
             TAC* exprTAC = generateTAC(node->assignment.expr); 
 
-            instruction = (TAC*)malloc(sizeof(TAC));
-            if (!instruction) return NULL;
-
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
-
             instruction->arg1 = exprTAC->result;
             instruction->op = "=";
             instruction->arg2 = NULL;      
@@ -172,12 +158,6 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Print: {
             generateTAC(node->print.expr);
             TAC* exprTAC = generateTAC(node->print.expr); 
-
-            instruction = (TAC*)malloc(sizeof(TAC));
-            if (!instruction) return NULL;
-
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
             
             instruction->arg1 = exprTAC->result;
             instruction->op = "print";
@@ -190,12 +170,6 @@ TAC* generateTAC(ASTNode* node) {
             TAC* leftTAC = generateTAC(node->expr.left);
             TAC* rightTAC = generateTAC(node->expr.right);
 
-            instruction = (TAC*)malloc(sizeof(TAC));
-            if (!instruction) return NULL;
-
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
-
             instruction->arg1 = leftTAC->result; 
             instruction->arg2 = rightTAC->result;
             instruction->op = node->expr.op;
@@ -207,12 +181,6 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Term: {
             TAC* leftTAC = generateTAC(node->term.left);
             TAC* rightTAC = generateTAC(node->term.right);
-
-            instruction = (TAC*)malloc(sizeof(TAC));
-            if (!instruction) return NULL;
-
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
 
             instruction->arg1 = leftTAC->result;
             instruction->arg2 = rightTAC->result;
@@ -227,12 +195,6 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_ID: {
-            instruction = (TAC*)malloc(sizeof(TAC));
-            if (!instruction) return NULL;
-
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
-
             instruction->result = createOperand(node); 
             instruction->op = NULL; 
             instruction->arg1 = NULL;
@@ -242,16 +204,6 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_Number: {
-            printf("Before alloc");
-            instruction = (TAC*)malloc(sizeof(TAC));
-            if (!instruction) return NULL;
-            printf("After alloc");
-
-            printf("Before instruction");
-            instruction->arg1 = instruction->arg2 = instruction->op = instruction->result = instruction->nodetype = NULL;
-            instruction->next = NULL;
-            printf("After instruction");
-
             instruction->op = "=";
             instruction->arg1 = createOperand(node);
             instruction->arg2 = NULL;
@@ -268,10 +220,9 @@ TAC* generateTAC(ASTNode* node) {
             return NULL;
     }
 
-    if (instruction) {
-        instruction->next = NULL;  // Make sure to null-terminate the new instruction
-        appendTAC(&tacHead, instruction);
-    }
+
+    instruction->next = NULL;  // Make sure to null-terminate the new instruction
+    appendTAC(&tacHead, instruction);
 
     return instruction;
 }
@@ -313,16 +264,16 @@ void appendTAC(TAC** head, TAC* newInstruction) {
 }
 
 // Function to print all elements of the TAC linked list
-void printTAC(TAC* tac) {
+void printTAC(TAC** tac) {
     if (!tac) return;
 
-    cleanupTAC(&tac);
+    cleanupTAC(tac);
 
     // Print header
     printf("\nRESULT\tARG1\tOP\tARG2\tNodeType\n");
 
     // Iterate through the linked list using a for loop
-    for (TAC* current = tac; current != NULL; current = current->next) {
+    for (TAC* current = *(tac); current != NULL; current = current->next) {
         // Print the fields of the current TAC node, handling null pointers
         if (current->result != NULL)
             printf("%s\t", current->result);
@@ -355,15 +306,16 @@ void printTAC(TAC* tac) {
     printf("\n");
 }
 
-void printTACToFile(const char* filename, TAC* tac) {
+void printTACToFile(const char* filename, TAC** tac) {
+    if (!tac) return;
 
-    cleanupTAC(&tac);
+    cleanupTAC(tac);
     FILE* file = fopen(filename , "w");
     if (!file) {
         perror("Failed to open file");
         return;
     }
-    TAC* current = tac;
+    TAC* current = *(tac);
     while (current != NULL) {
         if (strcmp(current->op,"=") == 0) {
             fprintf(file, "%s = %s\n", current->result, current->arg1);

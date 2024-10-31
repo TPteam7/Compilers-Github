@@ -97,7 +97,7 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
 
 {NUMBER}    { words++; chars += strlen(yytext); 
               printf("%s : NUMBER\n", yytext);
-              yylval.number = atoi(strdup(yytext));  
+              yylval.number = atoi(yytext);  
               return NUMBER; }
 
 "+"         { chars++; 

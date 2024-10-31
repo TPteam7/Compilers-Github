@@ -192,11 +192,13 @@ int main() {
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
 		generateTAC(root);
-		printTAC(tacHead);
+		printTAC(&tacHead);
 
-		printTACToFile("TAC.ir", tacHead);
+		printTACToFile("TAC.ir", &tacHead);
 
-		freeAST(root);
+		//freeTAC(tacHead);
+
+		//freeAST(root);
 
     }
 

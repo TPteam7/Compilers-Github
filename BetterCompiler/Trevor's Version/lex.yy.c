@@ -908,7 +908,7 @@ YY_RULE_SETUP
 #line 98 "lexer.l"
 { words++; chars += strlen(yytext); 
               printf("%s : NUMBER\n", yytext);
-              yylval.number = atoi(strdup(yytext));  
+              yylval.number = atoi(yytext);  
               return NUMBER; }
 	YY_BREAK
 case 16:

@@ -46,7 +46,7 @@ ARGS:
             varTab = lookupSymbol(symTab, node->functionDeclaration.id->id.name)->variables;
 
             semanticAnalysis(node->functionDeclaration.type, symTab, varTab);
-            semanticAnalysis(node->functionDeclaration.id, symTab, varTab);
+            semanticAnalysis(node->functionDeclaration.id, symTab, NULL);
             semanticAnalysis(node->functionDeclaration.paramList, symTab, varTab);
             semanticAnalysis(node->functionDeclaration.block, symTab, varTab);
             break;

@@ -260,7 +260,7 @@ TAC* generateTAC(ASTNode* expr) {
             instruction->op = NULL; 
             instruction->arg1 = NULL;
             instruction->arg2 = NULL;
-            instruction->nodetype = "Expr";
+            instruction->nodetype = "ID";
 
             break;
         }

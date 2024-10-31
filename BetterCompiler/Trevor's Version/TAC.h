@@ -15,13 +15,14 @@ extern TAC* tacHead;
 
 int allocateNextAvailableTempVar(int tempVars[]);
 TAC* generateTAC(ASTNode* expr);
+void freeTAC(TAC* tac);
 char* findOrCreateTemp(ASTNode* node);
 char* createTempVar();
 char* createOperand(ASTNode* node);
-void printTAC(TAC* tac);
+void printTAC(TAC** tac);
 void initializeTempVars();
 void deallocateTempVar(int tempVars[], int index);
 int allocateNextAvailableTempVar(int tempVars[]);
 void appendTAC(TAC** head, TAC* newInstruction);
-void printTACToFile(const char* filename, TAC* tac);
+void printTACToFile(const char* filename, TAC** tac);
 void cleanupTAC(TAC** tac);
