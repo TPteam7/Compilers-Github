@@ -1,6 +1,28 @@
+t0 = 5
+arr = alloc t0 
+t1 = 3
+t2 = 6
+arr = t2 assign t1 
 
 function sub 
-t0 = 3
-b = t0
+t3 = 3
+b = t3
 b return 
 
+
+function add 
+c arg 
+call sub 
+c = (null)
+t4 = c - b 
+res = t4
+res return 
+
+t5 = 1
+input = t5
+input arg 
+t6 = 3
+t7 = arr access t6 
+t7 arg 
+call add 
+returnfromAdd = (null)

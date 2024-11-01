@@ -1,5 +1,24 @@
+int arr[5];
+arr[3] = 6;
+
 int sub(int b)
 {
     b = 3;
     return b;
 }
+
+int add(int c, int b)
+{
+    c = sub(c);
+    int res;
+    res = c - b;
+    return res;
+}
+
+
+int returnfromAdd;
+int input;
+
+input = 1;
+
+returnfromAdd = add(arr[3], input);
