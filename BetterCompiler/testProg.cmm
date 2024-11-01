@@ -1,18 +1,18 @@
 int arr[5];
 arr[3] = 6;
 
-int sub(int b)
+int sub(int a, int b)
 {
-    b = 3;
-    return b;
+    int diff;
+    diff = a - b;
+    return diff;
 }
 
-int add(int c, int b)
+int add(int a, int b)
 {
-    c = sub(c);
-    int res;
-    res = c - b;
-    return res;
+    int sum;
+    sum = a + b;
+    return sum;
 }
 
 

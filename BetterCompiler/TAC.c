@@ -190,7 +190,7 @@ TAC* generateTAC(ASTNode* node) {
             TAC* sizeTAC = generateTAC(node->arrayDeclaration.size);
 
             instruction->arg1 = NULL;
-            instruction->op = "alloc";
+            instruction->op = "array_decl";
             instruction->arg2 = sizeTAC->result;
             instruction->result = createOperand(node->arrayDeclaration.id);
             instruction->nodetype = "ArrayDeclaration";
@@ -207,7 +207,7 @@ TAC* generateTAC(ASTNode* node) {
             TAC* valueTAC = generateTAC(node->arrayAssignment.value);
 
             instruction->arg1 = valueTAC->result;
-            instruction->op = "assign";
+            instruction->op = "array_assign";
             instruction->arg2 = indexTAC->result;
             instruction->result = createOperand(node->arrayAssignment.id);
             instruction->nodetype = "ArrayAssignment";
@@ -223,7 +223,7 @@ TAC* generateTAC(ASTNode* node) {
             TAC* indexTAC = generateTAC(node->arrayAccess.index);
 
             instruction->arg1 = createOperand(node->arrayAccess.id);
-            instruction->op = "access";
+            instruction->op = "array_access";
             instruction->arg2 = indexTAC->result;
             instruction->result = createTempVar();
             instruction->nodetype = "ArrayAccess";
@@ -443,6 +443,21 @@ void printTACToFile(const char* filename, TAC** tac) {
         //if operator is function add a line
         if (strcmp(current->op,"function") == 0) {
             fprintf(file, "\n");
+        }
+        if (strcmp(current->op, "array_decl") == 0) {
+            fprintf(file, "%s = %s %s\n", current->result, current->op, current->arg2);
+            current = current->next;
+            continue;
+        }
+        else if (strcmp(current->op, "array_assign") == 0) {
+            fprintf(file, "%s[%s] = %s\n", current->result, current->arg2, current->arg1);
+            current = current->next;
+            continue;
+        }
+        else if (strcmp(current->op, "array_access") == 0) {
+            fprintf(file, "%s = %s[%s]\n", current->result, current->arg1, current->arg2);
+            current = current->next;
+            continue;
         }
 
         if (strcmp(current->op,"=") == 0) {

@@ -1,28 +1,25 @@
 t0 = 5
-arr = alloc t0 
+arr = array_decl t0
 t1 = 3
 t2 = 6
-arr = t2 assign t1 
+arr[t1] = t2
 
 function sub 
-t3 = 3
-b = t3
-b return 
+t3 = a - b 
+diff = t3
+diff return 
 
 
 function add 
-c arg 
-call sub 
-c = (null)
-t4 = c - b 
-res = t4
-res return 
+t4 = a + b 
+sum = t4
+sum return 
 
 t5 = 1
 input = t5
 input arg 
 t6 = 3
-t7 = arr access t6 
+t7 = arr[t6]
 t7 arg 
 call add 
 returnfromAdd = (null)
