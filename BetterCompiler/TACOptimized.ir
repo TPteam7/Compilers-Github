@@ -1,0 +1,8 @@
+2 arg 
+1 arg 
+t3 = call sub 
+
+function sub 
+t0 = a - b 
+diff = t0 
+diff return 

@@ -1,4 +1,6 @@
 // Define a structure for TAC instructions
+#ifndef TAC_H
+#define TAC_H
 
 #include "AST.h"
 
@@ -12,6 +14,8 @@ typedef struct TAC {
 } TAC;
 
 extern TAC* tacHead;
+
+#endif // TAC_H
 
 int allocateNextAvailableTempVar(int tempVars[]);
 TAC* generateTAC(ASTNode* expr);

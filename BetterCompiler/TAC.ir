@@ -4,21 +4,9 @@ t0 = a - b
 diff = t0
 diff return 
 
-
-function add 
-t1 = a + b 
-sum = t1
-sum return 
-
+t1 = 2
+arg t1
 t2 = 1
 arg t2
-t3 = 2
-arg t3
-t4 = call add
-addition = t4
-t5 = 2
-arg t5
-t6 = 1
-arg t6
-t7 = call sub
-subtraction = t7
+t3 = call sub
+subtraction = t3

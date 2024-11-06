@@ -5,16 +5,5 @@ int sub(int a, int b)
     return diff;
 }
 
-int add(int a, int b)
-{
-    int sum;
-    sum = a + b;
-    return sum;
-}
-
-
-int addition;
-addition = add(1, 2);
-
 int subtraction;
 subtraction = sub(2, 1);
