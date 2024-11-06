@@ -77,7 +77,11 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->functionCall.id);
             generateTAC(node->functionCall.argList);
 
-            instruction->op = "call";
+            if(node->parent->nType == NodeType_Assignment || node->parent->nType == NodeType_ArrayAssignment)
+                instruction->result = createTempVar();
+                instruction->op = "=";
+            
+            instruction->arg1 = "call";
             instruction->arg2 = createOperand(node->functionCall.id);
             instruction->nodetype = "FunctionCall";
             break;
@@ -120,7 +124,6 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing semantic analysis on argtail\n");
 
-            generateTAC(node->argTail.argTail);
             TAC* exprTAC = generateTAC(node->argTail.expr);
 
             instruction->arg1 = exprTAC->result;
@@ -128,6 +131,12 @@ TAC* generateTAC(ASTNode* node) {
             instruction->op = "arg";
             instruction->result = NULL;
             instruction->nodetype = "ArgTail";
+
+            instruction->next = NULL;
+            appendTAC(&tacHead, instruction);
+
+            generateTAC(node->argTail.argTail);
+            
             break;
         }
         case NodeType_Block: {
@@ -342,7 +351,7 @@ TAC* generateTAC(ASTNode* node) {
             return NULL;
     }
 
-    if (node->nType != NodeType_FunctionDeclaration) {
+    if (node->nType != NodeType_FunctionDeclaration && node->nType != NodeType_ArgTail) {
         instruction->next = NULL;  // Make sure to null-terminate the new instruction
         appendTAC(&tacHead, instruction);
     }
@@ -440,28 +449,29 @@ void printTACToFile(const char* filename, TAC** tac) {
     }
     TAC* current = *(tac);
     while (current != NULL) {
-        //if operator is function add a line
-        if (strcmp(current->op,"function") == 0) {
+        // Add new line for specific operators
+        if (strcmp(current->op, "function") == 0) {
             fprintf(file, "\n");
         }
+
         if (strcmp(current->op, "array_decl") == 0) {
             fprintf(file, "%s = %s %s\n", current->result, current->op, current->arg2);
-            current = current->next;
-            continue;
         }
         else if (strcmp(current->op, "array_assign") == 0) {
             fprintf(file, "%s[%s] = %s\n", current->result, current->arg2, current->arg1);
-            current = current->next;
-            continue;
         }
         else if (strcmp(current->op, "array_access") == 0) {
             fprintf(file, "%s = %s[%s]\n", current->result, current->arg1, current->arg2);
-            current = current->next;
-            continue;
         }
-
-        if (strcmp(current->op,"=") == 0) {
-            fprintf(file, "%s = %s\n", current->result, current->arg1);
+        else if (strcmp(current->op,"=") == 0) {
+            if (strcmp(current->arg1, "call") == 0) {
+                fprintf(file, "%s = %s %s\n", current->result, current->arg1, current->arg2);
+            } else {
+                fprintf(file, "%s = %s\n", current->result, current->arg1);
+            }
+        }
+        else if (strcmp(current->op, "arg") == 0) {
+            fprintf(file, "%s %s\n", current->op, current->arg1);
         }
         else {
             if(current->result != NULL)
@@ -474,8 +484,8 @@ void printTACToFile(const char* filename, TAC** tac) {
                 fprintf(file, "%s ", current->arg2);
             fprintf(file, "\n");
         }
-        //if operator is return add a line
-        if (strcmp(current->op,"return") == 0) {
+
+        if (strcmp(current->op, "return") == 0) {
             fprintf(file, "\n");
         }
 

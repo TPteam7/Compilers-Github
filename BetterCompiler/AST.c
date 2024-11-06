@@ -140,6 +140,9 @@ ASTNode* createArrayAssignmentNode(ASTNode* id, ASTNode* index, ASTNode* value) 
     node->arrayAssignment.id = id;
     node->arrayAssignment.index = index;
     node->arrayAssignment.value = value;
+    if (id) id->parent = node;
+    if (index) index->parent = node;
+    if (value) value->parent = node;
     return node;
 }
 

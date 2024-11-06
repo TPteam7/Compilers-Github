@@ -1,25 +1,24 @@
-t0 = 5
-arr = array_decl t0
-t1 = 3
-t2 = 6
-arr[t1] = t2
 
 function sub 
-t3 = a - b 
-diff = t3
+t0 = a - b 
+diff = t0
 diff return 
 
 
 function add 
-t4 = a + b 
-sum = t4
+t1 = a + b 
+sum = t1
 sum return 
 
-t5 = 1
-input = t5
-input arg 
-t6 = 3
-t7 = arr[t6]
-t7 arg 
-call add 
-returnfromAdd = (null)
+t2 = 1
+arg t2
+t3 = 2
+arg t3
+t4 = call add
+addition = t4
+t5 = 2
+arg t5
+t6 = 1
+arg t6
+t7 = call sub
+subtraction = t7

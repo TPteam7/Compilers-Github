@@ -1,6 +1,3 @@
-int arr[5];
-arr[3] = 6;
-
 int sub(int a, int b)
 {
     int diff;
@@ -16,9 +13,8 @@ int add(int a, int b)
 }
 
 
-int returnfromAdd;
-int input;
+int addition;
+addition = add(1, 2);
 
-input = 1;
-
-returnfromAdd = add(arr[3], input);
+int subtraction;
+subtraction = sub(2, 1);
