@@ -20,6 +20,10 @@ MIPSRegister tempRegisters[NUM_TEMP_REGISTERS] = {
     {"$t8", false}, {"$t9", false}
 };
 
+MIPSRegister argumentRegisters[NUM_ARG_REGISTERS] = {
+    {"$a0", false}, {"$a1", false}, {"$a2", false}, {"$a3", false}
+};
+
 void initCodeGenerator(const char* outputFilename) {
     outputFile = fopen(outputFilename, "w");
     if (outputFile == NULL) {
@@ -87,8 +91,8 @@ void generateMIPS(TAC* tacInstructions)
     while (current != NULL) {
         int reg1, reg2, regResult;
 
-        // Handle assignment operation
-        if (strcmp(current->op, "=") == 0) {
+        // Handle assignment operation. Skip if it's a function call
+        if (strcmp(current->op, "=") == 0 && strcmp(current->arg1, "call") != 0) {
             printf("Generating MIPS for Assignment operation\n");
 
             // Allocate a register for the result
@@ -260,7 +264,69 @@ void generateMIPS(TAC* tacInstructions)
             // Deallocate the register
             deallocateRegister(reg1);
         }
+        // Handle arg operation
+        else if (strcmp(current->op, "arg") == 0) {
+            // Allocate a register for the argument
+            reg1 = allocateArgRegister();
+            if (reg1 == -1) {
+                fprintf(stderr, "No available register for arg operation\n");
+                exit(EXIT_FAILURE);
+            }
 
+            // Load the argument into the register
+            if (isConstant(current->arg1)) {
+                fprintf(outputFile, "\tli %s, %s\n", argumentRegisters[reg1].name, current->arg1);
+            } 
+            else {
+                fprintf(outputFile, "\tlw %s, %s\n", argumentRegisters[reg1].name, current->arg1);
+            }
+
+            // Deallocate the register
+            deallocateRegister(reg1);
+        }
+        // Handle function calls
+        else if (strcmp(current->arg1, "call") == 0) {
+
+            // Call the function
+            fprintf(outputFile, "\tjal %s\n", current->arg2);
+              
+            // Handle print operation
+            if (strcmp(current->arg2, "print") == 0) {
+                // Load the argument into $a0
+                if (isConstant(current->result)) {
+                    fprintf(outputFile, "\tli $a0, %s\n", current->result);
+                } 
+                else {
+                    fprintf(outputFile, "\tlw $a0, %s\n", current->result);
+                }
+
+                // Print the value
+                fprintf(outputFile, "\tli $v0, 1\n\tsyscall\n");
+            }
+            // Handle if it is used as an assignment
+            else if(strcmp(current->op, "=") == 0) {
+                // Allocate a register for the result
+                regResult = allocateRegister();
+                if (regResult == -1) {
+                    fprintf(stderr, "No available register for assignment operation\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                // Load the result into the register
+                fprintf(outputFile, "\tmove %s, $v0\n", tempRegisters[regResult].name);
+
+                // Store result in memory
+                fprintf(outputFile, "\tsw %s, %s\n", tempRegisters[regResult].name, current->result);
+
+                // Deallocate the register
+                deallocateRegister(regResult);
+            }
+            // Handle if it is used as an argument
+            // else if(strcmp(current->op, "arg") == 0) {
+            //     // Load the argument into the argument register
+            //     fprintf(outputFile, "\tmove %s, $v0\n", argumentRegisters[0].name);
+            // }
+        }
         current = current->next; // Move to the next TAC instruction
     }
 
@@ -319,6 +385,25 @@ int allocateRegister() {
 void deallocateRegister(int regIndex) {
     if (regIndex >= 0 && regIndex < NUM_TEMP_REGISTERS) {
         tempRegisters[regIndex].inUse = false;
+    }
+}
+
+// Alocate an argument register
+int allocateArgRegister() {
+    for (int i = 0; i < NUM_ARG_REGISTERS; i++) {
+        if (!argumentRegisters[i].inUse) {
+            argumentRegisters[i].inUse = true;
+            return i; // Return the register index
+        }
+    }
+    // No available register, implement spilling if necessary
+    return -1; // Indicate failure
+}
+
+// Deallocate an argument register
+void deallocateArgRegister(int regIndex) {
+    if (regIndex >= 0 && regIndex < NUM_ARG_REGISTERS) {
+        argumentRegisters[regIndex].inUse = false;
     }
 }
 

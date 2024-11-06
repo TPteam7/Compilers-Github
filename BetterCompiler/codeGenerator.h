@@ -8,6 +8,7 @@
 #include <stdbool.h>
 
 #define NUM_TEMP_REGISTERS 10
+#define NUM_ARG_REGISTERS 4
 
 // Initializes code generation, setting up any necessary structures
 void initCodeGenerator(const char* outputFilename);
