@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 TAC* tacHead = NULL;
+TAC* funcDeclHead = NULL; // Separate list for function declarations
+TAC** currentTACList = &tacHead;
 int tempVars[60];
 int printDebugTAC = 1;
 
@@ -31,6 +33,7 @@ TAC* generateTAC(ASTNode* node) {
                 printf("Performing semantic analysis on program\n");
 
             generateTAC(node->program.stmtList);
+            appendTAC(&tacHead, funcDeclHead);
             break;
         }
         case NodeType_StmtList: {
@@ -59,13 +62,17 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg2 = createOperand(node->functionDeclaration.id);
             instruction->nodetype = "FunctionDeclaration";
 
+            currentTACList = &funcDeclHead;
+
             instruction->next = NULL;
-            appendTAC(&tacHead, instruction);
+            appendTAC(currentTACList, instruction);
 
             generateTAC(node->functionDeclaration.type);
             generateTAC(node->functionDeclaration.id);
             generateTAC(node->functionDeclaration.paramList);
             generateTAC(node->functionDeclaration.block);
+
+            currentTACList = &tacHead;
 
             break;
         }
@@ -133,7 +140,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->nodetype = "ArgTail";
 
             instruction->next = NULL;
-            appendTAC(&tacHead, instruction);
+            appendTAC(currentTACList, instruction);
 
             generateTAC(node->argTail.argTail);
             
@@ -353,7 +360,7 @@ TAC* generateTAC(ASTNode* node) {
 
     if (node->nType != NodeType_FunctionDeclaration && node->nType != NodeType_ArgTail) {
         instruction->next = NULL;  // Make sure to null-terminate the new instruction
-        appendTAC(&tacHead, instruction);
+        appendTAC(currentTACList, instruction);
     }
         
     return instruction;

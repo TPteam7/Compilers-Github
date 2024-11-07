@@ -1,12 +1,15 @@
+t1 = 3
+subtraction = array_decl t1
+t2 = 0
+t3 = 2
+arg t3
+t4 = 1
+arg t4
+t5 = call sub
+subtraction[t2] = t5
 
 function sub 
 t0 = a - b 
 diff = t0
 diff return 
 
-t1 = 2
-arg t1
-t2 = 1
-arg t2
-t3 = call sub
-subtraction = t3

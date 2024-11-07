@@ -5,5 +5,5 @@ int sub(int a, int b)
     return diff;
 }
 
-int subtraction;
-subtraction = sub(2, 1);
+int subtraction[3];
+subtraction[0] = sub(2, 1);
