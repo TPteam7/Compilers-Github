@@ -197,15 +197,15 @@ int main() {
 		printTACToFile("TAC.ir", &tacHead);
 
 		// Code optimization
-		// printf("\n\n=== CODE OPTIMIZATION ===\n");
+		printf("\n\n=== CODE OPTIMIZATION ===\n");
 
-		// optimizeTAC(&tacHead);
-		// printOptimizedTAC("TACOptimized.ir", tacHead);
+		optimizeTAC(&tacHead);
+		printOptimizedTAC("TACOptimized.ir", tacHead);
 
-		// printf("\n=== CODE GENERATION ===\n");
-		// initCodeGenerator("output.s");
-		// generateMIPS(tacHead);
-		// finalizeCodeGenerator("output.s");
+		printf("\n=== CODE GENERATION ===\n");
+		initCodeGenerator("output.s");
+		generateMIPS(tacHead);
+		finalizeCodeGenerator("output.s");
 
         freeAST(root);
 		freeSymbolTable(symTab);
