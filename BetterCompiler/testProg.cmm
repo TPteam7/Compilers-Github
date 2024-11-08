@@ -5,7 +5,7 @@ int sub(int a, int b)
     return diff;
 }
 
-int subtraction;
-subtraction = sub(2, 1);
+//int subtraction;
+//subtraction = sub(2, 1);
 
-print(subtraction);
+//print(subtraction);

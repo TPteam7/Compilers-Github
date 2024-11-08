@@ -91,10 +91,14 @@ void generateMIPS(TAC* tacInstructions)
     while (current != NULL) {
         int reg1, reg2, regResult;
 
+        // Print all current parts of tac
+        printf(current->op);
+        printf("Print\n");
+
         // Handle assignment operation. Skip if it's a function call
         if (strcmp(current->op, "=") == 0 && strcmp(current->arg1, "call") != 0) {
             printf("Generating MIPS for Assignment operation\n");
-
+            
             // Allocate a register for the result
             regResult = allocateRegister();
             if (regResult == -1) {
@@ -112,6 +116,7 @@ void generateMIPS(TAC* tacInstructions)
                     fprintf(stderr, "No available register for arg1\n");
                     exit(EXIT_FAILURE);
                 }
+                
 
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1); // Load from memory
                 fprintf(outputFile, "\tmove %s, %s\n", tempRegisters[regResult].name, tempRegisters[reg1].name); // Move to result
@@ -190,6 +195,8 @@ void generateMIPS(TAC* tacInstructions)
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
+
+            printf("Generating MIPS for Subtraction operation\n");
 
             // Perform addition
             fprintf(outputFile, "\tsubu %s, %s, %s\n", tempRegisters[regResult].name, tempRegisters[reg1].name, tempRegisters[reg2].name);
@@ -285,8 +292,8 @@ void generateMIPS(TAC* tacInstructions)
             deallocateRegister(reg1);
         }
         // Handle function calls
-        else if (strcmp(current->arg1, "call") == 0) {
-
+        else if (current->arg1 != NULL && strcmp(current->arg1, "call") == 0) {
+            printf("Generating MIPS for Function call\n");
             // Call the function
             fprintf(outputFile, "\tjal %s\n", current->arg2);
               
@@ -327,6 +334,31 @@ void generateMIPS(TAC* tacInstructions)
             //     fprintf(outputFile, "\tmove %s, $v0\n", argumentRegisters[0].name);
             // }
         }
+        // Handle function declarations
+        else if (strcmp(current->op, "function") == 0) {
+            printf("Generating MIPS for Function declaration\n");
+            // Function label
+            fprintf(outputFile, "\n%s:", current->result);
+        }
+        // Handle return operation
+        else if (strcmp(current->op, "return") == 0) {
+            // Load the return value into $v0
+            if (isConstant(current->result)) {
+                fprintf(outputFile, "\tli $v0, %s\n", current->result);
+            } 
+            else {
+                fprintf(outputFile, "\tlw $v0, %s\n", current->result);
+            }
+
+            // Return from the function
+            fprintf(outputFile, "\tjr $ra\n");
+        }
+        else
+        {
+            printf("Generating MIPS for other operations\n");
+        }
+        printf("MIPS code generated for current TAC\n");
+        
         current = current->next; // Move to the next TAC instruction
     }
 
