@@ -1,11 +1,23 @@
 int sub(int a, int b)
 {
     int diff;
-    diff = a - b;
+    diff = b - a;
     return diff;
 }
 
-//int subtraction;
-//subtraction = sub(2, 1);
+int subtraction;
+int num;
 
-//print(subtraction);
+int num1;
+int num2;
+
+num1 = 10;
+num2 = 5;
+
+num = num1 - num2;
+
+print(num);
+
+subtraction = sub(num, 1);
+
+print(subtraction);

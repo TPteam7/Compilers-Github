@@ -1,6 +1,7 @@
 #include "optimizer.h"
 #include <stdbool.h>
 #include <ctype.h>
+#include <string.h>
 
 void optimizeTAC(TAC** head) {
     constantFolding(head);

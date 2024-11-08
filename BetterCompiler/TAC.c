@@ -116,6 +116,13 @@ TAC* generateTAC(ASTNode* node) {
                 printf("Performing semantic analysis on param\n");
 
             generateTAC(node->param.child);
+
+            instruction->arg1 = createOperand(node->param.child->declaration.id);
+            instruction->arg2 = NULL;
+            instruction->op = "param";
+            instruction->result = NULL;
+            instruction->nodetype = "ParamDecl";
+ 
             break;
         }
         case NodeType_ArgList: {
@@ -190,6 +197,8 @@ TAC* generateTAC(ASTNode* node) {
             //print debug statement
             if (printDebugTAC == 1)
                 printf("Performing semantic analysis on declaration\n");
+
+            printf("Declaration: %s\n", node->declaration.id);
 
             generateTAC(node->declaration.type);
             generateTAC(node->declaration.id);
@@ -334,6 +343,8 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg1 = NULL;
             instruction->arg2 = NULL;
             instruction->nodetype = "Expr";
+
+            printf("ID: %s\n", instruction->result);
 
             break;
         }

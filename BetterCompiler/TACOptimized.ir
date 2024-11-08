@@ -1,4 +1,14 @@
+t3 = 10 - 5 
+num = t3 
+num print 
+num arg 
+1 arg 
+t5 = call sub 
+subtraction = t5 
+subtraction print 
 function sub 
-t0 = a - b 
+a param 
+b param 
+t0 = b - a 
 diff = t0 
 diff return 

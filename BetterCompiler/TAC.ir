@@ -1,6 +1,21 @@
+t1 = 10
+num1 = t1
+t2 = 5
+num2 = t2
+t3 = num1 - num2 
+num = t3
+num print 
+arg num
+t4 = 1
+arg t4
+t5 = call sub
+subtraction = t5
+subtraction print 
 
 function sub 
-t0 = a - b 
+a param 
+b param 
+t0 = b - a 
 diff = t0
 diff return 
 

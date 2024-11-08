@@ -3,6 +3,7 @@
 #include "codeGenerator.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static FILE* outputFile;
 bool endOfProgram = false;
@@ -52,9 +53,12 @@ void generateMIPS(TAC* tacInstructions)
 
     // Get the list of variables from the TAC instructions
     while (current != NULL) {
+        printf("\nOP:%s\n", current->op);
+        if(strcmp(current->op, "param") == 0) {
+            printf("HERE");
+        }
         // Check if the operation is '=', '+', or '*'
-        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || strcmp(current->op, "*") || strcmp(current->op, "-") || strcmp(current->op, "/") == 0) {
-            printf(current->result);
+        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || strcmp(current->op, "*") == 0 || strcmp(current->op, "-") == 0 || strcmp(current->op, "/") == 0) {
             // Check if the result is a variable
             if (current->result != NULL && !isConstant(current->result)) {
                 // Check if the variable is already declared
@@ -79,6 +83,34 @@ void generateMIPS(TAC* tacInstructions)
                 }
             }
         }
+        // if a param
+        else if(strcmp(current->op, "param") == 0) {
+            printf("HERE");
+            // Check if the argument is a variable
+            if (current->arg1 != NULL && !isConstant(current->arg1)) {
+                
+                // Check if the variable is already declared
+                int found = 0;
+                for (int i = 0; i < varIndex; i++) { // Only iterate up to varIndex
+                    if (variables[i] != NULL && strcmp(variables[i], current->arg1) == 0) {
+                        found = 1;
+                        break;
+                    }
+                }
+
+                // If the variable is not found, add it to the list
+                if (!found) {
+                    if (varIndex < 100) { // Ensure we do not exceed the array bounds
+                        variables[varIndex] = current->arg1;
+                        varIndex++;
+                        fprintf(outputFile, "\t%s: .word 0\n", current->arg1); // Declare the variable in the data segment
+                    } else {
+                        fprintf(stderr, "Error: Too many variables to declare.\n");
+                        break;
+                    }
+                }
+            }
+        }
         current = current->next; // Move to the next TAC instruction
     }
 
@@ -91,10 +123,6 @@ void generateMIPS(TAC* tacInstructions)
 
     while (current != NULL) {
         int reg1, reg2, regResult;
-
-        // Print all current parts of tac
-        printf(current->op);
-        printf("Print\n");
 
         // Handle assignment operation. Skip if it's a function call
         if (strcmp(current->op, "=") == 0 && strcmp(current->arg1, "call") != 0) {
@@ -266,6 +294,7 @@ void generateMIPS(TAC* tacInstructions)
 
             // Print the value
             fprintf(outputFile, "\tli $v0, 1\n\tmove $a0, %s\n\tsyscall\n", tempRegisters[reg1].name);
+            printNewLineMIPS();
 
 
 
@@ -290,11 +319,17 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Deallocate the register
-            deallocateRegister(reg1);
+            //deallocateArgRegister(reg1);
         }
         // Handle function calls
         else if (current->arg1 != NULL && strcmp(current->arg1, "call") == 0) {
             printf("Generating MIPS for Function call\n");
+
+            // Free up all argument registers
+            for (int i = 0; i < NUM_ARG_REGISTERS; i++) {
+                argumentRegisters[i].inUse = false;
+            }
+
             // Call the function
             fprintf(outputFile, "\tjal %s\n", current->arg2);
               
@@ -310,6 +345,7 @@ void generateMIPS(TAC* tacInstructions)
 
                 // Print the value
                 fprintf(outputFile, "\tli $v0, 1\n\tsyscall\n");
+                printNewLineMIPS();
             }
             // Handle if it is used as an assignment
             else if(strcmp(current->op, "=") == 0) {
@@ -351,23 +387,70 @@ void generateMIPS(TAC* tacInstructions)
         // Handle return operation
         else if (strcmp(current->op, "return") == 0) {
             // Load the return value into $v0
-            if (isConstant(current->result)) {
-                fprintf(outputFile, "\tli $v0, %s\n", current->result);
+            if (isConstant(current->arg1)) {
+                fprintf(outputFile, "\tli $v0, %s\n", current->arg1);
             } 
             else {
-                fprintf(outputFile, "\tlw $v0, %s\n", current->result);
+                fprintf(outputFile, "\tlw $v0, %s\n", current->arg1);
+            }
+
+            // Free up all argument registers
+            for (int i = 0; i < NUM_ARG_REGISTERS; i++) {
+                argumentRegisters[i].inUse = false;
             }
 
             // Return from the function
             fprintf(outputFile, "\tjr $ra\n");
         }
+        // Handle params
+        else if (strcmp(current->op, "param") == 0) {
+            // Allocate a register for the argument
+            reg1 = allocateArgRegister();
+            if (reg1 == -1) {
+                fprintf(stderr, "No available register for arg operation\n");
+                exit(EXIT_FAILURE);
+            }
+
+            // Load the argument into the register
+            if (isConstant(current->arg1)) {
+                fprintf(outputFile, "\tli %s, %s\n", argumentRegisters[reg1].name, current->arg1);
+            } 
+            else {
+                fprintf(outputFile, "\tsw %s, %s\n", argumentRegisters[reg1].name, current->arg1);
+            }
+
+            // Deallocate the register
+            //deallocateArgRegister(reg1);
+        }
         else
         {
             printf("Generating MIPS for other operations\n");
         }
-        printf("MIPS code generated for current TAC\n");
         
         current = current->next; // Move to the next TAC instruction
+    }
+}
+
+void generateMIPSForFunction(TAC* tacInstructions)
+/*
+    Params:
+        tacInstructions: The list of TAC instructions to generate MIPS code from
+
+    Functionality:
+        Generates MIPS assembly code from the provided TAC instructions for a function.
+            This needs to be done as we deal with functions in a different way than other TAC instructions.
+*/
+{
+    TAC* current = tacInstructions;
+
+    // Function label
+    if(strcmp(current->op, "function") == 0) {
+        fprintf(outputFile, "\n%s:\n", tacInstructions->arg2);
+    }
+    // Assignment
+    else if(strcmp(current->op, "=") == 0 && strcmp(current->arg1, "call") != 0)
+    {
+
     }
 }
 
@@ -464,4 +547,15 @@ void printCurrentTAC(TAC* tac) {
     }
         current = current->next;
     }   
+}
+
+void printNewLineMIPS() 
+/*
+    Purpose:
+        To print a new line to console in MIPS code generation
+
+*/
+{
+    // Print a newline by printing the ASCII value 10
+    fprintf(outputFile, "\tli $v0, 11\n\tli $a0, 10\n\tsyscall\n");
 }
