@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 static FILE* outputFile;
+bool endOfProgram = false;
 
 typedef struct {
     char* name; // Name of the register, e.g., "$t0"
@@ -337,8 +338,15 @@ void generateMIPS(TAC* tacInstructions)
         // Handle function declarations
         else if (strcmp(current->op, "function") == 0) {
             printf("Generating MIPS for Function declaration\n");
+
+            // if end of program is false print the end in main first
+            if(!endOfProgram) {
+                fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
+                endOfProgram = true;
+            }
+
             // Function label
-            fprintf(outputFile, "\n%s:", current->result);
+            fprintf(outputFile, "\n%s:\n", current->arg2);
         }
         // Handle return operation
         else if (strcmp(current->op, "return") == 0) {
@@ -361,9 +369,6 @@ void generateMIPS(TAC* tacInstructions)
         
         current = current->next; // Move to the next TAC instruction
     }
-
-    // Exit program
-    fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
 }
 
 

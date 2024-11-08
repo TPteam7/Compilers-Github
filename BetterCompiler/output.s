@@ -4,8 +4,11 @@
 .text
 .globl main
 main:
+	li $v0, 10
+	syscall
 
-(null):	lw $t0, a
+sub:
+	lw $t0, a
 	lw $t1, b
 	subu $t2, $t0, $t1
 	sw $t2, t0
@@ -14,5 +17,3 @@ main:
 	sw $t0, diff
 	lw $v0, (null)
 	jr $ra
-	li $v0, 10
-	syscall
