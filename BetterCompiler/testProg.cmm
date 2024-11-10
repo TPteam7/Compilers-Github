@@ -1,12 +1,22 @@
+int divide(int a1, int b1)
+{
+    int total;
+    total = a1/b1;
+    print(total);
+    return total;
+}
+
 int sub(int a, int b)
 {
     int diff;
+    b = divide(a, b);
     diff = b - a;
+    print(diff);
     return diff;
 }
 
 int subtraction;
 
-subtraction = sub(5, 1);
+subtraction = sub(10, 5);
 
 print(subtraction);

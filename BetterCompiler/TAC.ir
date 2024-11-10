@@ -1,15 +1,29 @@
-t1 = 5
-arg t1
-t2 = 1
-arg t2
-t3 = call sub
-subtraction = t3
+t3 = 10
+arg t3
+t4 = 5
+arg t4
+t5 = call sub
+subtraction = t5
 subtraction print 
+
+function divide 
+a1 param 
+b1 param 
+t0 = a1 / b1 
+total = t0
+total print 
+total return 
+
 
 function sub 
 a param 
 b param 
-t0 = b - a 
-diff = t0
+arg a
+arg b
+t1 = call divide
+b = t1
+t2 = b - a 
+diff = t2
+diff print 
 diff return 
 

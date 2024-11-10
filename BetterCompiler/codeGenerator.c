@@ -52,67 +52,7 @@ void generateMIPS(TAC* tacInstructions)
     int varIndex = 0;
 
     // Get the list of variables from the TAC instructions
-    while (current != NULL) {
-        printf("\nOP:%s\n", current->op);
-        if(strcmp(current->op, "param") == 0) {
-            printf("HERE");
-        }
-        // Check if the operation is '=', '+', or '*'
-        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || strcmp(current->op, "*") == 0 || strcmp(current->op, "-") == 0 || strcmp(current->op, "/") == 0) {
-            // Check if the result is a variable
-            if (current->result != NULL && !isConstant(current->result)) {
-                // Check if the variable is already declared
-                int found = 0;
-                for (int i = 0; i < varIndex; i++) { // Only iterate up to varIndex
-                    if (variables[i] != NULL && strcmp(variables[i], current->result) == 0) {
-                        found = 1;
-                        break;
-                    }
-                }
-
-                // If the variable is not found, add it to the list
-                if (!found) {
-                    if (varIndex < 100) { // Ensure we do not exceed the array bounds
-                        variables[varIndex] = current->result;
-                        varIndex++;
-                        fprintf(outputFile, "\t%s: .word 0\n", current->result); // Declare the variable in the data segment
-                    } else {
-                        fprintf(stderr, "Error: Too many variables to declare.\n");
-                        break;
-                    }
-                }
-            }
-        }
-        // if a param
-        else if(strcmp(current->op, "param") == 0) {
-            printf("HERE");
-            // Check if the argument is a variable
-            if (current->arg1 != NULL && !isConstant(current->arg1)) {
-                
-                // Check if the variable is already declared
-                int found = 0;
-                for (int i = 0; i < varIndex; i++) { // Only iterate up to varIndex
-                    if (variables[i] != NULL && strcmp(variables[i], current->arg1) == 0) {
-                        found = 1;
-                        break;
-                    }
-                }
-
-                // If the variable is not found, add it to the list
-                if (!found) {
-                    if (varIndex < 100) { // Ensure we do not exceed the array bounds
-                        variables[varIndex] = current->arg1;
-                        varIndex++;
-                        fprintf(outputFile, "\t%s: .word 0\n", current->arg1); // Declare the variable in the data segment
-                    } else {
-                        fprintf(stderr, "Error: Too many variables to declare.\n");
-                        break;
-                    }
-                }
-            }
-        }
-        current = current->next; // Move to the next TAC instruction
-    }
+    addDataSection(current, variables, varIndex);
 
     current = tacInstructions;
 
@@ -275,6 +215,45 @@ void generateMIPS(TAC* tacInstructions)
             deallocateRegister(reg2);
             deallocateRegister(regResult);
         }
+        // Handle division operation
+        else if(strcmp(current->op, "/") == 0)
+        {
+            // Allocate registers for both operands and the result
+            reg1 = allocateRegister();
+            reg2 = allocateRegister();
+            regResult = allocateRegister();
+
+            if (reg1 == -1 || reg2 == -1 || regResult == -1) {
+                fprintf(stderr, "No available register for division operation\n");
+                exit(EXIT_FAILURE);
+            }
+
+            if(isConstant(current->arg1)) {
+                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
+            } 
+            else {
+                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
+            }
+
+            if(isConstant(current->arg2)) {
+                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
+            } 
+            else {
+                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg2].name, current->arg2);
+            }
+
+            // Perform division
+            fprintf(outputFile, "\tdiv %s, %s\n", tempRegisters[reg1].name, tempRegisters[reg2].name);
+            fprintf(outputFile, "\tmflo %s\n", tempRegisters[regResult].name);
+
+            // Store result in memory
+            fprintf(outputFile, "\tsw %s, %s\n", tempRegisters[regResult].name, current->result);
+
+            // Deallocate registers
+            deallocateRegister(reg1);
+            deallocateRegister(reg2);
+            deallocateRegister(regResult);
+        }
         // Handle print operation
         else if (strcmp(current->op, "print") == 0) {
             // Allocate a register for the value to print
@@ -383,6 +362,10 @@ void generateMIPS(TAC* tacInstructions)
 
             // Function label
             fprintf(outputFile, "\n%s:\n", current->arg2);
+
+            // Add a stack for return address. This is needed for nested function calls
+            fprintf(outputFile, "\taddi $sp, $sp, -4\n");
+            fprintf(outputFile, "\tsw $ra, 0($sp)\n\n");
         }
         // Handle return operation
         else if (strcmp(current->op, "return") == 0) {
@@ -398,6 +381,10 @@ void generateMIPS(TAC* tacInstructions)
             for (int i = 0; i < NUM_ARG_REGISTERS; i++) {
                 argumentRegisters[i].inUse = false;
             }
+
+            // Restore the return address from the stack
+            fprintf(outputFile, "\n\tlw $ra, 0($sp)\n");
+            fprintf(outputFile, "\taddi $sp, $sp, 4\n\n");
 
             // Return from the function
             fprintf(outputFile, "\tjr $ra\n");
@@ -419,9 +406,118 @@ void generateMIPS(TAC* tacInstructions)
                 fprintf(outputFile, "\tsw %s, %s\n", argumentRegisters[reg1].name, current->arg1);
             }
 
-            // Deallocate the register
-            //deallocateArgRegister(reg1);
+            // Deallocate all registers
+            if(current->next != NULL && strcmp(current->next->op, "param") != 0) {
+                for (int i = 0; i < NUM_ARG_REGISTERS; i++) {
+                    argumentRegisters[i].inUse = false;
+                }
+            }
         }
+        // Handle array declaration
+        // else if(strcmp(current->op, "array_decl") == 0) {
+        //     printf("Generating MIPS for Array declaration\n");
+
+        //     // Allocate a register for the size of the array
+        //     reg1 = allocateRegister();
+        //     if (reg1 == -1) {
+        //         fprintf(stderr, "No available register for array declaration\n");
+        //         exit(EXIT_FAILURE);
+        //     }
+
+        //     // Load the size of the array into the register
+        //     if (isConstant(current->arg2)) {
+        //         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg2);
+        //     } 
+        //     else {
+        //         fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg2);
+        //     }
+
+        //     // Allocate memory for the array
+        //     fprintf(outputFile, "\tli $v0, 9\n");
+        //     fprintf(outputFile, "\tmove $a0, %s\n", tempRegisters[reg1].name);
+        //     fprintf(outputFile, "\tsyscall\n");
+
+        //     // Store the address of the array in memory
+        //     fprintf(outputFile, "\tsw $v0, %s\n", current->result);
+
+        //     // Deallocate the register
+        //     deallocateRegister(reg1);
+        // }
+        // // Handle array assignment
+        // else if(strcmp(current->op, "array_assign") == 0) {
+        //     printf("Generating MIPS for Array assignment\n");
+
+        //     // Allocate a register for the index
+        //     reg1 = allocateRegister();
+        //     if (reg1 == -1) {
+        //         fprintf(stderr, "No available register for array assignment\n");
+        //         exit(EXIT_FAILURE);
+        //     }
+
+        //     // Load the index into the register
+        //     if (isConstant(current->arg2)) {
+        //         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg2);
+        //     } 
+        //     else {
+        //         fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg2);
+        //     }
+
+        //     // Load the value to assign into the register
+        //     if (isConstant(current->result)) {
+        //         fprintf(outputFile, "\tli $t0, %s\n", current->result);
+        //     } 
+        //     else {
+        //         fprintf(outputFile, "\tlw $t0, %s\n", current->result);
+        //     }
+
+        //     // Load the address of the array into $t1
+        //     fprintf(outputFile, "\tlw $t1, %s\n", current->arg1);
+
+        //     // Calculate the address of the element to assign
+        //     fprintf(outputFile, "\tmul $t0, $t0, 4\n");
+        //     fprintf(outputFile, "\tadd $t1, $t1, $t0\n");
+
+        //     // Store the value in the array
+        //     fprintf(outputFile, "\tsw $t0, 0($t1)\n");
+
+        //     // Deallocate the registers
+        //     deallocateRegister(reg1);
+        // }
+        // // Handle array access
+        // else if(strcmp(current->op, "array_access") == 0) {
+        //     printf("Generating MIPS for Array access\n");
+
+        //     // Allocate a register for the index
+        //     reg1 = allocateRegister();
+        //     if (reg1 == -1) {
+        //         fprintf(stderr, "No available register for array access\n");
+        //         exit(EXIT_FAILURE);
+        //     }
+
+        //     // Load the index into the register
+        //     if (isConstant(current->arg2)) {
+        //         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg2);
+        //     } 
+        //     else {
+        //         fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg2);
+        //     }
+
+        //     // Load the address of the array into $t0
+        //     fprintf(outputFile, "\tlw $t0, %s\n", current->arg1);
+
+        //     // Calculate the address of the element to access
+        //     fprintf(outputFile, "\tmul $t1, %s, 4\n", tempRegisters[reg1].name);
+        //     fprintf(outputFile, "\tadd $t0, $t0, $t1\n");
+
+        //     // Load the value from the array
+        //     fprintf(outputFile, "\tlw $t1, 0($t0)\n");
+
+        //     // Store the value in memory
+        //     fprintf(outputFile, "\tsw $t1, %s\n", current->result);
+
+        //     // Deallocate the registers
+        //     deallocateRegister(reg1);
+        // }
         else
         {
             printf("Generating MIPS for other operations\n");
@@ -465,6 +561,56 @@ Spilling: If all registers are in use and another one is needed,
           "spill" a register's value to memory and reuse the register.
 
 */
+
+//Create a function to add to the data section of the MIPS code
+void addDataSection(TAC* current, char* variables[], int varIndex) {
+    while (current != NULL) {
+        printf("\nOP:%s\n", current->op);
+        if(strcmp(current->op, "param") == 0) {
+            printf("HERE");
+        }
+        // Check if the operation is '=', '+', '*', '-', or '/'
+        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || 
+            strcmp(current->op, "*") == 0 || strcmp(current->op, "-") == 0 || 
+            strcmp(current->op, "/") == 0) {
+            // Check if the result is a variable
+            if (current->result != NULL && !isConstant(current->result)) {
+                int found = 0;
+                for (int i = 0; i < varIndex; i++) {
+                    if (variables[i] != NULL && strcmp(variables[i], current->result) == 0) {
+                        found = 1;
+                        break;
+                    }
+                }
+
+                if (!found && varIndex < 100) {
+                    variables[varIndex] = current->result;
+                    varIndex++;
+                    fprintf(outputFile, "\t%s: .word 0\n", current->result);
+                }
+            }
+        }
+        else if (strcmp(current->op, "param") == 0) {
+            if (current->arg1 != NULL && !isConstant(current->arg1)) {
+                int found = 0;
+                for (int i = 0; i < varIndex; i++) {
+                    if (variables[i] != NULL && strcmp(variables[i], current->arg1) == 0) {
+                        found = 1;
+                        break;
+                    }
+                }
+
+                if (!found && varIndex < 100) {
+                    variables[varIndex] = current->arg1;
+                    varIndex++;
+                    fprintf(outputFile, "\t%s: .word 0\n", current->arg1);
+                }
+            }
+        }
+        current = current->next;
+    }
+}
+
 
 // Allocate a register
 int allocateRegister() {
