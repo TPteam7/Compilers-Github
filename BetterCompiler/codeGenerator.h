@@ -25,7 +25,16 @@ int allocateRegister();
 // Deallocate a register
 void deallocateRegister(int regIndex);
 
+int allocateArgRegister();
+
+void deallocateArgRegister(int regIndex);
+
 // Print the current TAC instruction
 void printCurrentTAC(TAC* tac);
+
+void printNewLineMIPS(void);
+
+// Helper functions
+bool isConstant(const char* value);
 
 #endif // CODE_GENERATOR_H

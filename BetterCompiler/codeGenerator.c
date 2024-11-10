@@ -431,29 +431,6 @@ void generateMIPS(TAC* tacInstructions)
     }
 }
 
-void generateMIPSForFunction(TAC* tacInstructions)
-/*
-    Params:
-        tacInstructions: The list of TAC instructions to generate MIPS code from
-
-    Functionality:
-        Generates MIPS assembly code from the provided TAC instructions for a function.
-            This needs to be done as we deal with functions in a different way than other TAC instructions.
-*/
-{
-    TAC* current = tacInstructions;
-
-    // Function label
-    if(strcmp(current->op, "function") == 0) {
-        fprintf(outputFile, "\n%s:\n", tacInstructions->arg2);
-    }
-    // Assignment
-    else if(strcmp(current->op, "=") == 0 && strcmp(current->arg1, "call") != 0)
-    {
-
-    }
-}
-
 
 
 void finalizeCodeGenerator(const char* outputFilename) {

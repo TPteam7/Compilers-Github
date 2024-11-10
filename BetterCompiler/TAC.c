@@ -198,7 +198,7 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing semantic analysis on declaration\n");
 
-            printf("Declaration: %s\n", node->declaration.id);
+            printf("Declaration: %s\n", node->declaration.id->id.name);
 
             generateTAC(node->declaration.type);
             generateTAC(node->declaration.id);
