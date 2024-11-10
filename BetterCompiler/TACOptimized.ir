@@ -1,10 +1,7 @@
-t3 = 10 - 5 
-num = t3 
-num print 
-num arg 
+5 arg 
 1 arg 
-t5 = call sub 
-subtraction = t5 
+t3 = call sub 
+subtraction = t3 
 subtraction print 
 function sub 
 a param 

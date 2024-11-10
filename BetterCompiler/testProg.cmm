@@ -6,18 +6,7 @@ int sub(int a, int b)
 }
 
 int subtraction;
-int num;
 
-int num1;
-int num2;
-
-num1 = 10;
-num2 = 5;
-
-num = num1 - num2;
-
-print(num);
-
-subtraction = sub(num, 1);
+subtraction = sub(5, 1);
 
 print(subtraction);
