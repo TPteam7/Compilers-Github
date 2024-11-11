@@ -1,29 +1,11 @@
-t3 = 10
-arg t3
-t4 = 5
-arg t4
-t5 = call sub
-subtraction = t5
-subtraction print 
-
-function divide 
-a1 param 
-b1 param 
-t0 = a1 / b1 
-total = t0
-total print 
-total return 
-
-
-function sub 
-a param 
-b param 
-arg a
-arg b
-t1 = call divide
-b = t1
-t2 = b - a 
-diff = t2
-diff print 
-diff return 
-
+t0 = 5
+x = t0
+arr = array_decl x
+t1 = 3
+t2 = 17
+arr[t1] = t2
+t3 = 3
+t4 = arr[t3]
+t5 = 3
+t6 = arr[t5]
+t6 print 
