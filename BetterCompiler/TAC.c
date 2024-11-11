@@ -244,6 +244,11 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing semantic analysis on array access\n");
 
+            // Skip the array access if it is part of an assignment
+            // if (node->parent->nType == NodeType_Assignment || node->parent->nType == NodeType_ArrayAssignment) {
+            //     return NULL;
+            // }
+
             generateTAC(node->arrayAccess.id);
             TAC* indexTAC = generateTAC(node->arrayAccess.index);
 
@@ -283,7 +288,6 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing semantic analysis on print\n");
 
-            generateTAC(node->print.expr);
             TAC* exprTAC = generateTAC(node->print.expr); 
             
             instruction->arg1 = exprTAC->result;

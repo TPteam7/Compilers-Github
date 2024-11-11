@@ -7,6 +7,15 @@
 
 static FILE* outputFile;
 bool endOfProgram = false;
+// Keep track of the array register. 
+    //This register will remain and be used for all arrays
+int arrReg = NULL;       
+
+// Keep track of the element being accessed in the array
+int elementID = NULL;
+
+// Name of the current array being accessed
+char* accessedArr = NULL;   
 
 typedef struct {
     char* name; // Name of the register, e.g., "$t0"
@@ -417,101 +426,126 @@ void generateMIPS(TAC* tacInstructions)
         else if(strcmp(current->op, "array_decl") == 0) {
             printf("Generating MIPS for Array declaration\n");
 
-            // Allocate a register for the size of the array
-            reg1 = allocateRegister();
-            if (reg1 == -1) {
+            // Allocate a register for the size of the array if it is not already allocated
+            if(arrReg == NULL) {
+                arrReg = allocateRegister();
+            }
+
+            if (arrReg == -1) {
                 fprintf(stderr, "No available register for array declaration\n");
                 exit(EXIT_FAILURE);
             }
 
-            // // Load the size of the array into the register
-            // if (isConstant(current->arg2)) {
-            //     fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg2);
-            // } 
-            // else {
-            //     fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg2);
-            // }
-
-            // Allocate memory for the array using la
-            fprintf(outputFile, "\tla %s, %s\n", tempRegisters[reg1].name, current->result);
-
-            // Deallocate the register
-            deallocateRegister(reg1);
+            // Allocate memory for the array using la if it is not already allocated
+            if(accessedArr == NULL || strcmp(accessedArr, current->result) != 0) {
+                accessedArr = current->result;
+                elementID = NULL;       // Reset the element being accessed since it is a new array
+                fprintf(outputFile, "\tla %s, %s\n", tempRegisters[arrReg].name, current->result);
+            }
         }
         // Handle array assignment
         else if(strcmp(current->op, "array_assign") == 0) {
             printf("Generating MIPS for Array assignment\n");
 
             // Allocate a register for the index
-            reg1 = allocateRegister();
-            if (reg1 == -1) {
+            int indexReg = allocateRegister();
+            int resultReg = allocateRegister();
+            int offsetReg = allocateRegister();
+
+            if (indexReg == -1 || resultReg == -1 || offsetReg == -1) {
                 fprintf(stderr, "No available register for array assignment\n");
                 exit(EXIT_FAILURE);
             }
 
-            // Load the index into the register
-            if (isConstant(current->arg2)) {
-                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg2);
-            } 
-            else {
-                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg2);
+            printf("ASSIGN Current array: %s\n", accessedArr);
+            printf("ASSIGN Array to assign: %s\n", current->result);
+
+            // Current array to assign to
+            char* arr_to_assign = current->result;
+
+            // If the array is different then the current array, load the address of the array into the register
+            if(accessedArr == NULL || strcmp(accessedArr, arr_to_assign) != 0) {
+                accessedArr = arr_to_assign;
+                elementID = NULL;       // Reset the element being accessed since it is a new array
+                fprintf(outputFile, "\tla %s, %s\n", tempRegisters[arrReg].name, accessedArr);
             }
+
+            // Load the index into the register
+            if (isConstant(current->arg2))
+                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[indexReg].name, current->arg2);
+            
+            else
+                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[indexReg].name, current->arg2);
+            
 
             // Load the value to assign into the register
-            if (isConstant(current->result)) {
-                fprintf(outputFile, "\tli $t0, %s\n", current->result);
-            } 
-            else {
-                fprintf(outputFile, "\tlw $t0, %s\n", current->result);
-            }
-
-            // Load the address of the array into $t1
-            fprintf(outputFile, "\tlw $t1, %s\n", current->arg1);
+            if (isConstant(current->arg1))
+                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[resultReg].name, current->arg1);
+            
+            else
+                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[resultReg].name, current->arg1);
+            
 
             // Calculate the address of the element to assign
-            fprintf(outputFile, "\tmul $t0, $t0, 4\n");
-            fprintf(outputFile, "\tadd $t1, $t1, $t0\n");
+            fprintf(outputFile, "\tmul %s, %s, 4\n", tempRegisters[indexReg].name, tempRegisters[indexReg].name);
+            
+            // newReg, arrReg, indexReg
+            fprintf(outputFile, "\tadd %s, %s, %s\n", tempRegisters[offsetReg].name, tempRegisters[arrReg].name, tempRegisters[indexReg].name);       
 
-            // Store the value in the array
-            fprintf(outputFile, "\tsw $t0, 0($t1)\n");
+            // Load the value from the array
+            fprintf(outputFile, "\tsw %s, 0(%s)\n", tempRegisters[resultReg].name, tempRegisters[offsetReg].name);
 
             // Deallocate the registers
-            deallocateRegister(reg1);
+            deallocateRegister(indexReg);
+            deallocateRegister(resultReg);
+            deallocateRegister(offsetReg);
         }
         // Handle array access
         else if(strcmp(current->op, "array_access") == 0) {
             printf("Generating MIPS for Array access\n");
 
             // Allocate a register for the index
-            reg1 = allocateRegister();
-            if (reg1 == -1) {
-                fprintf(stderr, "No available register for array access\n");
+            int indexReg = allocateRegister();
+            int accessedElementArg = allocateRegister();
+            int offsetReg = allocateRegister();
+
+            if (indexReg == -1 || accessedElementArg == -1 || offsetReg == -1) {
+                fprintf(stderr, "No available register for array assignment\n");
                 exit(EXIT_FAILURE);
             }
 
-            // Load the index into the register
-            if (isConstant(current->arg2)) {
-                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg2);
-            } 
-            else {
-                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg2);
+            printf("ACCESS Current array: %s\n", accessedArr);
+            printf("ACCESS Array to assign: %s\n", current->arg1);
+
+            // Current array to assign to
+            char* arr_to_assign = current->arg1;
+
+            // If the array is different then the current array, load the address of the array into the register
+            if(accessedArr == NULL || strcmp(accessedArr, arr_to_assign) != 0) {
+                accessedArr = arr_to_assign;
+                fprintf(outputFile, "\tla %s, %s\n", tempRegisters[arrReg].name, accessedArr);
             }
 
-            // Load the address of the array into $t0
-            fprintf(outputFile, "\tlw $t0, %s\n", current->arg1);
+            // Load the index into the register
+            if (isConstant(current->arg2))
+                fprintf(outputFile, "\tli %s, %s\n", tempRegisters[indexReg].name, current->arg2);
+            
+            else
+                fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[indexReg].name, current->arg2);
 
-            // Calculate the address of the element to access
-            fprintf(outputFile, "\tmul $t1, %s, 4\n", tempRegisters[reg1].name);
-            fprintf(outputFile, "\tadd $t0, $t0, $t1\n");
+            // Calculate the address of the element to assign
+            fprintf(outputFile, "\tmul %s, %s, 4\n", tempRegisters[indexReg].name, tempRegisters[indexReg].name);
+            
+            // newReg, arrReg, indexReg
+            fprintf(outputFile, "\tadd %s, %s, %s\n", tempRegisters[offsetReg].name, tempRegisters[arrReg].name, tempRegisters[indexReg].name);       
 
             // Load the value from the array
-            fprintf(outputFile, "\tlw $t1, 0($t0)\n");
-
-            // Store the value in memory
-            fprintf(outputFile, "\tsw $t1, %s\n", current->result);
+            fprintf(outputFile, "\tlw %s, 0(%s)\n", tempRegisters[accessedElementArg].name, tempRegisters[offsetReg].name);
 
             // Deallocate the registers
-            deallocateRegister(reg1);
+            deallocateRegister(indexReg);
+            deallocateRegister(accessedElementArg);
+            deallocateRegister(offsetReg);
         }
         else
         {
@@ -519,6 +553,11 @@ void generateMIPS(TAC* tacInstructions)
         }
         
         current = current->next; // Move to the next TAC instruction
+
+        if(current == NULL && !endOfProgram) {
+            fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
+            endOfProgram = true;
+        }
     }
 }
 

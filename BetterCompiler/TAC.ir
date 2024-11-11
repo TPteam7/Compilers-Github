@@ -6,6 +6,4 @@ t2 = 17
 arr[t1] = t2
 t3 = 3
 t4 = arr[t3]
-t5 = 3
-t6 = arr[t5]
-t6 print 
+t4 print 

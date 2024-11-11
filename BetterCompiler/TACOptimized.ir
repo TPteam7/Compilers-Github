@@ -1,5 +1,4 @@
 arr = array_decl 5 
 arr = 17 array_assign 3 
 t4 = arr array_access 3 
-t6 = arr array_access 3 
-t6 print 
+t4 print 
