@@ -542,6 +542,9 @@ void generateMIPS(TAC* tacInstructions)
             // Load the value from the array
             fprintf(outputFile, "\tlw %s, 0(%s)\n", tempRegisters[accessedElementArg].name, tempRegisters[offsetReg].name);
 
+            // Save into the result
+            fprintf(outputFile, "\tsw %s, %s\n", tempRegisters[accessedElementArg].name, current->result);
+
             // Deallocate the registers
             deallocateRegister(indexReg);
             deallocateRegister(accessedElementArg);
