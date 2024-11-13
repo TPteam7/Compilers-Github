@@ -1,8 +1,23 @@
+int divideNums(int a, int b)
+{
+    int total;
+
+    total = b/a;
+
+    print(total);
+
+    return total;
+}
+
 int addNums(int a, int b)
 {
     int total;
 
+    a = divideNums(a, b);
+
     total= a + b;
+
+    print(total);
 
     return total;
 }
@@ -13,7 +28,7 @@ arr[3] = 17;
 arr[2] = 2;
 arr[5] = 5;
 
-print(arr[5]);
+print(arr[3]);
 
 int sum;
 
