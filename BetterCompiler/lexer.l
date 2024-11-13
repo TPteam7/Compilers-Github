@@ -79,6 +79,11 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
               printf("%s : KEYWORD\n", yytext); 
               yylval.string = strdup(yytext); 
               return ELSE; }
+        
+"else if"   { words++; chars += strlen(yytext); 
+              printf("%s : KEYWORD\n", yytext); 
+              yylval.string = strdup(yytext); 
+              return ELSE_IF; }
 
 "while"     { words++; chars += strlen(yytext); 
               printf("%s : KEYWORD\n", yytext); 
@@ -124,6 +129,41 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
               printf("%s : ASSIGN\n", yytext); 
               yylval.op = yytext[0]; 
               return ASSIGN; }
+
+"<"         { chars++; 
+              printf("%s : LESS THAN\n", yytext); 
+              yylval.op = yytext[0]; 
+              return LESS_THAN; }
+
+">"         { chars++; 
+              printf("%s : GREATER THAN\n", yytext); 
+              yylval.op = yytext[0]; 
+              return GREATER_THAN; }
+
+"=="         { chars += strlen(yytext); 
+              printf("%s : EQUAL TO\n", yytext); 
+              yylval.op = strdup(yytext); 
+              return EQUAL_TO; }
+
+"<="         { chars += strlen(yytext); 
+              printf("%s : LESS THAN EQUAL TO\n", yytext); 
+              yylval.op = strdup(yytext); 
+              return LESS_THAN_EQUAL_TO; }
+
+">="         { chars += strlen(yytext); 
+              printf("%s : GREATER THAN EQUAL TO\n", yytext); 
+              yylval.op = strdup(yytext); 
+              return GREATER_THAN_EQUAL_TO; }
+
+"&&"         { chars += strlen(yytext); 
+              printf("%s : AND\n", yytext); 
+              yylval.op = strdup(yytext); 
+              return AND; }
+
+"||"         { chars += strlen(yytext); 
+              printf("%s : OR\n", yytext); 
+              yylval.op = strdup(yytext); 
+              return OR; }
 
 "("         { chars++;
               printf("%s : LPAREN\n", yytext);

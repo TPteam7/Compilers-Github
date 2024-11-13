@@ -1,31 +1,6 @@
-int divideNums(int a, int b)
+int a = 3;
+
+if(a > 3)
 {
-    int total;
-
-    total=a/b;
-
-    return total;
+    print(a);
 }
-
-int addNums(int a, int b)
-{
-    int total;
-    int divideTotal;
-
-    divideTotal = divideNums(a,b);
-
-    total = divideTotal + a;
-
-    return total;
-}
-
-int arr[5];
-
-arr[3] = 17;
-
-print(arr[3]);
-
-int sum;
-sum = addNums(10,2);
-
-print(sum);

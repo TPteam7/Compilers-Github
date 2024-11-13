@@ -79,7 +79,12 @@ extern int yydebug;
     MINUS = 280,                   /* MINUS  */
     MULT = 281,                    /* MULT  */
     DIV = 282,                     /* DIV  */
-    NUMBER = 283                   /* NUMBER  */
+    GREATER_THAN = 283,            /* GREATER_THAN  */
+    LESS_THAN = 284,               /* LESS_THAN  */
+    EQUAL_TO = 285,                /* EQUAL_TO  */
+    GREATER_THAN_EQUAL_TO = 286,   /* GREATER_THAN_EQUAL_TO  */
+    LESS_THAN_EQUAL_TO = 287,      /* LESS_THAN_EQUAL_TO  */
+    NUMBER = 288                   /* NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -96,7 +101,7 @@ union YYSTYPE
 	char op;
 	struct ASTNode* node;
 
-#line 100 "parser.tab.h"
+#line 105 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

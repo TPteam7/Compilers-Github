@@ -48,12 +48,14 @@ int printParserDebug = 0;
 %token <character> SEMICOLON COMMA
 %token <character> LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token <op> ASSIGN PLUS MINUS MULT DIV
+%token <op> GREATER_THAN LESS_THAN EQUAL_TO GREATER_THAN_EQUAL_TO LESS_THAN_EQUAL_TO
 %token <number> NUMBER
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
 %type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
 %type <node> FunctionDeclaration FunctionCall ParamList ParamTail Param ArgList ArgTail BlockStmtList BlockStmt Block ReturnStmt
+%type <node> IfStmt Condition SIGN
 %start Program
 
 %%
@@ -70,6 +72,20 @@ Stmt: Declaration { $$ = createStmtNode($1); }
 	| Print { $$ = createStmtNode($1); }
 	| FunctionCall { $$ = createStmtNode($1); }
 	| FunctionDeclaration { $$ = createStmtNode($1); };
+	| IfStmt { printf("IF Stmt\n"); }
+
+
+IfStmt: IF LPAREN Condition RPAREN LBRACE StmtList RBRACE { printf("IF Stmt\n"); }
+
+
+Condition: Expr SIGN Expr { printf("Condition\n"); }
+
+
+SIGN: GREATER_THAN { printf("SIGN: %s\n", "GREATER_THAN"); }
+	| LESS_THAN { printf("SIGN: %s\n", "LESS_THAN"); }
+	| EQUAL_TO { printf("SIGN: %s\n", "EQUAL_TO"); }
+	| GREATER_THAN_EQUAL_TO { printf("SIGN: %s\n", "GREATER_THAN_EQUAL_TO"); }
+	| LESS_THAN_EQUAL_TO { printf("SIGN: %s\n", "LESS_THAN_EQUAL_TO"); }
 
 
 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
@@ -160,7 +176,7 @@ int main() {
 	yydebug = 0;
 
 	// Initialize symbol table
-	symTab = createSymbolTable(TABLE_SIZE);
+	//symTab = createSymbolTable(TABLE_SIZE);
     if (symTab == NULL) {
         // Handle error
         return EXIT_FAILURE;
@@ -174,41 +190,41 @@ int main() {
 		// Print symbol table for debugging
 		if(printSymbolDebug == 1)
 		{
-			printSymbolTable(symTab);
+			//printSymbolTable(symTab);
 		}
 
 		printf("\nPARSER:\nParsing successful!\n");
 
-		printAST(root, 0);
+		//printAST(root, 0);
 		
 
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
-		semanticAnalysis(root, symTab, symTab->topLevelStatements);
+		//semanticAnalysis(root, symTab, symTab->topLevelStatements);
 
 
 		//print symbolTable
 		printSymbolTable(symTab);
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
-		generateTAC(root);
-		printTAC(&tacHead);
+		//generateTAC(root);
+		//printTAC(&tacHead);
 
-		printTACToFile("TAC.ir", &tacHead);
+		//printTACToFile("TAC.ir", &tacHead);
 
 		// Code optimization
 		printf("\n\n=== CODE OPTIMIZATION ===\n");
 
-		optimizeTAC(&tacHead);
-		printOptimizedTAC("TACOptimized.ir", tacHead);
+		//optimizeTAC(&tacHead);
+		//printOptimizedTAC("TACOptimized.ir", tacHead);
 
 		printf("\n=== CODE GENERATION ===\n");
-		initCodeGenerator("output.s");
-		generateMIPS(tacHead);
-		finalizeCodeGenerator("output.s");
+		//initCodeGenerator("output.s");
+		//generateMIPS(tacHead);
+		//finalizeCodeGenerator("output.s");
 
-        freeAST(root);
-		freeSymbolTable(symTab);
+        //freeAST(root);
+		//freeSymbolTable(symTab);
 
     }
 
