@@ -9,10 +9,10 @@ static FILE* outputFile;
 bool endOfProgram = false;
 // Keep track of the array register. 
     //This register will remain and be used for all arrays
-int arrReg = NULL;       
+int arrReg = 0;       
 
 // Keep track of the element being accessed in the array
-int elementID = NULL;
+int elementID = 0;
 
 // Name of the current array being accessed
 char* accessedArr = NULL;   
@@ -427,7 +427,7 @@ void generateMIPS(TAC* tacInstructions)
             printf("Generating MIPS for Array declaration\n");
 
             // Allocate a register for the size of the array if it is not already allocated
-            if(arrReg == NULL) {
+            if(arrReg == 0) {
                 arrReg = allocateRegister();
             }
 
@@ -439,7 +439,7 @@ void generateMIPS(TAC* tacInstructions)
             // Allocate memory for the array using la if it is not already allocated
             if(accessedArr == NULL || strcmp(accessedArr, current->result) != 0) {
                 accessedArr = current->result;
-                elementID = NULL;       // Reset the element being accessed since it is a new array
+                elementID = 0;       // Reset the element being accessed since it is a new array
                 fprintf(outputFile, "\tla %s, %s\n", tempRegisters[arrReg].name, current->result);
             }
         }
@@ -466,7 +466,7 @@ void generateMIPS(TAC* tacInstructions)
             // If the array is different then the current array, load the address of the array into the register
             if(accessedArr == NULL || strcmp(accessedArr, arr_to_assign) != 0) {
                 accessedArr = arr_to_assign;
-                elementID = NULL;       // Reset the element being accessed since it is a new array
+                elementID = 0;       // Reset the element being accessed since it is a new array
                 fprintf(outputFile, "\tla %s, %s\n", tempRegisters[arrReg].name, accessedArr);
             }
 
@@ -669,7 +669,7 @@ void addDataSection(TAC* current, char* variables[], int varIndex) {
         // Any access or assignment of array
         else if(strcmp(current->op, "array_assign") == 0 || strcmp(current->op, "array_access") == 0)
         {
-            printf(current->result);
+            printf("%s", current->result);
             if (current->result != NULL && !isConstant(current->result)) {
                 int found = 0;
                 for (int i = 0; i < varIndex; i++) {

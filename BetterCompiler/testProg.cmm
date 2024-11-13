@@ -1,20 +1,8 @@
-int divideNums(int a, int b)
-{
-    int total;
-
-    total=a/b;
-
-    return total;
-}
-
 int addNums(int a, int b)
 {
     int total;
-    int divideTotal;
 
-    divideTotal = divideNums(a,b);
-
-    total = divideTotal + a;
+    total= a + b;
 
     return total;
 }
@@ -22,10 +10,13 @@ int addNums(int a, int b)
 int arr[5];
 
 arr[3] = 17;
+arr[2] = 2;
+arr[5] = 5;
 
-print(arr[3]);
+print(arr[5]);
 
 int sum;
-sum = addNums(10,2);
+
+sum = addNums(arr[2], arr[3]);
 
 print(sum);

@@ -223,6 +223,10 @@ ARGS:
                 fprintf(stderr, "\nSEMANTIC ERROR:\nArray %s has not been declared\n\n", node->arrayAccess.id->id.name);
                 exit(0);
                 break;
+            } else if (lookupVariable(varTab, node->arrayAccess.id->id.name)->arraySize <= node->arrayAccess.index->number.value) {
+                fprintf(stderr, "\nSEMANTIC ERROR:\nArray %s index %d is out of bounds.\n\n", node->arrayAccess.id->id.name, node->arrayAccess.index->number.value);
+                exit(0);
+                break;
             }
 
             if (printDebugSemantic == 1)
@@ -239,7 +243,7 @@ ARGS:
         // Check for declaration of variables in VariableSymbolTable
         case NodeType_Assignment:
             if (lookupVariable(varTab, node->assignment.id->id.name) == NULL) {
-                fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has already been declared\n\n", node->assignment.id->id.name);
+                fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has not been declared\n\n", node->assignment.id->id.name);
                 exit(0);
                 break;
             }
@@ -374,6 +378,13 @@ const char* evaluateExprType(ASTNode* expr, VariableSymbolTable* varTab) {
             exit(0);
         }
         return leftType;  // Return the resulting type of the expression
+    } else if (expr->nType == NodeType_ArrayAccess) {
+        Variable* var = lookupVariable(varTab, expr->arrayAccess.id->id.name);
+        if (var == NULL) {
+            fprintf(stderr, "Semantic error: Array %s has not been declared\n", expr->id.name);
+            exit(0);
+        }
+        return var->variableType; 
     }
     return NULL;  // Error or unsupported type
 }

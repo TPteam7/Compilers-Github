@@ -1,35 +1,31 @@
-t3 = 5
-arr = array_decl t3
-t4 = 3
-t5 = 17
+t1 = 5
+arr = array_decl t1
+t2 = 3
+t3 = 17
+arr[t2] = t3
+t4 = 2
+t5 = 2
 arr[t4] = t5
-t6 = 3
-t7 = arr[t6]
-t7 print 
-t8 = 10
-arg t8
-t9 = 2
-arg t9
-t10 = call addNums
-sum = t10
+t6 = 5
+t7 = 5
+arr[t6] = t7
+t8 = 4
+t9 = arr[t8]
+t9 print 
+t10 = 2
+t11 = arr[t10]
+arg t11
+t12 = 3
+t13 = arr[t12]
+arg t13
+t14 = call addNums
+sum = t14
 sum print 
-
-function divideNums 
-a param 
-b param 
-t0 = a / b 
-total = t0
-total return 
-
 
 function addNums 
 a param 
 b param 
-arg a
-arg b
-t1 = call divideNums
-divideTotal = t1
-t2 = divideTotal + a 
-total = t2
+t0 = a + b 
+total = t0
 total return 
 

@@ -1,25 +1,19 @@
 arr = array_decl 5 
 arr = 17 array_assign 3 
-t7 = arr array_access 3 
-t7 print 
-10 arg 
-2 arg 
-t10 = call addNums 
-sum = t10 
+arr = 2 array_assign 2 
+arr = 5 array_assign 5 
+t9 = arr array_access 4 
+t9 print 
+t11 = arr array_access 2 
+t11 arg 
+t13 = arr array_access 3 
+t13 arg 
+t14 = call addNums 
+sum = t14 
 sum print 
-function divideNums 
-a param 
-b param 
-t0 = a / b 
-total = t0 
-total return 
 function addNums 
 a param 
 b param 
-a arg 
-b arg 
-t1 = call divideNums 
-divideTotal = t1 
-t2 = divideTotal + a 
-total = t2 
+t0 = a + b 
+total = t0 
 total return 

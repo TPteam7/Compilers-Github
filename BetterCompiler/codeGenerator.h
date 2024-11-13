@@ -19,6 +19,8 @@ void generateMIPS(TAC* tacInstructions);
 // Finalizes code generation, closing files and cleaning up
 void finalizeCodeGenerator(const char* outputFilename);
 
+void addDataSection(TAC* current, char* variables[], int varIndex);
+
 // Allocate a register
 int allocateRegister();
 
