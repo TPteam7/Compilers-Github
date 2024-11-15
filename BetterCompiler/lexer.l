@@ -132,37 +132,37 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
 
 "<"         { chars++; 
               printf("%s : LESS THAN\n", yytext); 
-              yylval.op = yytext[0]; 
+              yylval.stringOp = strdup(yytext); 
               return LESS_THAN; }
 
 ">"         { chars++; 
               printf("%s : GREATER THAN\n", yytext); 
-              yylval.op = yytext[0]; 
+              yylval.stringOp = strdup(yytext); 
               return GREATER_THAN; }
 
 "=="         { chars += strlen(yytext); 
               printf("%s : EQUAL TO\n", yytext); 
-              yylval.op = strdup(yytext); 
+              yylval.stringOp = strdup(yytext); 
               return EQUAL_TO; }
 
 "<="         { chars += strlen(yytext); 
               printf("%s : LESS THAN EQUAL TO\n", yytext); 
-              yylval.op = strdup(yytext); 
+              yylval.stringOp = strdup(yytext); 
               return LESS_THAN_EQUAL_TO; }
 
 ">="         { chars += strlen(yytext); 
               printf("%s : GREATER THAN EQUAL TO\n", yytext); 
-              yylval.op = strdup(yytext); 
+              yylval.stringOp = strdup(yytext); 
               return GREATER_THAN_EQUAL_TO; }
 
 "&&"         { chars += strlen(yytext); 
               printf("%s : AND\n", yytext); 
-              yylval.op = strdup(yytext); 
+              yylval.stringOp = strdup(yytext); 
               return AND; }
 
 "||"         { chars += strlen(yytext); 
               printf("%s : OR\n", yytext); 
-              yylval.op = strdup(yytext); 
+              yylval.stringOp = strdup(yytext); 
               return OR; }
 
 "("         { chars++;

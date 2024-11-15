@@ -10,6 +10,9 @@ typedef enum {
     NodeType_Stmt,
     NodeType_FunctionDeclaration,
     NodeType_FunctionCall,
+    NodeType_IfStmt,
+    NodeType_Condition,
+    NodeType_Sign,
     NodeType_ParamList,
     NodeType_ParamTail,
     NodeType_Param,
@@ -20,6 +23,7 @@ typedef enum {
     NodeType_BlockStmt,
     NodeType_Return,
     NodeType_Declaration,
+    NodeType_DeclarationAssignment,
     NodeType_ArrayDeclaration,
     NodeType_ArrayAccess,
     NodeType_ArrayAssignment,
@@ -51,7 +55,7 @@ typedef struct ASTNode {
         } stmtList;
 
         struct {
-            struct ASTNode* child; // Declaration, assignment, print, functionCall, functionDeclaration
+            struct ASTNode* child; // Declaration, assignment, print, functionCall, functionDeclaration, DeclarationAssignment
         } stmt;
 
         struct {
@@ -65,6 +69,21 @@ typedef struct ASTNode {
             struct ASTNode* id;
             struct ASTNode* argList;      // switched from paramList to argList
         } functionCall;
+
+        struct {
+            struct ASTNode* condition; 
+            struct ASTNode* block;
+        }   ifStmt;
+
+        struct {
+            struct ASTNode* expr;
+            struct ASTNode* sign;
+            struct ASTNode* expr2;
+        } condition;
+
+        struct {
+            char* op; 
+        } sign;
 
         struct {
             struct ASTNode* paramTail;
@@ -110,6 +129,12 @@ typedef struct ASTNode {
             struct ASTNode* type;
             struct ASTNode* id;
         } declaration;
+
+        struct {
+            struct ASTNode* type;
+            struct ASTNode* id;
+            struct ASTNode* expr;
+        } declarationAssignment;
 
         struct {
             struct ASTNode* type;
@@ -177,6 +202,9 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList);
 ASTNode* createStmtNode(ASTNode* child);
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block);
 ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList);
+ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block);
+ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2);
+ASTNode* createSignNode(char* op);
 ASTNode* createParamListNode(ASTNode* paramTail);
 ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
 ASTNode* createParamNode(ASTNode* child);
@@ -187,6 +215,7 @@ ASTNode* createBlockStmtListNode(ASTNode* blockStmt, ASTNode* blockStmtList);
 ASTNode* createBlockStmtNode(ASTNode* child);
 ASTNode* createReturnNode(ASTNode* expr);
 ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
+ASTNode* createDeclarationAssignmentNode(ASTNode* type, ASTNode* id, ASTNode* expr);
 ASTNode* createArrayDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* size);
 ASTNode* createArrayAccessNode(ASTNode* id, ASTNode* index);
 ASTNode* createArrayAssignmentNode(ASTNode* id, ASTNode* index, ASTNode* value);

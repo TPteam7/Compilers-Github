@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "AST.h"
-#include "symbolTable.h"
-#include "semantic.h"
-#include "TAC.h"
-#include "optimizer.h"
-#include "codeGenerator.h"
+//#include "symbolTable.h"
+//#include "semantic.h"
+//#include "TAC.h"
+//#include "optimizer.h"
+//#include "codeGenerator.h"
 
 #define TABLE_SIZE 100
 
@@ -20,13 +20,13 @@ extern int yyparse(); // Declare yyparse, the parser function
 extern FILE* yyin; // Declare yyin, the file pointer for the input file
 extern int yylineno;  // Declare yylineno, the line number counter
 extern char *yytext;  // The text from the lexer file
-extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
+//extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
 
 void yyerror(const char* s);
 
 ASTNode* root = NULL;
-SymbolTable* symTab = NULL;
-Symbol* symbol = NULL;
+//SymbolTable* symTab = NULL;
+//Symbol* symbol = NULL;
 
 // Declare global print booleans
 int printSymbolDebug = 0;
@@ -38,24 +38,25 @@ int printParserDebug = 0;
 	int number;
 	char character;
 	char* string;
+	char* stringOp;
 	char op;
 	struct ASTNode* node;
 }
 
 %token <string> ID
 %token <string> INT FLOAT BOOL VOID TRUE FALSE
-%token <string> PRINT IF ELSE WHILE RETURN
+%token <string> PRINT IF ELSE ELSE_IF WHILE RETURN
 %token <character> SEMICOLON COMMA
 %token <character> LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token <op> ASSIGN PLUS MINUS MULT DIV
-%token <op> GREATER_THAN LESS_THAN EQUAL_TO GREATER_THAN_EQUAL_TO LESS_THAN_EQUAL_TO
+%token <stringOp> GREATER_THAN LESS_THAN EQUAL_TO GREATER_THAN_EQUAL_TO LESS_THAN_EQUAL_TO AND OR
 %token <number> NUMBER
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
 %type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
 %type <node> FunctionDeclaration FunctionCall ParamList ParamTail Param ArgList ArgTail BlockStmtList BlockStmt Block ReturnStmt
-%type <node> IfStmt Condition SIGN
+%type <node> DeclarationAssignment IfStmt Condition SIGN 
 %start Program
 
 %%
@@ -68,24 +69,25 @@ StmtList:  { $$ = NULL; }
 
 
 Stmt: Declaration { $$ = createStmtNode($1); } 
+	| DeclarationAssignment { $$ = createStmtNode($1); } 
 	| Assignment { $$ = createStmtNode($1); }
 	| Print { $$ = createStmtNode($1); }
 	| FunctionCall { $$ = createStmtNode($1); }
-	| FunctionDeclaration { $$ = createStmtNode($1); };
-	| IfStmt { printf("IF Stmt\n"); }
+	| FunctionDeclaration { $$ = createStmtNode($1); }
+	| IfStmt { $$ = createStmtNode($1); };
 
 
-IfStmt: IF LPAREN Condition RPAREN LBRACE StmtList RBRACE { printf("IF Stmt\n"); }
+IfStmt: IF LPAREN Condition RPAREN LBRACE Block RBRACE { $$ = createIfStmtNode($3, $6); };
 
 
-Condition: Expr SIGN Expr { printf("Condition\n"); }
+Condition: Expr SIGN Expr { $$ = createConditionNode($1, $2, $3); };
 
 
-SIGN: GREATER_THAN { printf("SIGN: %s\n", "GREATER_THAN"); }
-	| LESS_THAN { printf("SIGN: %s\n", "LESS_THAN"); }
-	| EQUAL_TO { printf("SIGN: %s\n", "EQUAL_TO"); }
-	| GREATER_THAN_EQUAL_TO { printf("SIGN: %s\n", "GREATER_THAN_EQUAL_TO"); }
-	| LESS_THAN_EQUAL_TO { printf("SIGN: %s\n", "LESS_THAN_EQUAL_TO"); }
+SIGN: GREATER_THAN { $$ = createSignNode($1); }
+	| LESS_THAN { $$ = createSignNode($1); }
+	| EQUAL_TO { $$ = createSignNode($1); }
+	| GREATER_THAN_EQUAL_TO { $$ = createSignNode($1); }
+	| LESS_THAN_EQUAL_TO { $$ = createSignNode($1); }
 
 
 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
@@ -123,9 +125,11 @@ BlockStmtList:  { $$ = NULL; }
 
 
 BlockStmt: Declaration { $$ = createBlockStmtNode($1); } 
+	| DeclarationAssignment { $$ = createStmtNode($1); } 
 	| Assignment { $$ = createBlockStmtNode($1); }
 	| Print { $$ = createBlockStmtNode($1); }
-	| FunctionCall { $$ = createBlockStmtNode($1); };
+	| FunctionCall { $$ = createBlockStmtNode($1); }
+	| IfStmt { printf("IF Stmt\n"); };
 
 
 ReturnStmt: RETURN Expr SEMICOLON { $$ = createReturnNode($2); };
@@ -133,6 +137,9 @@ ReturnStmt: RETURN Expr SEMICOLON { $$ = createReturnNode($2); };
 
 Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)); }
 	| Type ID LBRACKET Expr RBRACKET SEMICOLON { $$ = createArrayDeclarationNode($1, createIDNode($2), $4); };
+
+
+DeclarationAssignment: Type ID ASSIGN Expr SEMICOLON { $$ = createDeclarationAssignmentNode($1, createIDNode($2), $4);}
 
 
 Type: INT { printf("HERE\n"); $$ = createTypeNode($1); }
@@ -177,12 +184,12 @@ int main() {
 
 	// Initialize symbol table
 	//symTab = createSymbolTable(TABLE_SIZE);
-    if (symTab == NULL) {
+    //if (symTab == NULL) {
         // Handle error
-        return EXIT_FAILURE;
-    }
+        //return EXIT_FAILURE;
+    //}
 
-	printf("\nPARSER:\nStarting to parse\n\n");
+	printf("\n=== PARSER ===\n\n");
     int result = yyparse();
 
     if (result == 0) {
@@ -193,9 +200,9 @@ int main() {
 			//printSymbolTable(symTab);
 		}
 
-		printf("\nPARSER:\nParsing successful!\n");
+		printf("\n=== AST ===\n\n");
 
-		//printAST(root, 0);
+		printAST(root, 0);
 		
 
 		// Semantic analysis
@@ -204,7 +211,7 @@ int main() {
 
 
 		//print symbolTable
-		printSymbolTable(symTab);
+		//printSymbolTable(symTab);
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
 		//generateTAC(root);

@@ -49,6 +49,27 @@ ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList) {
     return node;
 }
 
+ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block) {
+    ASTNode* node = createNode(NodeType_IfStmt);
+    node->ifStmt.condition = condition;
+    node->ifStmt.block = block;
+    return node;
+}
+
+ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2) {
+    ASTNode* node = createNode(NodeType_Condition);
+    node->condition.expr = expr;
+    node->condition.sign = sign;
+    node->condition.expr2 = expr2;
+    return node;
+}
+
+ASTNode* createSignNode(char* op) {
+    ASTNode* node = createNode(NodeType_Sign);
+    node->sign.op = op;
+    return node;
+}
+
 ASTNode* createParamListNode(ASTNode* paramTail) {
     ASTNode* node = createNode(NodeType_ParamList);
     node->paramList.paramTail = paramTail;
@@ -111,6 +132,14 @@ ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id) {
     ASTNode* node = createNode(NodeType_Declaration);
     node->declaration.type = type;
     node->declaration.id = id;
+    return node;
+}
+
+ASTNode* createDeclarationAssignmentNode(ASTNode* type, ASTNode* id, ASTNode* expr) {
+    ASTNode* node = createNode(NodeType_DeclarationAssignment);
+    node->declarationAssignment.type = type;
+    node->declarationAssignment.id = id;
+    node->declarationAssignment.expr = expr;
     return node;
 }
 
@@ -238,6 +267,20 @@ void printAST(ASTNode* node, int indent) {
             printAST(node->functionCall.id, indent + 1);
             printAST(node->functionCall.argList, indent + 1);
             break;
+        case NodeType_IfStmt:
+            printf("If Statement\n");
+            printAST(node->ifStmt.condition, indent + 1);
+            printAST(node->ifStmt.block, indent + 1);
+            break;
+        case NodeType_Condition:
+            printf("Condition\n");
+            printAST(node->condition.expr, indent + 1);
+            printAST(node->condition.sign, indent + 1);
+            printAST(node->condition.expr2, indent + 1);
+            break;
+        case NodeType_Sign:
+            printf("Sign: %s\n", node->sign.op);
+            break;
         case NodeType_ParamList:
             printf("ParamList\n");
             printAST(node->paramList.paramTail, indent + 1);
@@ -282,6 +325,12 @@ void printAST(ASTNode* node, int indent) {
             printf("Declaration\n");
             printAST(node->declaration.type, indent + 1);
             printAST(node->declaration.id, indent + 1);
+            break;
+        case NodeType_DeclarationAssignment:
+            printf("Declaration Assignment\n");
+            printAST(node->declarationAssignment.type, indent + 1);
+            printAST(node->declarationAssignment.id, indent + 1);
+            printAST(node->declarationAssignment.expr, indent + 1);
             break;
         case NodeType_ArrayDeclaration:
             printf("Array Declaration\n");
@@ -371,6 +420,22 @@ void freeAST(ASTNode* node) {
             freeAST(node->functionCall.id);
             freeAST(node->functionCall.argList);
             break;
+        case NodeType_IfStmt:
+            freeAST(node->ifStmt.condition);
+            freeAST(node->ifStmt.block);
+            break;
+        case NodeType_Condition:
+            freeAST(node->condition.expr);
+            freeAST(node->condition.sign);
+            freeAST(node->condition.expr2);
+            break;
+        case NodeType_Sign:
+            // Free the operator string if allocated
+            if (node->sign.op != NULL) {
+                free(node->sign.op);
+                node->sign.op = NULL;
+            }
+            break;
         case NodeType_ParamList:
             freeAST(node->paramList.paramTail);
             break;
@@ -398,6 +463,11 @@ void freeAST(ASTNode* node) {
         case NodeType_Declaration:
             freeAST(node->declaration.type);
             freeAST(node->declaration.id);
+            break;
+        case NodeType_DeclarationAssignment:
+            freeAST(node->declarationAssignment.type);
+            freeAST(node->declarationAssignment.id);
+            freeAST(node->declarationAssignment.expr);
             break;
         case NodeType_ArrayDeclaration:
             freeAST(node->arrayDeclaration.type);

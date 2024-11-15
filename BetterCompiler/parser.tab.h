@@ -64,27 +64,30 @@ extern int yydebug;
     PRINT = 265,                   /* PRINT  */
     IF = 266,                      /* IF  */
     ELSE = 267,                    /* ELSE  */
-    WHILE = 268,                   /* WHILE  */
-    RETURN = 269,                  /* RETURN  */
-    SEMICOLON = 270,               /* SEMICOLON  */
-    COMMA = 271,                   /* COMMA  */
-    LPAREN = 272,                  /* LPAREN  */
-    RPAREN = 273,                  /* RPAREN  */
-    LBRACE = 274,                  /* LBRACE  */
-    RBRACE = 275,                  /* RBRACE  */
-    LBRACKET = 276,                /* LBRACKET  */
-    RBRACKET = 277,                /* RBRACKET  */
-    ASSIGN = 278,                  /* ASSIGN  */
-    PLUS = 279,                    /* PLUS  */
-    MINUS = 280,                   /* MINUS  */
-    MULT = 281,                    /* MULT  */
-    DIV = 282,                     /* DIV  */
-    GREATER_THAN = 283,            /* GREATER_THAN  */
-    LESS_THAN = 284,               /* LESS_THAN  */
-    EQUAL_TO = 285,                /* EQUAL_TO  */
-    GREATER_THAN_EQUAL_TO = 286,   /* GREATER_THAN_EQUAL_TO  */
-    LESS_THAN_EQUAL_TO = 287,      /* LESS_THAN_EQUAL_TO  */
-    NUMBER = 288                   /* NUMBER  */
+    ELSE_IF = 268,                 /* ELSE_IF  */
+    WHILE = 269,                   /* WHILE  */
+    RETURN = 270,                  /* RETURN  */
+    SEMICOLON = 271,               /* SEMICOLON  */
+    COMMA = 272,                   /* COMMA  */
+    LPAREN = 273,                  /* LPAREN  */
+    RPAREN = 274,                  /* RPAREN  */
+    LBRACE = 275,                  /* LBRACE  */
+    RBRACE = 276,                  /* RBRACE  */
+    LBRACKET = 277,                /* LBRACKET  */
+    RBRACKET = 278,                /* RBRACKET  */
+    ASSIGN = 279,                  /* ASSIGN  */
+    PLUS = 280,                    /* PLUS  */
+    MINUS = 281,                   /* MINUS  */
+    MULT = 282,                    /* MULT  */
+    DIV = 283,                     /* DIV  */
+    GREATER_THAN = 284,            /* GREATER_THAN  */
+    LESS_THAN = 285,               /* LESS_THAN  */
+    EQUAL_TO = 286,                /* EQUAL_TO  */
+    GREATER_THAN_EQUAL_TO = 287,   /* GREATER_THAN_EQUAL_TO  */
+    LESS_THAN_EQUAL_TO = 288,      /* LESS_THAN_EQUAL_TO  */
+    AND = 289,                     /* AND  */
+    OR = 290,                      /* OR  */
+    NUMBER = 291                   /* NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -98,10 +101,11 @@ union YYSTYPE
 	int number;
 	char character;
 	char* string;
+	char* stringOp;
 	char op;
 	struct ASTNode* node;
 
-#line 105 "parser.tab.h"
+#line 109 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
