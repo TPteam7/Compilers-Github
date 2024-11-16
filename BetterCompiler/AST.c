@@ -49,10 +49,29 @@ ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList) {
     return node;
 }
 
+ASTNode* createIfBlockNode(ASTNode* child) {
+    ASTNode* node = createNode(NodeType_IfBlock);
+    node->ifBlock.child = child;
+    return node;
+}
+
 ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block) {
     ASTNode* node = createNode(NodeType_IfStmt);
     node->ifStmt.condition = condition;
     node->ifStmt.block = block;
+    return node;
+}
+
+ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block) {
+    ASTNode* node = createNode(NodeType_ElseIfStmt);
+    node->elseIfStmt.condition = condition;
+    node->elseIfStmt.block = block;
+    return node;
+}
+
+ASTNode* createElseStmtNode(ASTNode* block) {
+    ASTNode* node = createNode(NodeType_ElseStmt);
+    node->elseStmt.block = block;
     return node;
 }
 
@@ -267,10 +286,23 @@ void printAST(ASTNode* node, int indent) {
             printAST(node->functionCall.id, indent + 1);
             printAST(node->functionCall.argList, indent + 1);
             break;
+        case NodeType_IfBlock:
+            printf("If Block\n");
+            printAST(node->ifBlock.child, indent + 1);
+            break;
         case NodeType_IfStmt:
             printf("If Statement\n");
             printAST(node->ifStmt.condition, indent + 1);
             printAST(node->ifStmt.block, indent + 1);
+            break;
+        case NodeType_ElseIfStmt:
+            printf("Else If Statement\n");
+            printAST(node->elseIfStmt.condition, indent + 1);
+            printAST(node->elseIfStmt.block, indent + 1);
+            break;
+        case NodeType_ElseStmt:
+            printf("Else Statement\n");
+            printAST(node->elseStmt.block, indent + 1);
             break;
         case NodeType_Condition:
             printf("Condition\n");
@@ -420,9 +452,19 @@ void freeAST(ASTNode* node) {
             freeAST(node->functionCall.id);
             freeAST(node->functionCall.argList);
             break;
+        case NodeType_IfBlock:
+            freeAST(node->ifBlock.child);
+            break;
         case NodeType_IfStmt:
             freeAST(node->ifStmt.condition);
             freeAST(node->ifStmt.block);
+            break;
+        case NodeType_ElseIfStmt:
+            freeAST(node->elseIfStmt.condition);
+            freeAST(node->elseIfStmt.block);
+            break;
+        case NodeType_ElseStmt:
+            freeAST(node->elseStmt.block);
             break;
         case NodeType_Condition:
             freeAST(node->condition.expr);

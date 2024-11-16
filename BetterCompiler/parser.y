@@ -56,7 +56,7 @@ int printParserDebug = 0;
 
 %type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
 %type <node> FunctionDeclaration FunctionCall ParamList ParamTail Param ArgList ArgTail BlockStmtList BlockStmt Block ReturnStmt
-%type <node> DeclarationAssignment IfStmt Condition SIGN 
+%type <node> DeclarationAssignment IfBlock IfStmt ElseIfStmt ElseStmt Condition SIGN 
 %start Program
 
 %%
@@ -74,11 +74,20 @@ Stmt: Declaration { $$ = createStmtNode($1); }
 	| Print { $$ = createStmtNode($1); }
 	| FunctionCall { $$ = createStmtNode($1); }
 	| FunctionDeclaration { $$ = createStmtNode($1); }
-	| IfStmt { $$ = createStmtNode($1); };
+	| IfBlock { $$ = createStmtNode($1); };
+
+
+IfBlock: IfStmt ElseIfStmt ElseStmt { $$ = createIfBlockNode($); }
 
 
 IfStmt: IF LPAREN Condition RPAREN LBRACE Block RBRACE { $$ = createIfStmtNode($3, $6); };
 
+
+ElseIfStmt: { $$ = NULL; }
+	| ELSE_IF LPAREN Condition RPAREN LBRACE Block RBRACE ElseIfStmt{}
+
+ElseStmt: { $$ = NULL; }
+	| ELSE LBRACE Block RBRACE {}
 
 Condition: Expr SIGN Expr { $$ = createConditionNode($1, $2, $3); };
 
@@ -129,7 +138,7 @@ BlockStmt: Declaration { $$ = createBlockStmtNode($1); }
 	| Assignment { $$ = createBlockStmtNode($1); }
 	| Print { $$ = createBlockStmtNode($1); }
 	| FunctionCall { $$ = createBlockStmtNode($1); }
-	| IfStmt { printf("IF Stmt\n"); };
+	| IfBlock { printf("IF Stmt\n"); };
 
 
 ReturnStmt: RETURN Expr SEMICOLON { $$ = createReturnNode($2); };

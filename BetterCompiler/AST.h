@@ -10,7 +10,10 @@ typedef enum {
     NodeType_Stmt,
     NodeType_FunctionDeclaration,
     NodeType_FunctionCall,
+    NodeType_IfBlock,
     NodeType_IfStmt,
+    NodeType_ElseIfStmt,
+    NodeType_ElseStmt,
     NodeType_Condition,
     NodeType_Sign,
     NodeType_ParamList,
@@ -71,9 +74,22 @@ typedef struct ASTNode {
         } functionCall;
 
         struct {
+            struct ASTNode* child;        // IfStmt or ElseIfStmt or ElseStmt
+        } ifBlock;
+
+        struct {
             struct ASTNode* condition; 
             struct ASTNode* block;
         }   ifStmt;
+
+        struct {
+            struct ASTNode* condition;
+            struct ASTNode* block;
+        } elseIfStmt;
+
+        struct {
+            struct ASTNode* block;
+        } elseStmt;
 
         struct {
             struct ASTNode* expr;
@@ -202,7 +218,10 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList);
 ASTNode* createStmtNode(ASTNode* child);
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block);
 ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList);
+ASTNode* createIfBlockNode(ASTNode* child);
 ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block);
+ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block);
+ASTNode* createElseStmtNode(ASTNode* block);
 ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2);
 ASTNode* createSignNode(char* op);
 ASTNode* createParamListNode(ASTNode* paramTail);
