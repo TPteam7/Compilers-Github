@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "AST.h"
-//#include "symbolTable.h"
-//#include "semantic.h"
+#include "symbolTable.h"
+#include "semantic.h"
 //#include "TAC.h"
 //#include "optimizer.h"
 //#include "codeGenerator.h"
@@ -25,8 +25,8 @@ extern char *yytext;  // The text from the lexer file
 void yyerror(const char* s);
 
 ASTNode* root = NULL;
-//SymbolTable* symTab = NULL;
-//Symbol* symbol = NULL;
+SymbolTable* symTab = NULL;
+Symbol* symbol = NULL;
 
 // Declare global print booleans
 int printSymbolDebug = 0;
@@ -194,11 +194,11 @@ int main() {
 	yydebug = 0;
 
 	// Initialize symbol table
-	//symTab = createSymbolTable(TABLE_SIZE);
-    //if (symTab == NULL) {
+	symTab = createSymbolTable(TABLE_SIZE);
+    if (symTab == NULL) {
         // Handle error
-        //return EXIT_FAILURE;
-    //}
+        return EXIT_FAILURE;
+    }
 
 	printf("\n=== PARSER ===\n\n");
     int result = yyparse();
@@ -208,7 +208,7 @@ int main() {
 		// Print symbol table for debugging
 		if(printSymbolDebug == 1)
 		{
-			//printSymbolTable(symTab);
+			printSymbolTable(symTab);
 		}
 
 		printf("\n=== AST ===\n\n");
@@ -218,11 +218,11 @@ int main() {
 
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
-		//semanticAnalysis(root, symTab, symTab->topLevelStatements);
+		semanticAnalysis(root, symTab, symTab->topLevelStatements);
 
 
-		//print symbolTable
-		//printSymbolTable(symTab);
+		// print symbolTable
+		printSymbolTable(symTab);
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
 		//generateTAC(root);

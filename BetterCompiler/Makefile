@@ -11,12 +11,12 @@ lex.yy.c: lexer.l parser.tab.h
 # Compile and link all necessary files, including AST.c
 # remove for now semantic.c symbolTable.c optimizer.c codeGenerator.c TAC.c
 # semantic.c symbolTable.c optimizer.c codeGenerator.c TAC.c
-parser: lex.yy.c parser.tab.c parser.tab.h AST.c
-	gcc -o parser lex.yy.c parser.tab.c AST.c
+parser: lex.yy.c parser.tab.c parser.tab.h AST.c semantic.c symbolTable.c
+	gcc -o parser lex.yy.c parser.tab.c AST.c semantic.c symbolTable.c
 	./parser testProg.cmm
 
 # Clean up generated files
 # symbolTable.o optimizer.o codeGenerator.o optimizer.o semantic.o codeGenerator.o TAC.o
 clean:
-	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output lex.yy.o parser.tab.o
+	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output lex.yy.o parser.tab.o semantic.o symbolTable.o
 	ls -l
