@@ -74,17 +74,20 @@ typedef struct ASTNode {
         } functionCall;
 
         struct {
-            struct ASTNode* child;        // IfStmt or ElseIfStmt or ElseStmt
+            struct ASTNode* ifStmt;        // IfStmt 
+            struct ASTNode* elseIfList;    // Linked list of ElseIfStmt nodes
+            struct ASTNode* elseStmt;      // Optional ElseStmt node
         } ifBlock;
 
         struct {
             struct ASTNode* condition; 
             struct ASTNode* block;
-        }   ifStmt;
+        } ifStmt;
 
         struct {
             struct ASTNode* condition;
             struct ASTNode* block;
+            struct ASTNode* next; // Next ElseIfStmt in the list
         } elseIfStmt;
 
         struct {
@@ -218,9 +221,9 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList);
 ASTNode* createStmtNode(ASTNode* child);
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block);
 ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList);
-ASTNode* createIfBlockNode(ASTNode* child);
+ASTNode* createIfBlockNode(ASTNode* ifStmt, ASTNode* elseIfList, ASTNode* elseStmt);
 ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block);
-ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block);
+ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block, ASTNode* next);
 ASTNode* createElseStmtNode(ASTNode* block);
 ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2);
 ASTNode* createSignNode(char* op);

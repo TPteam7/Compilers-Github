@@ -49,9 +49,11 @@ ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList) {
     return node;
 }
 
-ASTNode* createIfBlockNode(ASTNode* child) {
+ASTNode* createIfBlockNode(ASTNode* ifStmt, ASTNode* elseIfList, ASTNode* elseStmt) {
     ASTNode* node = createNode(NodeType_IfBlock);
-    node->ifBlock.child = child;
+    node->ifBlock.ifStmt = ifStmt;
+    node->ifBlock.elseIfList = elseIfList;
+    node->ifBlock.elseStmt = elseStmt;
     return node;
 }
 
@@ -62,10 +64,11 @@ ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block) {
     return node;
 }
 
-ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block) {
+ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block, ASTNode* next) {
     ASTNode* node = createNode(NodeType_ElseIfStmt);
     node->elseIfStmt.condition = condition;
     node->elseIfStmt.block = block;
+    node->elseIfStmt.next = next;
     return node;
 }
 
@@ -288,7 +291,9 @@ void printAST(ASTNode* node, int indent) {
             break;
         case NodeType_IfBlock:
             printf("If Block\n");
-            printAST(node->ifBlock.child, indent + 1);
+            printAST(node->ifBlock.ifStmt, indent + 1);
+            printAST(node->ifBlock.elseIfList, indent + 1);
+            printAST(node->ifBlock.elseStmt, indent + 1);
             break;
         case NodeType_IfStmt:
             printf("If Statement\n");
@@ -299,6 +304,7 @@ void printAST(ASTNode* node, int indent) {
             printf("Else If Statement\n");
             printAST(node->elseIfStmt.condition, indent + 1);
             printAST(node->elseIfStmt.block, indent + 1);
+            printAST(node->elseIfStmt.next, indent + 1);
             break;
         case NodeType_ElseStmt:
             printf("Else Statement\n");
@@ -453,7 +459,9 @@ void freeAST(ASTNode* node) {
             freeAST(node->functionCall.argList);
             break;
         case NodeType_IfBlock:
-            freeAST(node->ifBlock.child);
+            freeAST(node->ifBlock.ifStmt);
+            freeAST(node->ifBlock.elseIfList);
+            freeAST(node->ifBlock.elseStmt);
             break;
         case NodeType_IfStmt:
             freeAST(node->ifStmt.condition);
@@ -462,6 +470,7 @@ void freeAST(ASTNode* node) {
         case NodeType_ElseIfStmt:
             freeAST(node->elseIfStmt.condition);
             freeAST(node->elseIfStmt.block);
+            freeAST(node->elseIfStmt.next);
             break;
         case NodeType_ElseStmt:
             freeAST(node->elseStmt.block);

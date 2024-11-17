@@ -77,17 +77,19 @@ Stmt: Declaration { $$ = createStmtNode($1); }
 	| IfBlock { $$ = createStmtNode($1); };
 
 
-IfBlock: IfStmt ElseIfStmt ElseStmt { $$ = createIfBlockNode($); }
+IfBlock: IfStmt ElseIfStmt ElseStmt { $$ = createIfBlockNode($1, $2, $3); };
 
 
 IfStmt: IF LPAREN Condition RPAREN LBRACE Block RBRACE { $$ = createIfStmtNode($3, $6); };
 
 
 ElseIfStmt: { $$ = NULL; }
-	| ELSE_IF LPAREN Condition RPAREN LBRACE Block RBRACE ElseIfStmt{}
+	| ELSE_IF LPAREN Condition RPAREN LBRACE Block RBRACE ElseIfStmt { $$ = createElseIfStmtNode($3, $6, $8); };
+
 
 ElseStmt: { $$ = NULL; }
-	| ELSE LBRACE Block RBRACE {}
+	| ELSE LBRACE Block RBRACE { $$ = createElseStmtNode($3); };
+
 
 Condition: Expr SIGN Expr { $$ = createConditionNode($1, $2, $3); };
 
@@ -96,7 +98,7 @@ SIGN: GREATER_THAN { $$ = createSignNode($1); }
 	| LESS_THAN { $$ = createSignNode($1); }
 	| EQUAL_TO { $$ = createSignNode($1); }
 	| GREATER_THAN_EQUAL_TO { $$ = createSignNode($1); }
-	| LESS_THAN_EQUAL_TO { $$ = createSignNode($1); }
+	| LESS_THAN_EQUAL_TO { $$ = createSignNode($1); };
 
 
 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
