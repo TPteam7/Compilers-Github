@@ -8,6 +8,12 @@ TAC** currentTACList = &tacHead;
 int tempVars[60];
 int printDebugTAC = 1;
 
+// Counter for if-elseif-else statements
+char labelBuffer[20];
+int ifStmtCounter = 0;
+int elseIfStmtCounter = 0;
+int elseStmtCounter = 0;
+
 // Implement functions to generate TAC expressions
 TAC* generateTAC(ASTNode* node) {
 
@@ -91,6 +97,90 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg1 = "call";
             instruction->arg2 = createOperand(node->functionCall.id);
             instruction->nodetype = "FunctionCall";
+            break;
+        }
+        case NodeType_IfBlock: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on if-elseif-else block\n");
+
+            generateTAC(node->ifBlock.ifStmt);
+            generateTAC(node->ifBlock.elseIfList);
+            generateTAC(node->ifBlock.elseStmt);
+            break;
+        }
+        case NodeType_IfStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on if statement\n");
+
+            TAC* conditionTAC = generateTAC(node->ifStmt.condition);
+
+            sprintf(labelBuffer, "ifBlock%d", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = conditionTAC->op;
+            instruction->arg1 = conditionTAC->arg1;
+            instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "IfStmt";
+
+            ifStmtCounter++;
+
+            generateTAC(node->ifStmt.block);
+            break;
+        }
+        case NodeType_ElseIfStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on else if statement\n");
+
+            TAC* conditionTAC = generateTAC(node->elseIfStmt.condition);
+
+            sprintf(labelBuffer, "elseIfBlock%d", elseIfStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = conditionTAC->op;
+            instruction->arg1 = conditionTAC->arg1;
+            instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "ElseIfStmt";
+
+            elseIfStmtCounter++;
+
+            generateTAC(node->elseIfStmt.block);
+            break;
+        }
+        case NodeType_ElseStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on else statement\n");
+
+            sprintf(labelBuffer, "elseBlock%d", elseStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "else";
+            instruction->nodetype = "ElseStmt";
+
+            elseStmtCounter++;
+
+            generateTAC(node->elseStmt.block);
+            break;
+        }
+        case NodeType_Condition: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on condition\n");
+
+            TAC *leftExprTAC = generateTAC(node->condition.expr);
+            TAC *rightExprTAC = generateTAC(node->condition.expr2);
+
+            instruction->arg1 = leftExprTAC->result;
+            instruction->arg2 = rightExprTAC->result;
+            instruction->op = node->sign.op; 
+
+            break;
+        }
+        case NodeType_Sign: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on sign\n");
+
             break;
         }
         case NodeType_ParamList: {

@@ -75,9 +75,9 @@
 #include <string.h>
 #include "AST.h"
 #include "symbolTable.h"
-#include "semantic.h"
-//#include "TAC.h"
-//#include "optimizer.h"
+//#include "semantic.h"
+#include "TAC.h"
+#include "optimizer.h"
 //#include "codeGenerator.h"
 
 #define TABLE_SIZE 100
@@ -90,7 +90,7 @@ extern int yyparse(); // Declare yyparse, the parser function
 extern FILE* yyin; // Declare yyin, the file pointer for the input file
 extern int yylineno;  // Declare yylineno, the line number counter
 extern char *yytext;  // The text from the lexer file
-//extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
+extern TAC* tacHead;  // Declare the head of the linked list of TAC entries
 
 void yyerror(const char* s);
 
@@ -1877,24 +1877,24 @@ int main() {
 		
 
 		// Semantic analysis
-		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
-		semanticAnalysis(root, symTab, symTab->topLevelStatements);
+		//printf("\n=== SEMANTIC ANALYSIS ===\n\n");
+		//semanticAnalysis(root, symTab, symTab->topLevelStatements);
 
 
 		// print symbolTable
 		printSymbolTable(symTab);
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
-		//generateTAC(root);
-		//printTAC(&tacHead);
+		generateTAC(root);
+		printTAC(&tacHead);
 
-		//printTACToFile("TAC.ir", &tacHead);
+		printTACToFile("TAC.ir", &tacHead);
 
 		// Code optimization
 		printf("\n\n=== CODE OPTIMIZATION ===\n");
 
 		//optimizeTAC(&tacHead);
-		//printOptimizedTAC("TACOptimized.ir", tacHead);
+		printOptimizedTAC("TACOptimized.ir", tacHead);
 
 		printf("\n=== CODE GENERATION ===\n");
 		//initCodeGenerator("output.s");

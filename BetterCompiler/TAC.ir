@@ -1,35 +1,13 @@
-t3 = 5
-arr = array_decl t3
-t4 = 3
-t5 = 17
-arr[t4] = t5
-t6 = 3
-t7 = arr[t6]
-t7 print 
-t8 = 10
-arg t8
-t9 = 2
-arg t9
-t10 = call addNums
-sum = t10
-sum print 
-
-function divideNums 
-a param 
-b param 
-t0 = a / b 
-total = t0
-total return 
-
-
-function addNums 
-a param 
-b param 
-arg a
-arg b
-t1 = call divideNums
-divideTotal = t1
-t2 = divideTotal + a 
-total = t2
-total return 
-
+t0 = 3
+> 
+a > t0 
+a print 
+ifBlock0 = a > t0 
+t1 = 3
+== 
+a == t1 
+a print 
+elseIfBlock0 = a == t1 
+t2 = 5
+t2 print 
+elseBlock0 = else 

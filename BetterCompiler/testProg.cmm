@@ -6,6 +6,12 @@ if(a > 3) {
 else if (a == 3) {
     print(a);
 }
+else if (a == 3) {
+    print(a);
+}
+else if (a == 3) {
+    print(a);
+}
 else {
     print(5);
 }
