@@ -75,7 +75,7 @@
 #include <string.h>
 #include "AST.h"
 #include "symbolTable.h"
-//#include "semantic.h"
+#include "semantic.h"
 #include "TAC.h"
 #include "optimizer.h"
 //#include "codeGenerator.h"
@@ -1877,8 +1877,8 @@ int main() {
 		
 
 		// Semantic analysis
-		//printf("\n=== SEMANTIC ANALYSIS ===\n\n");
-		//semanticAnalysis(root, symTab, symTab->topLevelStatements);
+		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
+		semanticAnalysis(root, symTab, symTab->topLevelStatements);
 
 
 		// print symbolTable
