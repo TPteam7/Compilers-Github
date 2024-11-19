@@ -18,6 +18,8 @@ ARGS:
         undeclared variables
 */
 {
+    const char* leftType = NULL;
+    const char* rightType = NULL;
     if (node == NULL)
         return;
 
@@ -69,7 +71,7 @@ ARGS:
             const char* type = lookupSymbol(symTab, node->functionDeclaration.id->id.name)->returnType;
             const char* returnType = NULL;
             if (node->functionDeclaration.block != NULL && node->functionDeclaration.block->block.returnStmt != NULL && node->functionDeclaration.block->block.returnStmt->returnStmt.expr != NULL) {
-                returnType = evaluateExprType(node->functionDeclaration.block->block.returnStmt->returnStmt.expr, varTab);
+                returnType = evaluateType(node->functionDeclaration.block->block.returnStmt->returnStmt.expr, symTab, varTab);
             } else {
                 returnType = "void";
             }
@@ -118,7 +120,7 @@ ARGS:
                 printf("Performing semantic analysis on if statement\n");
 
             // Check condition type
-            const char* condType = evaluateExprType(node->ifStmt.condition, varTab);
+            const char* condType = evaluateType(node->ifStmt.condition, symTab, varTab);
             if (condType == NULL || strcmp(condType, "int") != 0) {
                 fprintf(stderr, "Semantic error: Condition in if statement must be an int\n");
                 exit(0);
@@ -132,7 +134,7 @@ ARGS:
                 printf("Performing semantic analysis on else if statement\n");
 
             // Check condition type
-            const char* elseifCondType = evaluateExprType(node->elseIfStmt.condition, varTab);
+            const char* elseifCondType = evaluateType(node->elseIfStmt.condition, symTab, varTab);
             if (elseifCondType == NULL || strcmp(elseifCondType, "int") != 0) {
                 fprintf(stderr, "Semantic error: Condition in else if statement must be an int\n");
                 exit(0);
@@ -152,9 +154,6 @@ ARGS:
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on condition\n");
 
-            const char* leftType = NULL;
-            const char* rightType = NULL;
-
             // Check if the left side is a function call
             if (node->condition.expr->nType == NodeType_FunctionCall) {
                 // Retrieve the function's return type
@@ -168,7 +167,8 @@ ARGS:
                 
             } else {
                 // Evaluate type of the expression if it's not a function call
-                leftType = evaluateExprType(node->assignment.expr, varTab);
+                leftType = evaluateType(node->condition.expr, symTab, varTab);
+                rightType = evaluateType(node->condition.expr2, symTab, varTab);
             }
 
             if (leftType == NULL || rightType == NULL) {
@@ -358,39 +358,33 @@ ARGS:
             semanticAnalysis(node->assignment.expr, symTab, varTab);
 
             //----------------------------------------------------------------------------
-            // This section is performing Type Checking on the assignment
+            // // This section is performing Type Checking on the assignment
 
-            Variable* var = lookupVariable(varTab, node->assignment.id->id.name);
+            // Variable* var = lookupVariable(varTab, node->assignment.id->id.name);
 
-            const char* leftType = var->variableType;
-            const char* rightType = NULL;
+            // leftType = var->variableType;
+            // rightType = evaluateType(node->assignment.expr, symTab, varTab);
 
-            // Check if the right side is a function call
-            if (node->assignment.expr->nType == NodeType_FunctionCall) {
-                // Retrieve the function's return type
-                Symbol* func = lookupSymbol(symTab, node->assignment.expr->functionCall.id->id.name);
-                if (func == NULL) {
-                    fprintf(stderr, "Semantic error: Function %s not declared\n", node->assignment.expr->functionCall.id->id.name);
-                    exit(0);
-                }
-                rightType = func->returnType;
-            } else {
-                // Evaluate type of the expression if it's not a function call
-                rightType = evaluateExprType(node->assignment.expr, varTab);
-            }
+            // // Check if the right side is a function call
+            // if (node->assignment.expr->nType == NodeType_FunctionCall) {
+                
+            // } else {
+            //     // Evaluate type of the expression if it's not a function call
+            //     rightType = evaluateType(node->assignment.expr, symTab, varTab);
+            // }
 
-            if (leftType == NULL || rightType == NULL) {
-                if (leftType == NULL) {
-                    fprintf(stderr, "Semantic error: Left operand type is NULL\n");
-                }
-                if (rightType == NULL) {
-                    fprintf(stderr, "Semantic error: Right operand type is NULL\n");
-                }
-                exit(0);
-            } else if (strcmp(leftType, rightType) != 0) {
-                fprintf(stderr, "Type mismatch in assignment: %s vs %s\n", leftType, rightType);
-                exit(0);
-            }
+            // if (leftType == NULL || rightType == NULL) {
+            //     if (leftType == NULL) {
+            //         fprintf(stderr, "Semantic error: Left operand type is NULL\n");
+            //     }
+            //     if (rightType == NULL) {
+            //         fprintf(stderr, "Semantic error: Right operand type is NULL\n");
+            //     }
+            //     exit(0);
+            // } else if (strcmp(leftType, rightType) != 0) {
+            //     fprintf(stderr, "Type mismatch in assignment: %s vs %s\n", leftType, rightType);
+            //     exit(0);
+            // }
             
             // Type checking done
             //----------------------------------------------------------------------
@@ -409,7 +403,7 @@ ARGS:
             semanticAnalysis(node->expr.left, symTab, varTab);
             semanticAnalysis(node->expr.right, symTab, varTab);
 
-            evaluateExprType(node, varTab);
+            evaluateType(node, symTab, varTab);
 
             break;
         case NodeType_Term:
@@ -419,7 +413,7 @@ ARGS:
             semanticAnalysis(node->term.left, symTab, varTab);
             semanticAnalysis(node->term.right, symTab, varTab);
 
-            evaluateExprType(node, varTab);
+            evaluateType(node, symTab, varTab);
             
             break;
         case NodeType_Factor:
@@ -461,26 +455,64 @@ ARGS:
 }
 
 // Helper function to get the type of an expression
-const char* evaluateExprType(ASTNode* expr, VariableSymbolTable* varTab) {
-    if (expr->nType == NodeType_Number) {
+const char* evaluateType(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab) {
+    const char* leftType = NULL;
+    const char* rightType = NULL;
+    
+    if (node->nType == NodeType_Number) {
         return "int";  // Assuming all numbers are int for simplicity
-    } else if (expr->nType == NodeType_ID) {
-        Variable* var = lookupVariable(varTab, expr->id.name);
+    } else if (node->nType == NodeType_ID) {
+        Variable* var = lookupVariable(varTab, node->id.name);
         if (var == NULL) {
-            fprintf(stderr, "Semantic error: Variable %s has not been declared\n", expr->id.name);
+            fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->id.name);
             exit(0);
         }
+
         return var->variableType;
-    } else if (expr->nType == NodeType_Expr) {
-        const char* leftType = evaluateExprType(expr->expr.left, varTab);
-        const char* rightType = evaluateExprType(expr->expr.right, varTab);
+    } else if (node->nType == NodeType_Assignment) {
+        Variable* var = lookupVariable(varTab, node->assignment.id->id.name);
+
+        leftType = var->variableType;
+        rightType = evaluateType(node->assignment.expr, symTab, varTab);
 
         // Check type compatibility for both sides
         if (strcmp(leftType, rightType) != 0) {
             fprintf(stderr, "Type mismatch in expression: %s vs %s\n", leftType, rightType);
             exit(0);
         }
+
+        return leftType;
+    } else if (node->nType == NodeType_Expr) {
+        leftType = evaluateType(node->expr.left, symTab, varTab);
+        rightType = evaluateType(node->expr.right, symTab, varTab);
+
+        // Check type compatibility for both sides
+        if (strcmp(leftType, rightType) != 0) {
+            fprintf(stderr, "Type mismatch in expression: %s vs %s\n", leftType, rightType);
+            exit(0);
+        }
+
         return leftType;  // Return the resulting type of the expression
-    }
+    } else if (node->nType == NodeType_Condition) {
+        leftType = evaluateType(node->condition.expr, symTab, varTab);
+        rightType = evaluateType(node->condition.expr2, symTab, varTab);
+
+        // Check type compatibility for both sides
+        if (strcmp(leftType, rightType) != 0) {
+            fprintf(stderr, "Type mismatch in expression: %s vs %s\n", leftType, rightType);
+            exit(0);
+        }
+
+        return leftType;
+    } else if (node->nType == NodeType_FunctionCall) {
+        // Retrieve the function's return type
+            Symbol* func = lookupSymbol(symTab, node->functionCall.id->id.name);
+            if (func == NULL) {
+                fprintf(stderr, "Semantic error: Function %s not declared\n", node->assignment.expr->functionCall.id->id.name);
+                exit(0);
+            }
+
+        return func->returnType;
+    } 
     return NULL;  // Error or unsupported type
 }

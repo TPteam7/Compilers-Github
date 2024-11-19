@@ -5,7 +5,7 @@
 #include "symbolTable.h" 
 
 void semanticAnalysis(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab);
-const char* evaluateExprType(ASTNode* expr, VariableSymbolTable* varTab);
+const char* evaluateType(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab);
 int isFloat(const char* numberStr);
 
 
