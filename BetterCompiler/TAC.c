@@ -125,6 +125,8 @@ TAC* generateTAC(ASTNode* node) {
 
             ifStmtCounter++;
 
+            generateTAC(node->ifStmt.condition);
+
             generateTAC(node->ifStmt.block);
             break;
         }
@@ -172,7 +174,7 @@ TAC* generateTAC(ASTNode* node) {
 
             instruction->arg1 = leftExprTAC->result;
             instruction->arg2 = rightExprTAC->result;
-            instruction->op = node->sign.op; 
+            instruction->op = strdup(node->condition.sign->sign.op); 
 
             break;
         }
@@ -292,6 +294,23 @@ TAC* generateTAC(ASTNode* node) {
 
             generateTAC(node->declaration.type);
             generateTAC(node->declaration.id);
+            break;
+        }
+        case NodeType_DeclarationAssignment: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing semantic analysis on declaration assignment\n");
+
+            generateTAC(node->declarationAssignment.type);
+            generateTAC(node->declarationAssignment.id);
+            TAC* exprTAC = generateTAC(node->declarationAssignment.expr);
+
+            instruction->arg1 = exprTAC->result;
+            instruction->op = "=";
+            instruction->arg2 = NULL;
+            instruction->result = createOperand(node->declarationAssignment.id);
+            instruction->nodetype = "DeclarationAssignment";
+
             break;
         }
         case NodeType_ArrayDeclaration: {
@@ -462,6 +481,12 @@ TAC* generateTAC(ASTNode* node) {
             free(instruction);
             return NULL;
     }
+
+    // If nodeType of if-elseif-else statement, append the instruction to the TAC list
+    // if(node->nType == NodeType_IfStmt || node->nType == NodeType_ElseIfStmt || node->nType == NodeType_ElseStmt) {
+    //     instruction->next = NULL;  // Make sure to null-terminate the new instruction
+    //     appendTAC(currentTACList, instruction);
+    // }
 
     if (node->nType != NodeType_FunctionDeclaration && node->nType != NodeType_ArgTail) {
         instruction->next = NULL;  // Make sure to null-terminate the new instruction

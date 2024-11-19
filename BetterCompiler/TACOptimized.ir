@@ -1,13 +1,15 @@
 t0 = 3 
-> 
-a > t0 
-a print 
-ifBlock0 = a > t0 
+a = t0 
 t1 = 3 
-== 
-a == t1 
+a > t1 
+t2 = 3 
+a > t2 
 a print 
-elseIfBlock0 = a == t1 
-t2 = 5 
-t2 print 
+ifBlock0 = a > t1 
+t3 = 3 
+a == t3 
+a print 
+elseIfBlock0 = a == t3 
+t4 = 5 
+t4 print 
 elseBlock0 = else 
