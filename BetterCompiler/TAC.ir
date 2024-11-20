@@ -1,14 +1,30 @@
 t0 = 3
 a = t0
-t1 = 3
-t3 = 7
-L1 = a == t3 
-t4 = 2
-t4 print 
-t5 = 9
-L2 = a == t5 
-t6 = 5
-t6 print 
-L0 = else 
-t7 = 10
+t2 = 3
+t4 = 7
+t6 = 9
+t9 = 5
+t10 = 8
+t11 = t9 + t10 
+a = t11
+
+function add 
+a param 
+b param 
+t1 = a + b 
+c = t1
+c return 
+
+
+goto L0 = a == t2 
+t3 = 3
+t3 print 
+goto L1 = a == t4 
+t5 = 2
+t5 print 
+goto L2 = a == t6 
+t7 = 5
 t7 print 
+goto L3 = else 
+t8 = 10
+t8 print 

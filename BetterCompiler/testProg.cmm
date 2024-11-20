@@ -1,5 +1,10 @@
 int a = 3;
 
+int add(int a, int b) {
+    int c = a + b;
+    return c;
+}
+
 if(a == 3) {
     print(3);
 }
@@ -12,3 +17,5 @@ else if (a == 9) {
 else {
     print(10);
 }
+
+a = 5 + 8;
