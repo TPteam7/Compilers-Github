@@ -1,17 +1,14 @@
 int a = 3;
 
-if(a > 3) {
-    print(a);
+if(a == 3) {
+    print(3);
 }
-else if (a == 3) {
-    print(a);
+else if (a == 7) {
+    print(2);
 }
-else if (a == 3) {
-    print(a);
-}
-else if (a == 3) {
-    print(a);
+else if (a == 9) {
+    print(5);
 }
 else {
-    print(5);
+    print(10);
 }

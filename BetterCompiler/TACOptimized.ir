@@ -1,15 +1,14 @@
 t0 = 3 
 a = t0 
 t1 = 3 
-a > t1 
-t2 = 3 
-a > t2 
-a print 
-ifBlock0 = a > t1 
-t3 = 3 
-a == t3 
-a print 
-elseIfBlock0 = a == t3 
-t4 = 5 
+t3 = 7 
+L1 = a == t3 
+t4 = 2 
 t4 print 
-elseBlock0 = else 
+t5 = 9 
+L2 = a == t5 
+t6 = 5 
+t6 print 
+L0 = else 
+t7 = 10 
+t7 print 
