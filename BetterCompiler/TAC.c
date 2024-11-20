@@ -128,6 +128,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->nodetype = "IfStmt";
 
             ifStmtCounter++;
+            
 
             oldTACList = currentTACList;
             currentTACList = &ifHead;
