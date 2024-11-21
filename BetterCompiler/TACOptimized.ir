@@ -5,27 +5,33 @@ t3 = 3 + b
 c = t3
 c print 
 if c == 3 L0
-if c == 3 L1
-if c == 9 L2
-L3
+end_if 
+if c == 3 L2
+if c == 9 L3
+L4
 a print 
 
 L0:
+b = 2
 t6 = 3
 t6 print 
-end_if 
+if 2 > 1 L1
 
 L1:
-t8 = 2
-t8 print 
-end_elseIf 
+b print 
+end_if 
 
 L2:
-t10 = 5
-t10 print 
+t9 = 2
+t9 print 
 end_elseIf 
 
 L3:
-t11 = 10
+t11 = 5
 t11 print 
+end_elseIf 
+
+L4:
+t12 = 10
+t12 print 
 end_else 

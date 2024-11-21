@@ -108,9 +108,11 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on if-elseif-else block\n");
 
+            // Change the Current TAC list to the ifHead
             generateTAC(node->ifBlock.ifStmt);
             generateTAC(node->ifBlock.elseIfList);
             generateTAC(node->ifBlock.elseStmt);
+            // Change it back to the original TAC list
             break;
         }
         case NodeType_IfStmt: {
@@ -120,6 +122,7 @@ TAC* generateTAC(ASTNode* node) {
 
             TAC* conditionTAC = generateTAC(node->ifStmt.condition);
 
+            // Create the call to the if statement
             sprintf(labelBuffer, "L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
@@ -127,9 +130,12 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg2 = conditionTAC->arg2;
             instruction->nodetype = "IfStmtCall";
 
+            // Change the current TAC list to the tacHead
             instruction->next = NULL;
             appendTAC(currentTACList, instruction);
+            // Change it back to the original TAC list
 
+            // Create the label for the if statement block
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
             sprintf(labelBuffer, "L%d:", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
@@ -146,6 +152,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->next = NULL;
             appendTAC(currentTACList, instruction);
 
+            // Generate TAC for the if statement block
             generateTAC(node->ifStmt.block);
 
             // Add a instruction to end the else if block
