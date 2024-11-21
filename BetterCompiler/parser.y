@@ -234,8 +234,8 @@ int main() {
 		// Code optimization
 		printf("\n\n=== CODE OPTIMIZATION ===\n");
 
-		//optimizeTAC(&tacHead);
-		printOptimizedTAC("TACOptimized.ir", tacHead);
+		optimizeTAC(&tacHead);
+		printTACToFile("TACOptimized.ir", &tacHead);
 
 		printf("\n=== CODE GENERATION ===\n");
 		//initCodeGenerator("output.s");

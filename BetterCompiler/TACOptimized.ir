@@ -1,15 +1,35 @@
-t0 = 3 
-a = t0 
-t1 = 3 
-a > t1 
-t2 = 3 
-a > t2 
-a print 
-ifBlock0 = a > t1 
-t3 = 3 
-a == t3 
-a print 
-elseIfBlock0 = a == t3 
-t4 = 5 
+if 3 == 3 goto L0
+if 3 == 7 goto L1
+if 3 == 9 goto L2
+goto L3
+t12 = 5 + 8 
+
+function add 
+3 param 
+b param 
+t1 = 3 + b 
+c = t1
+c return 
+
+function sub 
+3 param 
+b param 
+t2 = 3 - b 
+c = t2
+c return 
+
+L0:
+t4 = 3
 t4 print 
-elseBlock0 = else 
+
+L1:
+t6 = 2
+t6 print 
+
+L2:
+t8 = 5
+t8 print 
+
+L3:
+t9 = 10
+t9 print 

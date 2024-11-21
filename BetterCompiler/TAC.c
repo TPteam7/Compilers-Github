@@ -3,8 +3,10 @@
 #include <stdio.h>
 
 TAC* tacHead = NULL;
-TAC* funcDeclHead = NULL; // Separate list for function declarations
+TAC* funcDeclHead = NULL;
+TAC* ifHead = NULL; // Separate list for function declarations
 TAC** currentTACList = &tacHead;
+TAC** oldTACList = NULL;
 int tempVars[60];
 int printDebugTAC = 1;
 
@@ -40,6 +42,7 @@ TAC* generateTAC(ASTNode* node) {
 
             generateTAC(node->program.stmtList);
             appendTAC(&tacHead, funcDeclHead);
+            appendTAC(&tacHead, ifHead);
             break;
         }
         case NodeType_StmtList: {
@@ -68,6 +71,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg2 = createOperand(node->functionDeclaration.id);
             instruction->nodetype = "FunctionDeclaration";
 
+            oldTACList = currentTACList;
             currentTACList = &funcDeclHead;
 
             instruction->next = NULL;
@@ -78,7 +82,7 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->functionDeclaration.paramList);
             generateTAC(node->functionDeclaration.block);
 
-            currentTACList = &tacHead;
+            currentTACList = oldTACList;
 
             break;
         }
@@ -116,18 +120,36 @@ TAC* generateTAC(ASTNode* node) {
 
             TAC* conditionTAC = generateTAC(node->ifStmt.condition);
 
-            sprintf(labelBuffer, "ifBlock%d", ifStmtCounter);
+            sprintf(labelBuffer, "goto L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "IfStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "if";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
             instruction->nodetype = "IfStmt";
 
-            ifStmtCounter++;
+            ifStmtCounter++;        
 
-            generateTAC(node->ifStmt.condition);
+            oldTACList = currentTACList;
+            currentTACList = &ifHead;
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
 
             generateTAC(node->ifStmt.block);
+
+            currentTACList = oldTACList;
+            
             break;
         }
         case NodeType_ElseIfStmt: {
@@ -137,16 +159,37 @@ TAC* generateTAC(ASTNode* node) {
 
             TAC* conditionTAC = generateTAC(node->elseIfStmt.condition);
 
-            sprintf(labelBuffer, "elseIfBlock%d", elseIfStmtCounter);
+            sprintf(labelBuffer, "goto L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "ElseIfStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "elseIf";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
             instruction->nodetype = "ElseIfStmt";
 
-            elseIfStmtCounter++;
+            ifStmtCounter++;
+
+            oldTACList = currentTACList;
+            currentTACList = &ifHead;
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
 
             generateTAC(node->elseIfStmt.block);
+
+            currentTACList = oldTACList;
+
+            generateTAC(node->elseIfStmt.next);
             break;
         }
         case NodeType_ElseStmt: {
@@ -154,14 +197,35 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on else statement\n");
 
-            sprintf(labelBuffer, "elseBlock%d", elseStmtCounter);
+            sprintf(labelBuffer, "goto L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = "else";
+            instruction->nodetype = "ElseStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "else";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
             instruction->nodetype = "ElseStmt";
 
-            elseStmtCounter++;
+            ifStmtCounter++;
+
+            oldTACList = currentTACList;
+            currentTACList = &ifHead;
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
 
             generateTAC(node->elseStmt.block);
+
+            currentTACList = oldTACList;
+
+
             break;
         }
         case NodeType_Condition: {
@@ -174,7 +238,8 @@ TAC* generateTAC(ASTNode* node) {
 
             instruction->arg1 = leftExprTAC->result;
             instruction->arg2 = rightExprTAC->result;
-            instruction->op = strdup(node->condition.sign->sign.op); 
+            instruction->op = strdup(node->condition.sign->sign.op);
+            instruction->nodetype = "Condition";
 
             break;
         }
@@ -488,7 +553,7 @@ TAC* generateTAC(ASTNode* node) {
     //     appendTAC(currentTACList, instruction);
     // }
 
-    if (node->nType != NodeType_FunctionDeclaration && node->nType != NodeType_ArgTail) {
+    if (node->nType != NodeType_Condition && node->nType != NodeType_FunctionDeclaration && node->nType != NodeType_ArgTail && node->nType != NodeType_IfStmt && node->nType != NodeType_ElseIfStmt && node->nType != NodeType_ElseStmt) {
         instruction->next = NULL;  // Make sure to null-terminate the new instruction
         appendTAC(currentTACList, instruction);
     }
@@ -587,7 +652,7 @@ void printTACToFile(const char* filename, TAC** tac) {
     TAC* current = *(tac);
     while (current != NULL) {
         // Add new line for specific operators
-        if (strcmp(current->op, "function") == 0) {
+        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0) {
             fprintf(file, "\n");
         }
 
@@ -610,6 +675,15 @@ void printTACToFile(const char* filename, TAC** tac) {
         else if (strcmp(current->op, "arg") == 0) {
             fprintf(file, "%s %s\n", current->op, current->arg1);
         }
+        else if (strcmp(current->nodetype, "IfStmtCall") == 0 || strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
+            fprintf(file, "if %s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
+        }
+        else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
+            fprintf(file, "%s\n", current->result);
+        }
+        else if (strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0) {
+            fprintf(file, "%s\n", current->result);
+        }
         else {
             if(current->result != NULL)
                 fprintf(file, "%s = ", current->result);
@@ -619,10 +693,6 @@ void printTACToFile(const char* filename, TAC** tac) {
                 fprintf(file, "%s ", current->op);
             if(current->arg2 != NULL)
                 fprintf(file, "%s ", current->arg2);
-            fprintf(file, "\n");
-        }
-
-        if (strcmp(current->op, "return") == 0) {
             fprintf(file, "\n");
         }
 
