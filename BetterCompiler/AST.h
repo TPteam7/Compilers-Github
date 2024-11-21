@@ -15,7 +15,9 @@ typedef enum {
     NodeType_ElseIfStmt,
     NodeType_ElseStmt,
     NodeType_Condition,
+    NodeType_ConditionTail,
     NodeType_Sign,
+    NodeType_Conjunction,
     NodeType_ParamList,
     NodeType_ParamTail,
     NodeType_Param,
@@ -98,11 +100,21 @@ typedef struct ASTNode {
             struct ASTNode* expr;
             struct ASTNode* sign;
             struct ASTNode* expr2;
+            struct ASTNode* conditionTail;
         } condition;
+
+        struct{
+            struct ASTNode* conjuction;
+            struct ASTNode* condition; 
+        } conditionTail;
 
         struct {
             char* op; 
         } sign;
+
+        struct {
+            char* op;
+        } conjuction;
 
         struct {
             struct ASTNode* paramTail;
@@ -225,8 +237,10 @@ ASTNode* createIfBlockNode(ASTNode* ifStmt, ASTNode* elseIfList, ASTNode* elseSt
 ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block);
 ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block, ASTNode* next);
 ASTNode* createElseStmtNode(ASTNode* block);
-ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2);
+ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2, ASTNode* conditionTail);
+ASTNode* createConditionTailNode(ASTNode* conjunction, ASTNode* condition);
 ASTNode* createSignNode(char* op);
+ASTNode* createConjunctionNode(char* op);
 ASTNode* createParamListNode(ASTNode* paramTail);
 ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
 ASTNode* createParamNode(ASTNode* child);

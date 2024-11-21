@@ -56,7 +56,7 @@ int printParserDebug = 0;
 
 %type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
 %type <node> FunctionDeclaration FunctionCall ParamList ParamTail Param ArgList ArgTail BlockStmtList BlockStmt Block ReturnStmt
-%type <node> DeclarationAssignment IfBlock IfStmt ElseIfStmt ElseStmt Condition SIGN 
+%type <node> DeclarationAssignment IfBlock IfStmt ElseIfStmt ElseStmt Condition ConditionTail SIGN CONJUNCTION 
 %start Program
 
 %%
@@ -91,7 +91,11 @@ ElseStmt: { $$ = NULL; }
 	| ELSE LBRACE Block RBRACE { $$ = createElseStmtNode($3); };
 
 
-Condition: Expr SIGN Expr { $$ = createConditionNode($1, $2, $3); };
+Condition: Expr SIGN Expr ConditionTail{ $$ = createConditionNode($1, $2, $3, $4); };
+
+
+ConditionTail: { $$ = NULL; }
+	| CONJUNCTION Condition { $$ = createConditionTailNode($1, $2); };
 
 
 SIGN: GREATER_THAN { $$ = createSignNode($1); }
@@ -100,6 +104,10 @@ SIGN: GREATER_THAN { $$ = createSignNode($1); }
 	| GREATER_THAN_EQUAL_TO { $$ = createSignNode($1); }
 	| LESS_THAN_EQUAL_TO { $$ = createSignNode($1); };
 	| NOT_EQUAL_TO { $$ = createSignNode($1); };
+
+
+CONJUNCTION: AND { $$ = createConjunctionNode($1); }
+	| OR { $$ = createConjunctionNode($1); };
 
 
 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };

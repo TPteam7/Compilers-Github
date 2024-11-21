@@ -78,17 +78,31 @@ ASTNode* createElseStmtNode(ASTNode* block) {
     return node;
 }
 
-ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2) {
+ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2, ASTNode* conditionTail) {
     ASTNode* node = createNode(NodeType_Condition);
     node->condition.expr = expr;
     node->condition.sign = sign;
     node->condition.expr2 = expr2;
+    node->condition.conditionTail = conditionTail;
+    return node;
+}
+
+ASTNode* createConditionTailNode(ASTNode* conjuction, ASTNode* condition) {
+    ASTNode* node = createNode(NodeType_ConditionTail);
+    node->conditionTail.conjuction = conjuction;
+    node->conditionTail.condition = condition;
     return node;
 }
 
 ASTNode* createSignNode(char* op) {
     ASTNode* node = createNode(NodeType_Sign);
     node->sign.op = op;
+    return node;
+}
+
+ASTNode* createConjunctionNode(char* op) {
+    ASTNode* node = createNode(NodeType_Conjunction);
+    node->conjuction.op = op;
     return node;
 }
 
@@ -315,9 +329,18 @@ void printAST(ASTNode* node, int indent) {
             printAST(node->condition.expr, indent + 1);
             printAST(node->condition.sign, indent + 1);
             printAST(node->condition.expr2, indent + 1);
+            printAST(node->condition.conditionTail, indent + 1);
+            break;
+        case NodeType_ConditionTail:
+            printf("Condition Tail\n");
+            printAST(node->conditionTail.conjuction, indent + 1);
+            printAST(node->conditionTail.condition, indent + 1);
             break;
         case NodeType_Sign:
             printf("Sign: %s\n", node->sign.op);
+            break;
+        case NodeType_Conjunction:
+            printf("Conjunction: %s\n", node->conjuction.op);
             break;
         case NodeType_ParamList:
             printf("ParamList\n");
@@ -479,12 +502,24 @@ void freeAST(ASTNode* node) {
             freeAST(node->condition.expr);
             freeAST(node->condition.sign);
             freeAST(node->condition.expr2);
+            freeAST(node->condition.conditionTail);
+            break;
+        case NodeType_ConditionTail:
+            freeAST(node->conditionTail.conjuction);
+            freeAST(node->conditionTail.condition);
             break;
         case NodeType_Sign:
             // Free the operator string if allocated
             if (node->sign.op != NULL) {
                 free(node->sign.op);
                 node->sign.op = NULL;
+            }
+            break;
+        case NodeType_Conjunction:
+            // Free the operator string if allocated
+            if (node->conjuction.op != NULL) {
+                free(node->conjuction.op);
+                node->conjuction.op = NULL;
             }
             break;
         case NodeType_ParamList:
