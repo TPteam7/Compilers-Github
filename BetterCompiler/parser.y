@@ -49,7 +49,7 @@ int printParserDebug = 0;
 %token <character> SEMICOLON COMMA
 %token <character> LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token <op> ASSIGN PLUS MINUS MULT DIV
-%token <stringOp> GREATER_THAN LESS_THAN EQUAL_TO GREATER_THAN_EQUAL_TO LESS_THAN_EQUAL_TO AND OR
+%token <stringOp> GREATER_THAN LESS_THAN EQUAL_TO GREATER_THAN_EQUAL_TO LESS_THAN_EQUAL_TO AND OR NOT_EQUAL_TO
 %token <number> NUMBER
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
@@ -99,6 +99,7 @@ SIGN: GREATER_THAN { $$ = createSignNode($1); }
 	| EQUAL_TO { $$ = createSignNode($1); }
 	| GREATER_THAN_EQUAL_TO { $$ = createSignNode($1); }
 	| LESS_THAN_EQUAL_TO { $$ = createSignNode($1); };
+	| NOT_EQUAL_TO { $$ = createSignNode($1); };
 
 
 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };

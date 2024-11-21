@@ -550,6 +550,24 @@ void generateMIPS(TAC* tacInstructions)
             deallocateRegister(accessedElementArg);
             deallocateRegister(offsetReg);
         }
+        // Handle if statements
+        else if (strcmp(current->nodetype, "IfStmt") == 0) {
+            printf("Generating MIPS for If statement\n");
+
+            jumptoIfElseIfElseBlock(current);
+        }
+        // Handle else if statements
+        else if (strcmp(current->nodetype, "ElseIfStmt") == 0) {
+            printf("Generating MIPS for Else If statement\n");
+
+            jumptoIfElseIfElseBlock(current);
+        }
+        // Handle else statements
+        else if (strcmp(current->nodetype, "ElseStmt") == 0) {
+            printf("Generating MIPS for Else statement\n");
+
+            jumptoIfElseIfElseBlock(current);
+        }
         else
         {
             printf("Generating MIPS for other operations\n");
@@ -598,6 +616,75 @@ Spilling: If all registers are in use and another one is needed,
           "spill" a register's value to memory and reuse the register.
 
 */
+
+void jumptoIfElseIfElseBlock(TAC* current) 
+/*
+    Purpose: Generate MIPS code for jumping to an if, else if, or else block
+
+    Params:
+        current: The current TAC instruction
+*/
+{
+    // Allocate a register for the condition
+    int arg1Reg = allocateRegister();
+    int arg2Reg = allocateRegister();
+    int conditionReg = allocateRegister();
+
+    if (arg1Reg == -1 || arg2Reg == -1 || conditionReg == -1) {
+        fprintf(stderr, "No available register for if statement\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Load the condition into the register
+    if (isConstant(current->arg1)) {
+        fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
+    } 
+    else {
+        fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
+    }
+
+    // Load the condition into the register
+    if (isConstant(current->arg2)) {
+        fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
+    } 
+    else {
+        fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
+    }
+
+    // If sign is ==, compare the values
+    if(strcmp(current->op, "==") == 0) {
+        fprintf(outputFile, "\tbeq %s, %s, %s\n", tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name, current->result);
+    }
+    // If sign is !=, compare the values
+    else if(strcmp(current->op, "!=") == 0) {
+        fprintf(outputFile, "\tbne %s, %s, %s\n", tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name, current->result);
+    }
+    // If sign is <, compare the values
+    else if(strcmp(current->op, "<") == 0) {
+        fprintf(outputFile, "\tslt %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+    }
+    // If sign is >, compare the values
+    else if(strcmp(current->op, ">") == 0) {
+        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+    }
+    // If sign is <=, compare the values
+    else if(strcmp(current->op, "<=") == 0) {
+        fprintf(outputFile, "\tsle %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+    }
+    // If sign is >=, compare the values
+    else if(strcmp(current->op, ">=") == 0) {
+        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+    }
+
+    // Deallocate the register
+    deallocateRegister(arg1Reg);
+    deallocateRegister(arg2Reg);
+    deallocateRegister(conditionReg);
+}
 
 //Create a function to add to the data section of the MIPS code
 void addDataSection(TAC* current, char* variables[], int varIndex) {

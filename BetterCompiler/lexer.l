@@ -155,6 +155,11 @@ NUMBER      {digit}+(\.{digit}+)?(E[+\-]?{digit}+)?
               yylval.stringOp = strdup(yytext); 
               return GREATER_THAN_EQUAL_TO; }
 
+"!="         { chars += strlen(yytext); 
+              printf("%s : NOT EQUAL TO\n", yytext); 
+              yylval.stringOp = strdup(yytext); 
+              return NOT_EQUAL_TO; }
+
 "&&"         { chars += strlen(yytext); 
               printf("%s : AND\n", yytext); 
               yylval.stringOp = strdup(yytext); 
