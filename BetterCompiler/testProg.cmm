@@ -5,6 +5,11 @@ int add(int a, int b) {
     return c;
 }
 
+int sub(int a, int b) {
+    int c = a - b;
+    return c;
+}
+
 if(a == 3) {
     print(3);
 }

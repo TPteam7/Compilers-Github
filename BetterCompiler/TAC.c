@@ -125,10 +125,20 @@ TAC* generateTAC(ASTNode* node) {
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "IfStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "if";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
             instruction->nodetype = "IfStmt";
 
-            ifStmtCounter++;
-            
+            ifStmtCounter++;        
 
             oldTACList = currentTACList;
             currentTACList = &ifHead;
@@ -154,6 +164,17 @@ TAC* generateTAC(ASTNode* node) {
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "ElseIfStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "elseIf";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
             instruction->nodetype = "ElseIfStmt";
 
             ifStmtCounter++;
@@ -179,6 +200,17 @@ TAC* generateTAC(ASTNode* node) {
             sprintf(labelBuffer, "goto L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = "else";
+            instruction->nodetype = "ElseStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "else";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
             instruction->nodetype = "ElseStmt";
 
             ifStmtCounter++;
@@ -192,6 +224,8 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->elseStmt.block);
 
             currentTACList = oldTACList;
+
+
             break;
         }
         case NodeType_Condition: {
@@ -618,7 +652,7 @@ void printTACToFile(const char* filename, TAC** tac) {
     TAC* current = *(tac);
     while (current != NULL) {
         // Add new line for specific operators
-        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0) {
+        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0) {
             fprintf(file, "\n");
         }
 
@@ -641,6 +675,15 @@ void printTACToFile(const char* filename, TAC** tac) {
         else if (strcmp(current->op, "arg") == 0) {
             fprintf(file, "%s %s\n", current->op, current->arg1);
         }
+        else if (strcmp(current->nodetype, "IfStmtCall") == 0 || strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
+            fprintf(file, "if %s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
+        }
+        else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
+            fprintf(file, "%s\n", current->result);
+        }
+        else if (strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0) {
+            fprintf(file, "%s\n", current->result);
+        }
         else {
             if(current->result != NULL)
                 fprintf(file, "%s = ", current->result);
@@ -650,10 +693,6 @@ void printTACToFile(const char* filename, TAC** tac) {
                 fprintf(file, "%s ", current->op);
             if(current->arg2 != NULL)
                 fprintf(file, "%s ", current->arg2);
-            fprintf(file, "\n");
-        }
-
-        if (strcmp(current->op, "return") == 0) {
             fprintf(file, "\n");
         }
 
