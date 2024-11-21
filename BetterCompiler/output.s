@@ -2,15 +2,21 @@
 
 	a: .word 0
 
+	t2: .word 0
+
 	b: .word 0
 
 	t3: .word 0
+
+	c: .word 0
 
 	t6: .word 0
 
 	t8: .word 0
 
-	t9: .word 0
+	t10: .word 0
+
+	t11: .word 0
 
 .text
 
@@ -24,45 +30,33 @@ main:
 
 	li $t0, 3
 
-	li $t1, 3
+	li $t1, 7
 
-	beq $t0, $t1, L0
+	add $t2, $t0, $t1
 
-L0:
+	sw $t2, t2
 
-	li $t0, 2
+	lw $t1, t2
+
+	move $t0, $t1
 
 	sw $t0, b
 
 	li $t0, 3
 
-	sw $t0, t3
+	lw $t1, b
 
-	lw $t0, t3
+	add $t2, $t0, $t1
 
-	li $v0, 1
+	sw $t2, t3
 
-	move $a0, $t0
+	lw $t1, t3
 
-	syscall
+	move $t0, $t1
 
-	li $v0, 11
+	sw $t0, c
 
-	li $a0, 10
-
-	syscall
-
-	li $t0, 2
-
-	li $t1, 1
-
-	sge $t2, $t1, $t0
-
-	bne $t2, $zero, L1
-
-L1:
-
-	lw $t0, b
+	lw $t0, c
 
 	li $v0, 1
 
@@ -76,23 +70,43 @@ L1:
 
 	syscall
 
-	li $v0, 10
-
-	syscall
-
-	li $v0, 10
-
-	syscall
-
-	li $t0, 3
+	lw $t0, c
 
 	li $t1, 3
 
+	beq $t0, $t1, L0
+
+	lw $t0, c
+
+	li $t1, 3
+
+	beq $t0, $t1, L1
+
+	lw $t0, c
+
+	li $t1, 9
+
 	beq $t0, $t1, L2
 
-L2:
+	j L3
 
-	li $t0, 2
+	lw $t0, a
+
+	li $v0, 1
+
+	move $a0, $t0
+
+	syscall
+
+	li $v0, 11
+
+	li $a0, 10
+
+	syscall
+
+L0:
+
+	li $t0, 3
 
 	sw $t0, t6
 
@@ -114,15 +128,9 @@ L2:
 
 	syscall
 
-	li $t0, 3
+L1:
 
-	li $t1, 9
-
-	beq $t0, $t1, L3
-
-L3:
-
-	li $t0, 5
+	li $t0, 2
 
 	sw $t0, t8
 
@@ -144,15 +152,13 @@ L3:
 
 	syscall
 
-	j L4
+L2:
 
-L4:
+	li $t0, 5
 
-	li $t0, 10
+	sw $t0, t10
 
-	sw $t0, t9
-
-	lw $t0, t9
+	lw $t0, t10
 
 	li $v0, 1
 
@@ -170,7 +176,13 @@ L4:
 
 	syscall
 
-	lw $t0, a
+L3:
+
+	li $t0, 10
+
+	sw $t0, t11
+
+	lw $t0, t11
 
 	li $v0, 1
 
@@ -181,6 +193,10 @@ L4:
 	li $v0, 11
 
 	li $a0, 10
+
+	syscall
+
+	li $v0, 10
 
 	syscall
 

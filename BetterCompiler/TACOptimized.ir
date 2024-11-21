@@ -1,32 +1,31 @@
 a = 3
-if 3 == 3 L0
+t2 = 3 + 7 
+b = t2
+t3 = 3 + b 
+c = t3
+c print 
+if c == 3 L0
+if c == 3 L1
+if c == 9 L2
+L3
+a print 
 
 L0:
-b = 2
-t3 = 3
-t3 print 
-if 2 >= 1 L1
+t6 = 3
+t6 print 
+end_if 
 
 L1:
-b print 
-end_if 
-end_if 
-if 3 == 3 L2
-
-L2:
-t6 = 2
-t6 print 
-end_elseIf 
-if 3 == 9 L3
-
-L3:
-t8 = 5
+t8 = 2
 t8 print 
 end_elseIf 
-L4
 
-L4:
-t9 = 10
-t9 print 
+L2:
+t10 = 5
+t10 print 
+end_elseIf 
+
+L3:
+t11 = 10
+t11 print 
 end_else 
-a print 

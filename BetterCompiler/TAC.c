@@ -156,7 +156,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->next = NULL;
             appendTAC(currentTACList, instruction);
 
-            currentTACList = oldTACList;
+            currentTACList = &tacHead;
             
             break;
         }
@@ -211,7 +211,7 @@ TAC* generateTAC(ASTNode* node) {
             appendTAC(currentTACList, instruction);
 
             // Switch back to the original TAC list
-            currentTACList = oldTACList;
+            currentTACList = &tacHead;
 
             generateTAC(node->elseIfStmt.next);
             break;
@@ -255,7 +255,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->next = NULL;
             appendTAC(currentTACList, instruction);
 
-            currentTACList = oldTACList;
+            currentTACList = &tacHead;
 
 
             break;
