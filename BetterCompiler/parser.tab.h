@@ -87,7 +87,8 @@ extern int yydebug;
     LESS_THAN_EQUAL_TO = 288,      /* LESS_THAN_EQUAL_TO  */
     AND = 289,                     /* AND  */
     OR = 290,                      /* OR  */
-    NUMBER = 291                   /* NUMBER  */
+    NOT_EQUAL_TO = 291,            /* NOT_EQUAL_TO  */
+    NUMBER = 292                   /* NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -105,7 +106,7 @@ union YYSTYPE
 	char op;
 	struct ASTNode* node;
 
-#line 109 "parser.tab.h"
+#line 110 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

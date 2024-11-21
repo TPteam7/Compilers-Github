@@ -8,7 +8,7 @@
 #include "semantic.h"
 #include "TAC.h"
 #include "optimizer.h"
-//#include "codeGenerator.h"
+#include "codeGenerator.h"
 
 #define TABLE_SIZE 100
 
@@ -238,12 +238,12 @@ int main() {
 		printTACToFile("TACOptimized.ir", &tacHead);
 
 		printf("\n=== CODE GENERATION ===\n");
-		//initCodeGenerator("output.s");
-		//generateMIPS(tacHead);
-		//finalizeCodeGenerator("output.s");
+		initCodeGenerator("output.s");
+		generateMIPS(tacHead);
+		finalizeCodeGenerator("output.s");
 
-        //freeAST(root);
-		//freeSymbolTable(symTab);
+        freeAST(root);
+		freeSymbolTable(symTab);
 
     }
 

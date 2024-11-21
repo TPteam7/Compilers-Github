@@ -36,5 +36,7 @@ void printNewLineMIPS(void);
 
 // Helper functions
 bool isConstant(const char* value);
+void addDataSection(TAC* current, char* variables[], int varIndex);
+void jumpToIfElseIfElseBlock(TAC* current);
 
 #endif // CODE_GENERATOR_H

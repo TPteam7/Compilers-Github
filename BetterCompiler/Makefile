@@ -9,14 +9,13 @@ lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l
 
 # Compile and link all necessary files, including AST.c
-# remove for now semantic.c codeGenerator.c
-#  semantic.c codeGenerator.c 
-parser: lex.yy.c parser.tab.c parser.tab.h AST.c semantic.c symbolTable.c TAC.c optimizer.c
-	gcc -o parser lex.yy.c parser.tab.c AST.c semantic.c symbolTable.c TAC.c optimizer.c
+#  
+parser: lex.yy.c parser.tab.c parser.tab.h AST.c semantic.c symbolTable.c TAC.c optimizer.c codeGenerator.c
+	gcc -o parser lex.yy.c parser.tab.c AST.c semantic.c symbolTable.c TAC.c optimizer.c codeGenerator.c
 	./parser testProg.cmm
 
 # Clean up generated files
-# codeGenerator.o
+# 
 clean:
-	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output lex.yy.o parser.tab.o semantic.o symbolTable.o TAC.o optimizer.o
+	rm -f parser parser.tab.c lex.yy.c parser.tab.h parser.output lex.yy.o parser.tab.o semantic.o symbolTable.o TAC.o optimizer.o codeGenerator.o
 	ls -l

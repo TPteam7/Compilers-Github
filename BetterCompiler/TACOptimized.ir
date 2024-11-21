@@ -1,35 +1,32 @@
-if 3 == 3 goto L0
-if 3 == 7 goto L1
-if 3 == 9 goto L2
-goto L3
-t12 = 5 + 8 
-
-function add 
-3 param 
-b param 
-t1 = 3 + b 
-c = t1
-c return 
-
-function sub 
-3 param 
-b param 
-t2 = 3 - b 
-c = t2
-c return 
+a = 3
+if 3 == 3 L0
 
 L0:
-t4 = 3
-t4 print 
+b = 2
+t3 = 3
+t3 print 
+if 2 >= 1 L1
 
 L1:
-t6 = 2
-t6 print 
+b print 
+end_if 
+end_if 
+if 3 == 3 L2
 
 L2:
-t8 = 5
-t8 print 
+t6 = 2
+t6 print 
+end_elseIf 
+if 3 == 9 L3
 
 L3:
+t8 = 5
+t8 print 
+end_elseIf 
+L4
+
+L4:
 t9 = 10
 t9 print 
+end_else 
+a print 

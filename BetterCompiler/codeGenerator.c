@@ -9,10 +9,7 @@ static FILE* outputFile;
 bool endOfProgram = false;
 // Keep track of the array register. 
     //This register will remain and be used for all arrays
-int arrReg = NULL;       
-
-// Keep track of the element being accessed in the array
-int elementID = NULL;
+int arrReg = 0;       
 
 // Name of the current array being accessed
 char* accessedArr = NULL;   
@@ -427,7 +424,7 @@ void generateMIPS(TAC* tacInstructions)
             printf("Generating MIPS for Array declaration\n");
 
             // Allocate a register for the size of the array if it is not already allocated
-            if(arrReg == NULL) {
+            if(arrReg == 0) {
                 arrReg = allocateRegister();
             }
 
@@ -439,7 +436,6 @@ void generateMIPS(TAC* tacInstructions)
             // Allocate memory for the array using la if it is not already allocated
             if(accessedArr == NULL || strcmp(accessedArr, current->result) != 0) {
                 accessedArr = current->result;
-                elementID = NULL;       // Reset the element being accessed since it is a new array
                 fprintf(outputFile, "\tla %s, %s\n", tempRegisters[arrReg].name, current->result);
             }
         }
@@ -466,7 +462,6 @@ void generateMIPS(TAC* tacInstructions)
             // If the array is different then the current array, load the address of the array into the register
             if(accessedArr == NULL || strcmp(accessedArr, arr_to_assign) != 0) {
                 accessedArr = arr_to_assign;
-                elementID = NULL;       // Reset the element being accessed since it is a new array
                 fprintf(outputFile, "\tla %s, %s\n", tempRegisters[arrReg].name, accessedArr);
             }
 
@@ -551,22 +546,58 @@ void generateMIPS(TAC* tacInstructions)
             deallocateRegister(offsetReg);
         }
         // Handle if statements
-        else if (strcmp(current->nodetype, "IfStmt") == 0) {
+        else if (strcmp(current->nodetype, "IfStmtCall") == 0) {
             printf("Generating MIPS for If statement\n");
 
-            jumptoIfElseIfElseBlock(current);
+            jumpToIfElseIfElseBlock(current);
         }
         // Handle else if statements
-        else if (strcmp(current->nodetype, "ElseIfStmt") == 0) {
+        else if (strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
             printf("Generating MIPS for Else If statement\n");
 
-            jumptoIfElseIfElseBlock(current);
+            jumpToIfElseIfElseBlock(current);
         }
         // Handle else statements
-        else if (strcmp(current->nodetype, "ElseStmt") == 0) {
+        else if (strcmp(current->nodetype, "ElseStmtCall") == 0) {
             printf("Generating MIPS for Else statement\n");
 
-            jumptoIfElseIfElseBlock(current);
+            fprintf(outputFile, "\tj %s\n", current->result);
+        }
+        // Handle printing out an if block
+        else if (strcmp(current->nodetype, "IfStmt") == 0) {
+            printf("Generating MIPS for If block\n");
+
+            fprintf(outputFile, "%s\n", current->result);
+        }
+        // Handle printing out an else if block
+        else if (strcmp(current->nodetype, "ElseIfStmt") == 0) {
+            printf("Generating MIPS for Else If block\n");
+
+            fprintf(outputFile, "%s\n", current->result);
+        }
+        // Handle printing out an else block
+        else if (strcmp(current->nodetype, "ElseStmt") == 0) {
+            printf("Generating MIPS for Else block\n");
+
+            fprintf(outputFile, "%s\n", current->result);
+        }
+        // Handle end of if block
+        else if (strcmp(current->nodetype, "End_IfStmt") == 0) {
+            printf("Generating MIPS for End If block\n");
+
+            fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
+        }
+        // Handle end of else if block
+        else if (strcmp(current->nodetype, "End_ElseIfStmt") == 0) {
+            printf("Generating MIPS for End Else If block\n");
+
+            fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
+        }
+        // Handle end of else block
+        else if (strcmp(current->nodetype, "End_ElseStmt") == 0) {
+            printf("Generating MIPS for End Else block\n");
+
+            fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
         }
         else
         {
@@ -617,7 +648,7 @@ Spilling: If all registers are in use and another one is needed,
 
 */
 
-void jumptoIfElseIfElseBlock(TAC* current) 
+void jumpToIfElseIfElseBlock(TAC* current) 
 /*
     Purpose: Generate MIPS code for jumping to an if, else if, or else block
 
@@ -661,23 +692,23 @@ void jumptoIfElseIfElseBlock(TAC* current)
     }
     // If sign is <, compare the values
     else if(strcmp(current->op, "<") == 0) {
-        fprintf(outputFile, "\tslt %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+        fprintf(outputFile, "\tslt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
     // If sign is >, compare the values
     else if(strcmp(current->op, ">") == 0) {
-        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
     // If sign is <=, compare the values
     else if(strcmp(current->op, "<=") == 0) {
-        fprintf(outputFile, "\tsle %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+        fprintf(outputFile, "\tsle %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
     // If sign is >=, compare the values
     else if(strcmp(current->op, ">=") == 0) {
-        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg], tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg], current->result);
+        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
+        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
 
     // Deallocate the register
@@ -689,10 +720,6 @@ void jumptoIfElseIfElseBlock(TAC* current)
 //Create a function to add to the data section of the MIPS code
 void addDataSection(TAC* current, char* variables[], int varIndex) {
     while (current != NULL) {
-        printf("\nOP:%s\n", current->op);
-        if(strcmp(current->op, "param") == 0) {
-            printf("HERE");
-        }
         // Check if the operation is '=', '+', '*', '-', or '/'
         if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || 
             strcmp(current->op, "*") == 0 || strcmp(current->op, "-") == 0 || 
@@ -756,7 +783,6 @@ void addDataSection(TAC* current, char* variables[], int varIndex) {
         // Any access or assignment of array
         else if(strcmp(current->op, "array_assign") == 0 || strcmp(current->op, "array_access") == 0)
         {
-            printf(current->result);
             if (current->result != NULL && !isConstant(current->result)) {
                 int found = 0;
                 for (int i = 0; i < varIndex; i++) {

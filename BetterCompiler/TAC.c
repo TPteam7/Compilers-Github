@@ -13,8 +13,8 @@ int printDebugTAC = 1;
 // Counter for if-elseif-else statements
 char labelBuffer[20];
 int ifStmtCounter = 0;
-int elseIfStmtCounter = 0;
-int elseStmtCounter = 0;
+//int elseIfStmtCounter = 0;
+//int elseStmtCounter = 0;
 
 // Implement functions to generate TAC expressions
 TAC* generateTAC(ASTNode* node) {
@@ -120,7 +120,7 @@ TAC* generateTAC(ASTNode* node) {
 
             TAC* conditionTAC = generateTAC(node->ifStmt.condition);
 
-            sprintf(labelBuffer, "goto L%d", ifStmtCounter);
+            sprintf(labelBuffer, "L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
@@ -148,6 +148,14 @@ TAC* generateTAC(ASTNode* node) {
 
             generateTAC(node->ifStmt.block);
 
+            // Add a instruction to end the else if block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = "end_if";
+            instruction->nodetype = "End_IfStmt";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
             currentTACList = oldTACList;
             
             break;
@@ -157,18 +165,22 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on else if statement\n");
 
+            // Generate TAC for the condition of the else if statement
             TAC* conditionTAC = generateTAC(node->elseIfStmt.condition);
 
-            sprintf(labelBuffer, "goto L%d", ifStmtCounter);
+            // Create the call to the else if statement
+            sprintf(labelBuffer, "L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
             instruction->nodetype = "ElseIfStmtCall";
 
+            // Append the instruction to the TAC list
             instruction->next = NULL;
             appendTAC(currentTACList, instruction);
 
+            // Create the label for the else if statement block
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
             sprintf(labelBuffer, "L%d:", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
@@ -179,14 +191,26 @@ TAC* generateTAC(ASTNode* node) {
 
             ifStmtCounter++;
 
+            // Switch to the else if TAC list
             oldTACList = currentTACList;
             currentTACList = &ifHead;
+
+            // Append the instruction to the TAC list
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Generate TAC for the else if statement block
+            generateTAC(node->elseIfStmt.block);
+
+            // Add a instruction to end the else if block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = "end_elseIf";
+            instruction->nodetype = "End_ElseIfStmt";
 
             instruction->next = NULL;
             appendTAC(currentTACList, instruction);
 
-            generateTAC(node->elseIfStmt.block);
-
+            // Switch back to the original TAC list
             currentTACList = oldTACList;
 
             generateTAC(node->elseIfStmt.next);
@@ -197,7 +221,7 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on else statement\n");
 
-            sprintf(labelBuffer, "goto L%d", ifStmtCounter);
+            sprintf(labelBuffer, "L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = "else";
             instruction->nodetype = "ElseStmtCall";
@@ -222,6 +246,14 @@ TAC* generateTAC(ASTNode* node) {
             appendTAC(currentTACList, instruction);
 
             generateTAC(node->elseStmt.block);
+
+            // Add a instruction to end the else block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = "end_else";
+            instruction->nodetype = "End_ElseStmt";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
 
             currentTACList = oldTACList;
 

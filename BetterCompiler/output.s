@@ -1,99 +1,189 @@
 .data
-	arr: .space 20
-	t7: .word 0
-	t10: .word 0
-	sum: .word 0
+
 	a: .word 0
+
 	b: .word 0
-	t0: .word 0
-	total: .word 0
-	t1: .word 0
-	divideTotal: .word 0
-	t2: .word 0
+
+	t3: .word 0
+
+	t6: .word 0
+
+	t8: .word 0
+
+	t9: .word 0
+
 .text
+
 .globl main
+
 main:
-	la $t0, arr
+
+	li $t0, 3
+
+	sw $t0, a
+
+	li $t0, 3
+
 	li $t1, 3
-	li $t2, 17
-	mul $t1, $t1, 4
-	add $t3, $t0, $t1
-	sw $t2, 0($t3)
-	li $t1, 3
-	mul $t1, $t1, 4
-	add $t3, $t0, $t1
-	lw $t2, 0($t3)
-	sw $t2, t7
-	lw $t1, t7
+
+	beq $t0, $t1, L0
+
+L0:
+
+	li $t0, 2
+
+	sw $t0, b
+
+	li $t0, 3
+
+	sw $t0, t3
+
+	lw $t0, t3
+
 	li $v0, 1
-	move $a0, $t1
+
+	move $a0, $t0
+
 	syscall
+
 	li $v0, 11
+
 	li $a0, 10
+
 	syscall
-	li $a0, 10
-	li $a1, 2
-	jal addNums
-	move $t1, $v0
-	sw $t1, t10
-	lw $t2, t10
-	move $t1, $t2
-	sw $t1, sum
-	lw $t1, sum
+
+	li $t0, 2
+
+	li $t1, 1
+
+	sge $t2, $t1, $t0
+
+	bne $t2, $zero, L1
+
+L1:
+
+	lw $t0, b
+
 	li $v0, 1
-	move $a0, $t1
+
+	move $a0, $t0
+
 	syscall
+
 	li $v0, 11
+
 	li $a0, 10
+
 	syscall
+
 	li $v0, 10
+
 	syscall
 
-divideNums:
-	addi $sp, $sp, -4
-	sw $ra, 0($sp)
+	li $v0, 10
 
-	sw $a0, a
-	sw $a1, b
-	lw $t1, a
-	lw $t2, b
-	div $t1, $t2
-	mflo $t3
-	sw $t3, t0
-	lw $t2, t0
-	move $t1, $t2
-	sw $t1, total
-	lw $v0, total
+	syscall
 
-	lw $ra, 0($sp)
-	addi $sp, $sp, 4
+	li $t0, 3
 
-	jr $ra
+	li $t1, 3
 
-addNums:
-	addi $sp, $sp, -4
-	sw $ra, 0($sp)
+	beq $t0, $t1, L2
 
-	sw $a0, a
-	sw $a1, b
-	lw $a0, a
-	lw $a1, b
-	jal divideNums
-	move $t1, $v0
-	sw $t1, t1
-	lw $t2, t1
-	move $t1, $t2
-	sw $t1, divideTotal
-	lw $t1, divideTotal
-	lw $t2, a
-	add $t3, $t1, $t2
-	sw $t3, t2
-	lw $t2, t2
-	move $t1, $t2
-	sw $t1, total
-	lw $v0, total
+L2:
 
-	lw $ra, 0($sp)
-	addi $sp, $sp, 4
+	li $t0, 2
 
-	jr $ra
+	sw $t0, t6
+
+	lw $t0, t6
+
+	li $v0, 1
+
+	move $a0, $t0
+
+	syscall
+
+	li $v0, 11
+
+	li $a0, 10
+
+	syscall
+
+	li $v0, 10
+
+	syscall
+
+	li $t0, 3
+
+	li $t1, 9
+
+	beq $t0, $t1, L3
+
+L3:
+
+	li $t0, 5
+
+	sw $t0, t8
+
+	lw $t0, t8
+
+	li $v0, 1
+
+	move $a0, $t0
+
+	syscall
+
+	li $v0, 11
+
+	li $a0, 10
+
+	syscall
+
+	li $v0, 10
+
+	syscall
+
+	j L4
+
+L4:
+
+	li $t0, 10
+
+	sw $t0, t9
+
+	lw $t0, t9
+
+	li $v0, 1
+
+	move $a0, $t0
+
+	syscall
+
+	li $v0, 11
+
+	li $a0, 10
+
+	syscall
+
+	li $v0, 10
+
+	syscall
+
+	lw $t0, a
+
+	li $v0, 1
+
+	move $a0, $t0
+
+	syscall
+
+	li $v0, 11
+
+	li $a0, 10
+
+	syscall
+
+	li $v0, 10
+
+	syscall
