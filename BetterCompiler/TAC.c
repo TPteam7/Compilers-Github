@@ -290,7 +290,8 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on conditiontail\n");
 
-            generateTAC(node->conditionTail.conjuction);
+            generateTAC(node->conditionTail.conjunction);
+
             generateTAC(node->conditionTail.condition);
             break;
         }
@@ -305,7 +306,8 @@ TAC* generateTAC(ASTNode* node) {
             //print debug statement
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on conjunction\n");
-
+                
+                instruction->op = strdup(node->conjunction.op);
             break;
         }
         case NodeType_ParamList: {

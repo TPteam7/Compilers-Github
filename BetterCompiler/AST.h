@@ -104,7 +104,7 @@ typedef struct ASTNode {
         } condition;
 
         struct{
-            struct ASTNode* conjuction;
+            struct ASTNode* conjunction;
             struct ASTNode* condition; 
         } conditionTail;
 
@@ -114,7 +114,7 @@ typedef struct ASTNode {
 
         struct {
             char* op;
-        } conjuction;
+        } conjunction;
 
         struct {
             struct ASTNode* paramTail;

@@ -87,9 +87,9 @@ ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2, ASTNo
     return node;
 }
 
-ASTNode* createConditionTailNode(ASTNode* conjuction, ASTNode* condition) {
+ASTNode* createConditionTailNode(ASTNode* conjunction, ASTNode* condition) {
     ASTNode* node = createNode(NodeType_ConditionTail);
-    node->conditionTail.conjuction = conjuction;
+    node->conditionTail.conjunction = conjunction;
     node->conditionTail.condition = condition;
     return node;
 }
@@ -102,7 +102,7 @@ ASTNode* createSignNode(char* op) {
 
 ASTNode* createConjunctionNode(char* op) {
     ASTNode* node = createNode(NodeType_Conjunction);
-    node->conjuction.op = op;
+    node->conjunction.op = op;
     return node;
 }
 
@@ -333,14 +333,14 @@ void printAST(ASTNode* node, int indent) {
             break;
         case NodeType_ConditionTail:
             printf("Condition Tail\n");
-            printAST(node->conditionTail.conjuction, indent + 1);
+            printAST(node->conditionTail.conjunction, indent + 1);
             printAST(node->conditionTail.condition, indent + 1);
             break;
         case NodeType_Sign:
             printf("Sign: %s\n", node->sign.op);
             break;
         case NodeType_Conjunction:
-            printf("Conjunction: %s\n", node->conjuction.op);
+            printf("Conjunction: %s\n", node->conjunction.op);
             break;
         case NodeType_ParamList:
             printf("ParamList\n");
@@ -505,7 +505,7 @@ void freeAST(ASTNode* node) {
             freeAST(node->condition.conditionTail);
             break;
         case NodeType_ConditionTail:
-            freeAST(node->conditionTail.conjuction);
+            freeAST(node->conditionTail.conjunction);
             freeAST(node->conditionTail.condition);
             break;
         case NodeType_Sign:
@@ -517,9 +517,9 @@ void freeAST(ASTNode* node) {
             break;
         case NodeType_Conjunction:
             // Free the operator string if allocated
-            if (node->conjuction.op != NULL) {
-                free(node->conjuction.op);
-                node->conjuction.op = NULL;
+            if (node->conjunction.op != NULL) {
+                free(node->conjunction.op);
+                node->conjunction.op = NULL;
             }
             break;
         case NodeType_ParamList:
