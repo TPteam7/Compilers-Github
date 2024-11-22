@@ -135,8 +135,8 @@ TAC* generateTAC(ASTNode* node) {
             sprintf(labelBuffer, "L%d", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
-            instruction->arg1 = conditionTAC->arg1;
-            instruction->arg2 = conditionTAC->arg2;
+            instruction->arg1 = conditionTAC->result;
+            instruction->arg2 = NULL;
             instruction->nodetype = "IfStmtCall";
 
             instruction->next = NULL;
@@ -278,10 +278,13 @@ TAC* generateTAC(ASTNode* node) {
             TAC *leftExprTAC = generateTAC(node->condition.expr);
             TAC *rightExprTAC = generateTAC(node->condition.expr2);
 
+            instruction->result = createTempVar();
             instruction->arg1 = leftExprTAC->result;
             instruction->arg2 = rightExprTAC->result;
             instruction->op = strdup(node->condition.sign->sign.op);
             instruction->nodetype = "Condition";
+
+            appendTAC(currentTACList, instruction);
 
             break;
         }
@@ -307,7 +310,9 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on conjunction\n");
                 
-                instruction->op = strdup(node->conjunction.op);
+            instruction->op = strdup(node->conjunction.op);
+            instruction->nodetype = "Conjunction";
+
             break;
         }
         case NodeType_ParamList: {
@@ -736,7 +741,7 @@ void printTACToFile(const char* filename, TAC** tac) {
             fprintf(file, "%s %s\n", current->op, current->arg1);
         }
         else if (strcmp(current->nodetype, "IfStmtCall") == 0 || strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
-            fprintf(file, "if %s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
+            fprintf(file, "if %s %s\n", current->arg1, current->result);
         }
         else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
             fprintf(file, "%s\n", current->result);
