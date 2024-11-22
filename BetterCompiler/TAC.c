@@ -283,6 +283,8 @@ TAC* generateTAC(ASTNode* node) {
             instruction->op = strdup(node->condition.sign->sign.op);
             instruction->nodetype = "Condition";
 
+            generateTAC(node->condition.conditionTail);
+
             break;
         }
         case NodeType_ConditionTail: {
@@ -306,8 +308,9 @@ TAC* generateTAC(ASTNode* node) {
             //print debug statement
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on conjunction\n");
-                
-                instruction->op = strdup(node->conjunction.op);
+
+            instruction->op = strdup(node->conjunction.op);
+            instruction->nodetype = "Conjunction";
             break;
         }
         case NodeType_ParamList: {
