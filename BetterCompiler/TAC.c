@@ -282,10 +282,26 @@ TAC* generateTAC(ASTNode* node) {
 
             break;
         }
+        case NodeType_ConditionTail: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on conditiontail\n");
+
+            generateTAC(node->conditionTail.conjuction);
+            generateTAC(node->conditionTail.condition);
+            break;
+        }
         case NodeType_Sign: {
             //print debug statement
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on sign\n");
+
+            break;
+        }
+        case NodeType_Conjunction: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on conjunction\n");
 
             break;
         }

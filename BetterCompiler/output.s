@@ -4,10 +4,10 @@
 	b: .word 0
 	t3: .word 0
 	c: .word 0
-	t6: .word 0
-	t8: .word 0
-	t10: .word 0
+	t7: .word 0
+	t9: .word 0
 	t11: .word 0
+	t12: .word 0
 .text
 .globl main
 main:
@@ -34,7 +34,7 @@ main:
 	li $v0, 11
 	li $a0, 10
 	syscall
-	lw $t0, c
+	li $t0, 3
 	li $t1, 3
 	beq $t0, $t1, L0
 	lw $t0, c
@@ -53,8 +53,8 @@ main:
 	syscall
 L0:
 	li $t0, 3
-	sw $t0, t6
-	lw $t0, t6
+	sw $t0, t7
+	lw $t0, t7
 	li $v0, 1
 	move $a0, $t0
 	syscall
@@ -65,8 +65,8 @@ L0:
 	syscall
 L1:
 	li $t0, 2
-	sw $t0, t8
-	lw $t0, t8
+	sw $t0, t9
+	lw $t0, t9
 	li $v0, 1
 	move $a0, $t0
 	syscall
@@ -77,8 +77,8 @@ L1:
 	syscall
 L2:
 	li $t0, 5
-	sw $t0, t10
-	lw $t0, t10
+	sw $t0, t11
+	lw $t0, t11
 	li $v0, 1
 	move $a0, $t0
 	syscall
@@ -89,8 +89,8 @@ L2:
 	syscall
 L3:
 	li $t0, 10
-	sw $t0, t11
-	lw $t0, t11
+	sw $t0, t12
+	lw $t0, t12
 	li $v0, 1
 	move $a0, $t0
 	syscall

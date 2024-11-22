@@ -7,32 +7,33 @@ t3 = a + b
 c = t3
 c print 
 t4 = 3
-if c == t4 L0
-t7 = 3
-if c == t7 L1
-t9 = 9
-if c == t9 L2
+t5 = 3
+if t4 == t5 L0
+t8 = 3
+if c == t8 L1
+t10 = 9
+if c == t10 L2
 L3
 a print 
 
 L0:
-t5 = 2
-b = t5
-t6 = 3
-t6 print 
+t6 = 2
+b = t6
+t7 = 3
+t7 print 
 end_if 
 
 L1:
-t8 = 2
-t8 print 
+t9 = 2
+t9 print 
 end_elseIf 
 
 L2:
-t10 = 5
-t10 print 
+t11 = 5
+t11 print 
 end_elseIf 
 
 L3:
-t11 = 10
-t11 print 
+t12 = 10
+t12 print 
 end_else 
