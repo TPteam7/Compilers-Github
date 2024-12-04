@@ -1,8 +1,28 @@
-t0 = 1
-t1 = 1
-if t0 == t1 L0
+t2 = 3
+a = t2
+t3 = 4
+b = t3
+if b > a L0
+
+function sumThese 
+a param 
+b param 
+t0 = a + b 
+c = t0
+c return 
+
+function printSum 
+a param 
+b param 
+arg a
+arg b
+t1 = call sumThese
+c = t1
+c return 
 
 L0:
-t2 = 3
-t2 print 
+arg a
+arg b
+t4 = call printSum
+sum = t4
 end_if 

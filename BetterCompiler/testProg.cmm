@@ -1,22 +1,24 @@
-
-
-int addTheseNumbers(int a, int b)
+int sumThese(int a, int b)
 {
     int c = a + b;
 
     return c;
 }
 
-void printSum(int a, int b)
+int printSum(int a, int b)
 {
-    int c = addTheseNumbers(a,b); 
+    int c;
+    c = sumThese(a, b);
 
-    print(c);
+    return c;
 }
 
 int a = 3;
-int arr[5];
 
 int b = 4;
+int sum;
 
-printSum(a,b);
+if(b > a)
+{
+    sum = printSum(a,b);
+}
