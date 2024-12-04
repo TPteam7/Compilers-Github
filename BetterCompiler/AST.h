@@ -14,6 +14,7 @@ typedef enum {
     NodeType_IfStmt,
     NodeType_ElseIfStmt,
     NodeType_ElseStmt,
+    NodeType_WhileStmt,
     NodeType_Condition,
     NodeType_ConditionTail,
     NodeType_Sign,
@@ -95,6 +96,11 @@ typedef struct ASTNode {
         struct {
             struct ASTNode* block;
         } elseStmt;
+
+        struct {
+            struct ASTNode* condition;
+            struct ASTNode* block;
+        } whileStmt;
 
         struct {
             struct ASTNode* expr;
@@ -237,6 +243,7 @@ ASTNode* createIfBlockNode(ASTNode* ifStmt, ASTNode* elseIfList, ASTNode* elseSt
 ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block);
 ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block, ASTNode* next);
 ASTNode* createElseStmtNode(ASTNode* block);
+ASTNode* createWhileStmtNode(ASTNode* condition, ASTNode* block);
 ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2, ASTNode* conditionTail);
 ASTNode* createConditionTailNode(ASTNode* conjunction, ASTNode* condition);
 ASTNode* createSignNode(char* op);

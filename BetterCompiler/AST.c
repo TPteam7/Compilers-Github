@@ -78,6 +78,13 @@ ASTNode* createElseStmtNode(ASTNode* block) {
     return node;
 }
 
+ASTNode* createWhileStmtNode(ASTNode* condition, ASTNode* block) {
+    ASTNode* node = createNode(NodeType_WhileStmt);
+    node->whileStmt.condition = condition;
+    node->whileStmt.block = block;
+    return node;
+}
+
 ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2, ASTNode* conditionTail) {
     ASTNode* node = createNode(NodeType_Condition);
     node->condition.expr = expr;
@@ -324,6 +331,11 @@ void printAST(ASTNode* node, int indent) {
             printf("Else Statement\n");
             printAST(node->elseStmt.block, indent + 1);
             break;
+        case NodeType_WhileStmt:
+            printf("While Statement\n");
+            printAST(node->whileStmt.condition, indent + 1);
+            printAST(node->whileStmt.block, indent + 1);
+            break;
         case NodeType_Condition:
             printf("Condition\n");
             printAST(node->condition.expr, indent + 1);
@@ -497,6 +509,10 @@ void freeAST(ASTNode* node) {
             break;
         case NodeType_ElseStmt:
             freeAST(node->elseStmt.block);
+            break;
+        case NodeType_WhileStmt:
+            freeAST(node->whileStmt.condition);
+            freeAST(node->whileStmt.block);
             break;
         case NodeType_Condition:
             freeAST(node->condition.expr);

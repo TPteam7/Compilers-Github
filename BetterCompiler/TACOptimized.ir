@@ -1,12 +1,6 @@
 if 1 == 1 L0
 
 L0:
-t2 = 5
+t2 = 3
 t2 print 
-if 1 == 1 L1
-
-L1:
-t5 = 3
-t5 print 
-end_if 
 end_if 

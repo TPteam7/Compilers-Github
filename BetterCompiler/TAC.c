@@ -272,6 +272,9 @@ TAC* generateTAC(ASTNode* node) {
 
             break;
         }
+        case NodeType_WhileStmt: {
+
+        }
         case NodeType_Condition: {
             //print debug statement
             if (printDebugTAC == 1)
