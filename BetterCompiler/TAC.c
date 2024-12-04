@@ -10,7 +10,7 @@ TAC** currentTACList = &tacHead;
 TAC** oldTACList = NULL;
 int tempVars[60];
 int printDebugTAC = 1;
-TACStack tacStack = NULL;
+//TACStack tacStack = NULL;
 
 // Counter for if-elseif-else statements
 char labelBuffer[20];

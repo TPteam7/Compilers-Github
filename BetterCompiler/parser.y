@@ -118,7 +118,7 @@ CONJUNCTION: AND { $$ = createConjunctionNode($1); }
 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
 
 
-FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON{ printf("HERE\n"); $$ = createFunctionCallNode(createIDNode($1), $3); };
+FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON{ $$ = createFunctionCallNode(createIDNode($1), $3); };
 
 
 ParamList: { $$ = NULL; }
@@ -165,9 +165,10 @@ Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)
 
 
 DeclarationAssignment: Type ID ASSIGN Expr SEMICOLON { $$ = createDeclarationAssignmentNode($1, createIDNode($2), $4);}
+	| Type ID ASSIGN FunctionCall { $$ = createDeclarationAssignmentNode($1, createIDNode($2), $4);}
 
 
-Type: INT { printf("HERE\n"); $$ = createTypeNode($1); }
+Type: INT { $$ = createTypeNode($1); }
     | FLOAT { $$ = createTypeNode($1); }
 	| BOOL { $$ = createTypeNode($1); }
 	| VOID { $$ = createTypeNode($1); };
@@ -232,9 +233,8 @@ int main() {
 
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
+
 		semanticAnalysis(root, symTab, symTab->topLevelStatements);
-
-
 		// print symbolTable
 		printSymbolTable(symTab);
 

@@ -3,7 +3,7 @@
 
 
 // Perform semantic analysis on the AST
-int printDebugSemantic = 1;
+int printDebugSemantic = 0;
 
 void semanticAnalysis(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab) 
 /*
@@ -243,15 +243,16 @@ ARGS:
             break;
         // Check if variable has been declared in VariableSymbolTable
         case NodeType_DeclarationAssignment:
-            addVariable(varTab, node->declarationAssignment.id->id.name, node->declarationAssignment.type->type.typeName, 0);
-
-            if (lookupVariable(varTab, node->declarationAssignment.id->id.name) == NULL) {
-                fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has not been declared\n\n", node->declarationAssignment.id->id.name);
+            if (lookupVariable(varTab, node->declarationAssignment.id->id.name) != NULL) {
+                fprintf(stderr, "\nSEMANTIC ERROR:\nVariable %s has already been declared\n\n", node->declarationAssignment.id->id.name);
                 exit(0);
                 break;
             }
-
-            evaluateType(node, symTab, varTab);
+            else
+            {
+                addVariable(varTab, node->declarationAssignment.id->id.name, node->declarationAssignment.type->type.typeName, 0);
+            }
+                
 
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on declaration assignment\n");
@@ -259,6 +260,8 @@ ARGS:
             semanticAnalysis(node->declaration.type, symTab, NULL);
             semanticAnalysis(node->declarationAssignment.id, symTab, varTab);
             semanticAnalysis(node->declarationAssignment.expr, symTab, varTab);
+
+            evaluateType(node, symTab, varTab);
 
             break;
         // Check if array has been declared. If not, add to VariableSymbolTable
