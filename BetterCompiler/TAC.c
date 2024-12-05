@@ -248,34 +248,43 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg2 = NULL;
             instruction->nodetype = "WhileStmt";
 
-            whileStmtCounter++;
-
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
 
+            // Generate TAC for the condition of the while statement
             TAC* conditionTAC = generateTAC(node->whileStmt.condition);
 
             // Create the call to the while statement
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
-            sprintf(labelBuffer, "While%d", whileStmtCounter);
+            sprintf(labelBuffer, "Continue%d", whileStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
-            instruction->nodetype = "WhileStmtCall";
+            instruction->nodetype = "WhileCondition";
 
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
-
-            whileStmtCounter++;
 
             // Generate TAC for the while statement block
             generateTAC(node->whileStmt.block);
 
             //Add a instruction to end the while block
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
-            instruction->op = "end_while";
+            sprintf(labelBuffer, "WhileStart%d", whileStmtCounter);
+            instruction->arg1 = "goto";
+            instruction->op = strdup(labelBuffer);
             instruction->nodetype = "End_WhileStmt";
+
+            // Add the continue statement
+            sprintf(labelBuffer, "Continue%d:", whileStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "continue";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
+            instruction->nodetype = "ContinueStmt";
+
+            whileStmtCounter++;
 
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
@@ -721,10 +730,10 @@ void printTACToFile(const char* filename, TAC** tac) {
     TAC* current = *(tac);
     while (current != NULL) {
         // Add new line for specific operators
-        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0) {
+        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "WhileStmt") == 0 || strcmp(current->nodetype, "ContinueStmt") == 0) {
             fprintf(file, "\n");
         }
-        else if (strcmp(current->nodetype, "WhileStmt") == 0) {
+        if (strcmp(current->nodetype, "WhileStmt") == 0 || strcmp(current->nodetype, "ContinueStmt") == 0) {
             fprintf(file, "%s\n", current->result);
         }
         else if (strcmp(current->op, "array_decl") == 0) {
@@ -748,6 +757,9 @@ void printTACToFile(const char* filename, TAC** tac) {
         }
         else if (strcmp(current->nodetype, "IfStmtCall") == 0 || strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
             fprintf(file, "if %s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
+        }
+        else if (strcmp(current->nodetype, "WhileCondition") == 0 ) {
+            fprintf(file, "%s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
         }
         else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
             fprintf(file, "%s\n", current->result);

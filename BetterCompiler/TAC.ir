@@ -1,11 +1,23 @@
 t0 = 0
 a = t0
+
 WhileStart0:
 t1 = 3
-While1 = a < t1 
+a < t1 Continue0
 a print 
 t2 = 1
 t3 = a + t2 
 a = t3
-end_while 
+
+Continue0:
+
+WhileStart1:
+t4 = 3
+a < t4 Continue1
+a print 
+t5 = 1
+t6 = a + t5 
+a = t6
+
+Continue1:
 a print 

@@ -1,8 +1,18 @@
 a = 0
+
 WhileStart0:
-While1 = 0 < 3 
+0 < 3 Continue0
 a print 
 t3 = 0 + 1 
 a = t3
-end_while 
+
+Continue0:
+
+WhileStart1:
+0 < 3 Continue1
+a print 
+t6 = 0 + 1 
+a = t6
+
+Continue1:
 a print 
