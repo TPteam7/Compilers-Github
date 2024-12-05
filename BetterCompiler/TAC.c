@@ -272,7 +272,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->op = "while";
             instruction->arg1 = NULL;
             instruction->arg2 = NULL;
-            instruction->nodetype = "WhileStmt";
+            instruction->nodetype = "While_Stmt";
 
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
@@ -287,7 +287,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
-            instruction->nodetype = "WhileCondition";
+            instruction->nodetype = "While_Condition";
 
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
@@ -302,13 +302,17 @@ TAC* generateTAC(ASTNode* node) {
             instruction->op = strdup(labelBuffer);
             instruction->nodetype = "End_WhileStmt";
 
+            instruction->next = NULL;
+            appendTAC(&tacHead, instruction);
+
             // Add the continue statement
+            instruction = (TAC*)malloc(sizeof(TAC));
             sprintf(labelBuffer, "Continue%d:", whileStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = "continue";
             instruction->arg1 = NULL;
             instruction->arg2 = NULL;
-            instruction->nodetype = "ContinueStmt";
+            instruction->nodetype = "Continue_Stmt";
 
             whileStmtCounter++;
 

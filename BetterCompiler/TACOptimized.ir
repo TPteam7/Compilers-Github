@@ -1,18 +1,12 @@
-if 1 == 1 L0
-goto L1 
-
-L0:
-t2 = 3
-t2 print 
-if 1 == 1 L2
-goto L3 
-
-L2:
-t5 = 5
-t5 print 
-goto L3 
-
-L3:
-goto L1 
-
-L1:
+a = 0
+b = 100
+WhileStart0: = while 
+Continue0 = a < 3 
+t4 = a + 1 
+a = t4
+t6 = b + 1 
+b = t6
+a print 
+goto WhileStart0 
+Continue0: = continue 
+b print 

@@ -1,29 +1,44 @@
 .data
-	t2: .word 0
-	t5: .word 0
+	a: .word 0
+	b: .word 0
+	t4: .word 0
+	t6: .word 0
 .text
 .globl main
 main:
-	li $t0, 1
+	li $t0, 0
+	sw $t0, a
+	li $t0, 100
+	sw $t0, b
+WhileStart0:
+	lw $t0, a
+	li $t1, 3
+	sge $t2, $t0, $t1
+	bne $t2, $zero, Continue0
+	lw $t0, a
 	li $t1, 1
-	beq $t0, $t1, L0
-L0:
-	li $t0, 3
-	sw $t0, t2
-	lw $t0, t2
+	add $t2, $t0, $t1
+	sw $t2, t4
+	lw $t1, t4
+	move $t0, $t1
+	sw $t0, a
+	lw $t0, b
+	li $t1, 1
+	add $t2, $t0, $t1
+	sw $t2, t6
+	lw $t1, t6
+	move $t0, $t1
+	sw $t0, b
+	lw $t0, a
 	li $v0, 1
 	move $a0, $t0
 	syscall
 	li $v0, 11
 	li $a0, 10
 	syscall
-	li $t0, 1
-	li $t1, 1
-	beq $t0, $t1, L2
-L2:
-	li $t0, 5
-	sw $t0, t5
-	lw $t0, t5
+	j WhileStart0
+Continue0:
+	lw $t0, b
 	li $v0, 1
 	move $a0, $t0
 	syscall
