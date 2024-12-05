@@ -113,11 +113,23 @@ TAC* generateTAC(ASTNode* node) {
 
             // Create the call to the if statement
             sprintf(labelBuffer, "L%d", ifStmtCounter);
+            char* trueLabel = strdup(labelBuffer); // Save label for later
             instruction->result = strdup(labelBuffer);
             instruction->op = conditionTAC->op;
             instruction->arg1 = conditionTAC->arg1;
             instruction->arg2 = conditionTAC->arg2;
             instruction->nodetype = "IfStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(&tacHead, instruction);
+
+            // Create the call to the false result
+            sprintf(labelBuffer, "L%d", ifStmtCounter + 1);
+            char* falseLabel = strdup(labelBuffer);
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "EndIfCall";
 
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
@@ -131,7 +143,7 @@ TAC* generateTAC(ASTNode* node) {
             instruction->arg2 = NULL;
             instruction->nodetype = "IfStmt";
 
-            ifStmtCounter++;        
+            ifStmtCounter += 2;        
 
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
@@ -139,10 +151,24 @@ TAC* generateTAC(ASTNode* node) {
             // Generate TAC for the if statement block
             generateTAC(node->ifStmt.block);
 
-            // Add a instruction to end the else if block
+            sprintf(labelBuffer, "%s", falseLabel);
+            falseLabel = strdup(labelBuffer);
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
-            instruction->op = "end_if";
-            instruction->nodetype = "End_IfStmt";
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "EndIfCall";
+
+            instruction->next = NULL;
+            appendTAC(&tacHead, instruction);
+
+            // Create the label for the if statement block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "%s:", falseLabel);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "endif";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
+            instruction->nodetype = "EndIfLabel";
 
             instruction->next = NULL;
             appendTAC(&tacHead, instruction);
@@ -721,10 +747,10 @@ void printTACToFile(const char* filename, TAC** tac) {
     TAC* current = *(tac);
     while (current != NULL) {
         // Add new line for specific operators
-        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0) {
+        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "EndIfLabel") == 0) {
             fprintf(file, "\n");
         }
-        else if (strcmp(current->nodetype, "WhileStmt") == 0) {
+        if (strcmp(current->nodetype, "WhileStmt") == 0) {
             fprintf(file, "%s\n", current->result);
         }
         else if (strcmp(current->op, "array_decl") == 0) {
@@ -752,7 +778,7 @@ void printTACToFile(const char* filename, TAC** tac) {
         else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
             fprintf(file, "%s\n", current->result);
         }
-        else if (strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0) {
+        else if (strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "EndIfLabel") == 0) {
             fprintf(file, "%s\n", current->result);
         }
         else {
