@@ -295,31 +295,31 @@ TAC* generateTAC(ASTNode* node) {
             instruction->next = NULL;
             appendTAC(currentTACList, instruction);
 
-            TAC* conditionTAC = generateTAC(node->whileStmt.condition);
+            // TAC* conditionTAC = generateTAC(node->whileStmt.condition);
 
-            // Create the call to the while statement
-            sprintf(labelBuffer, "While%d", whileStmtCounter);
-            instruction->result = strdup(labelBuffer);
-            instruction->op = conditionTAC->op;
-            instruction->arg1 = conditionTAC->arg1;
-            instruction->arg2 = conditionTAC->arg2;
-            instruction->nodetype = "WhileStmtCall";
+            // // Create the call to the while statement
+            // sprintf(labelBuffer, "While%d", whileStmtCounter);
+            // instruction->result = strdup(labelBuffer);
+            // instruction->op = conditionTAC->op;
+            // instruction->arg1 = conditionTAC->arg1;
+            // instruction->arg2 = conditionTAC->arg2;
+            // instruction->nodetype = "WhileStmtCall";
 
-            instruction->next = NULL;
-            appendTAC(currentTACList, instruction);
+            // instruction->next = NULL;
+            // appendTAC(currentTACList, instruction);
 
-            whileStmtCounter++;
+            // whileStmtCounter++;
 
-            // Generate TAC for the while statement block
-            generateTAC(node->whileStmt.block);
+            // // Generate TAC for the while statement block
+            // generateTAC(node->whileStmt.block);
 
-            //Add a instruction to end the while block
-            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
-            instruction->op = "end_while";
-            instruction->nodetype = "End_WhileStmt";
+            // //Add a instruction to end the while block
+            // instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            // instruction->op = "end_while";
+            // instruction->nodetype = "End_WhileStmt";
 
-            instruction->next = NULL;
-            appendTAC(currentTACList, instruction);
+            // instruction->next = NULL;
+            // appendTAC(currentTACList, instruction);
 
             break;
         }

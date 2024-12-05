@@ -1,8 +1,3 @@
 a = 0
-While0 = 0 < 3 
 L0: = while 
-a print 
-t3 = 0 + 1 
-a = t3
-end_while 
 a print 
