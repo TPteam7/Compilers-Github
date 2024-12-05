@@ -1,11 +1,4 @@
 t0 = 0
 a = t0
-WhileStart0:
-t1 = 3
-While1 = a < t1 
-a print 
-t2 = 1
-t3 = a + t2 
-a = t3
-end_while 
+L0: = while 
 a print 
