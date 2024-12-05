@@ -4,12 +4,15 @@ goto L1
 L0:
 t2 = 3
 t2 print 
+if 1 == 1 L2
+goto L3 
+
+L2:
+t5 = 5
+t5 print 
+goto L3 
+
+L3:
 goto L1 
 
 L1:
-if 2 == 1 L2
-
-L2:
-t5 = 4
-t5 print 
-end_elseIf 
