@@ -1,8 +1,8 @@
 t0 = 0
 a = t0
+WhileStart0:
 t1 = 3
-While0 = a < t1 
-L0: = while 
+While1 = a < t1 
 a print 
 t2 = 1
 t3 = a + t2 

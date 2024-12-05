@@ -1,6 +1,6 @@
 a = 0
-While0 = 0 < 3 
-L0: = while 
+WhileStart0:
+While1 = 0 < 3 
 a print 
 t3 = 0 + 1 
 a = t3
