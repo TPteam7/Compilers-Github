@@ -756,7 +756,7 @@ void printTACToFile(const char* filename, TAC** tac) {
     TAC* current = *(tac);
     while (current != NULL) {
         // Add new line for specific operators
-        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "WhileStmt") == 0 || strcmp(current->nodetype, "ContinueStmt") == 0) {
+        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "WhileStmt") == 0 || strcmp(current->nodetype, "ContinueStmt") == 0 || strcmp(current->nodetype, "EndIfLabel") == 0) {
             fprintf(file, "\n");
         }
         if (strcmp(current->nodetype, "WhileStmt") == 0 || strcmp(current->nodetype, "ContinueStmt") == 0) {
