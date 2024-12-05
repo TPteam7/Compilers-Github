@@ -1,63 +1,51 @@
-.data
-	t0: .word 0
-	c: .word 0
-	t1: .word 0
-	t4: .word 0
-.text
-.globl main
+    .data
+
+msg:    .asciiz "Loop finished.\n"  # String to print after the loop
+
+
+
+    .text
+
+    .globl main
+
+
+
 main:
-	li $t0, 4
-	li $t1, 3
-	sgt $t2, $t1, $t0
-	bne $t2, $zero, L0
-	li $v0, 10
-	syscall
 
-sumThese:
-	addi $sp, $sp, -4
-	sw $ra, 0($sp)
+    li $t0, 5            # Initialize $t0 to 5
 
-	li $a0, 3
-	li $a1, 4
-	li $t0, 3
-	li $t1, 4
-	add $t2, $t0, $t1
-	sw $t2, t0
-	lw $t1, t0
-	move $t0, $t1
-	sw $t0, c
-	lw $v0, c
+    li $t1, 10            # Set $t1 to 0 (comparison value)
 
-	lw $ra, 0($sp)
-	addi $sp, $sp, 4
+LoopStart:
 
-	jr $ra
+    blt $t0, $t1, Continue  # If $t0 < $t1, exit the loop
+    
+    li $v0, 4             # System call for print string
 
-printSum:
-	addi $sp, $sp, -4
-	sw $ra, 0($sp)
+    la $a0, msg           # Load address of the string
 
-	li $a0, 3
-	li $a1, 4
-	li $a0, 3
-	li $a1, 4
-	jal sumThese
-	move $t0, $v0
-	sw $t0, t1
-	lw $t1, t1
-	move $t0, $t1
-	sw $t0, c
-	lw $v0, c
+    syscall
 
-	lw $ra, 0($sp)
-	addi $sp, $sp, 4
+    sub $t0, $t0, 1         # Decrement $t0
 
-	jr $ra
-L0:
-	li $a0, 3
-	li $a1, 4
-	jal printSum
-	move $t0, $v0
-	sw $t0, t4
-	li $v0, 10
-	syscall
+    j LoopStart             # Jump back to reevaluate the condition
+
+
+
+# Code to execute after the loop
+
+Continue:
+
+    li $v0, 4             # System call for print string
+
+    la $a0, msg           # Load address of the string
+
+    syscall
+
+
+
+# End program
+
+li $v0, 10            # Exit system call
+
+syscall

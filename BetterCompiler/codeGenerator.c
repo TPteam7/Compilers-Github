@@ -697,7 +697,7 @@ void jumpToIfElseIfElseBlock(TAC* current)
     }
     // If sign is >, compare the values
     else if(strcmp(current->op, ">") == 0) {
-        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
+        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
         fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
     // If sign is <=, compare the values
@@ -707,7 +707,7 @@ void jumpToIfElseIfElseBlock(TAC* current)
     }
     // If sign is >=, compare the values
     else if(strcmp(current->op, ">=") == 0) {
-        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg2Reg].name, tempRegisters[arg1Reg].name);
+        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
         fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
 

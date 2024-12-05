@@ -3,6 +3,7 @@
 #define TAC_H
 
 #include "AST.h"
+#include <stdbool.h>
 
 typedef struct TAC {
     char* op;   // Operator
@@ -26,6 +27,7 @@ char* createOperand(ASTNode* node);
 void printTAC(TAC** tac);
 void initializeTempVars();
 void deallocateTempVar(int tempVars[], int index);
+bool isNonActionableNodeType(NodeType nType);
 int allocateNextAvailableTempVar(int tempVars[]);
 void appendTAC(TAC** head, TAC* newInstruction);
 void printTACToFile(const char* filename, TAC** tac);

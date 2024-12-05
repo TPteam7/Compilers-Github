@@ -1,23 +1,8 @@
-if 4 > 3 L0
-
-function sumThese 
-3 param 
-4 param 
-t0 = 3 + 4 
-c = t0
-c return 
-
-function printSum 
-3 param 
-4 param 
-arg 3
-arg 4
-t1 = call sumThese
-c = t1
-c return 
-
-L0:
-arg 3
-arg 4
-t4 = call printSum
-end_if 
+a = 0
+While0 = 0 < 3 
+L0: = while 
+a print 
+t3 = 0 + 1 
+a = t3
+end_while 
+a print 

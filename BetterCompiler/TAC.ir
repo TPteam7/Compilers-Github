@@ -1,28 +1,11 @@
-t2 = 3
-a = t2
-t3 = 4
-b = t3
-if b > a L0
-
-function sumThese 
-a param 
-b param 
-t0 = a + b 
-c = t0
-c return 
-
-function printSum 
-a param 
-b param 
-arg a
-arg b
-t1 = call sumThese
-c = t1
-c return 
-
-L0:
-arg a
-arg b
-t4 = call printSum
-sum = t4
-end_if 
+t0 = 0
+a = t0
+t1 = 3
+While0 = a < t1 
+L0: = while 
+a print 
+t2 = 1
+t3 = a + t2 
+a = t3
+end_while 
+a print 

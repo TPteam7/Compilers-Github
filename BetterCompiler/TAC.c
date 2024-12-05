@@ -15,6 +15,7 @@ int printDebugTAC = 1;
 // Counter for if-elseif-else statements
 char labelBuffer[20];
 int ifStmtCounter = 0;
+int whileStmtCounter = 0;
 //int elseIfStmtCounter = 0;
 //int elseStmtCounter = 0;
 
@@ -273,7 +274,54 @@ TAC* generateTAC(ASTNode* node) {
             break;
         }
         case NodeType_WhileStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on while statement\n");
 
+            // Change the current TAC list to the tacHead or funcHead
+            currentTACList = &tacHead;
+
+            // Create the label for the while statement block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", whileStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "while";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
+            instruction->nodetype = "WhileStmt";
+
+            whileStmtCounter++;
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            TAC* conditionTAC = generateTAC(node->whileStmt.condition);
+
+            // Create the call to the while statement
+            sprintf(labelBuffer, "While%d", whileStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = conditionTAC->op;
+            instruction->arg1 = conditionTAC->arg1;
+            instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "WhileStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            whileStmtCounter++;
+
+            // Generate TAC for the while statement block
+            generateTAC(node->whileStmt.block);
+
+            //Add a instruction to end the while block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = "end_while";
+            instruction->nodetype = "End_WhileStmt";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            break;
         }
         case NodeType_Condition: {
             //print debug statement
@@ -621,7 +669,7 @@ TAC* generateTAC(ASTNode* node) {
     //     appendTAC(currentTACList, instruction);
     // }
 
-    if (node->nType != NodeType_Condition && node->nType != NodeType_FunctionDeclaration && node->nType != NodeType_ArgTail && node->nType != NodeType_IfStmt && node->nType != NodeType_ElseIfStmt && node->nType != NodeType_ElseStmt) {
+    if (!isNonActionableNodeType(node->nType)) {
         instruction->next = NULL;  // Make sure to null-terminate the new instruction
         appendTAC(currentTACList, instruction);
     }
@@ -787,6 +835,16 @@ char* createOperand(ASTNode* node) {
         default:
             return NULL;
     }
+}
+
+bool isNonActionableNodeType(NodeType type) {
+    return type == NodeType_Condition ||
+           type == NodeType_FunctionDeclaration ||
+           type == NodeType_ArgTail ||
+           type == NodeType_IfStmt ||
+           type == NodeType_ElseIfStmt ||
+           type == NodeType_ElseStmt ||
+           type == NodeType_WhileStmt;
 }
 
 // Function to remove nodes with NULL arg1, arg2, and op

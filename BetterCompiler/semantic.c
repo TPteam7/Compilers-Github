@@ -150,6 +150,20 @@ ARGS:
 
             semanticAnalysis(node->elseStmt.block, symTab, varTab);
             break;
+        case NodeType_WhileStmt:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on while statement\n");
+
+            // Check condition type
+            const char* whileCondType = evaluateType(node->whileStmt.condition, symTab, varTab);
+            if (whileCondType == NULL || strcmp(whileCondType, "int") != 0) {
+                fprintf(stderr, "Semantic error: Condition in while statement must be an int\n");
+                exit(0);
+            }
+
+            semanticAnalysis(node->whileStmt.condition, symTab, varTab);
+            semanticAnalysis(node->whileStmt.block, symTab, varTab);
+            break;
         case NodeType_Condition:
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on condition\n");
