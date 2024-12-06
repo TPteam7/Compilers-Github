@@ -85,19 +85,26 @@ ASTNode* createWhileStmtNode(ASTNode* condition, ASTNode* block) {
     return node;
 }
 
-ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2, ASTNode* conditionTail) {
+ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2) {
     ASTNode* node = createNode(NodeType_Condition);
     node->condition.expr = expr;
     node->condition.sign = sign;
     node->condition.expr2 = expr2;
-    node->condition.conditionTail = conditionTail;
     return node;
 }
 
-ASTNode* createConditionTailNode(ASTNode* conjunction, ASTNode* condition) {
+ASTNode* createConditionTailNode(ASTNode* conjunction, ASTNode* condition, ASTNode* conditionTail) {
     ASTNode* node = createNode(NodeType_ConditionTail);
     node->conditionTail.conjunction = conjunction;
     node->conditionTail.condition = condition;
+    node->conditionTail.conditionTail = conditionTail;
+    return node;
+}
+
+ASTNode* createConditionListNode(ASTNode* condition, ASTNode* conditionTail) {
+    ASTNode* node = createNode(NodeType_ConditionList);
+    node->conditionList.condition = condition;
+    node->conditionList.conditionTail = conditionTail;
     return node;
 }
 
@@ -341,12 +348,17 @@ void printAST(ASTNode* node, int indent) {
             printAST(node->condition.expr, indent + 1);
             printAST(node->condition.sign, indent + 1);
             printAST(node->condition.expr2, indent + 1);
-            printAST(node->condition.conditionTail, indent + 1);
             break;
         case NodeType_ConditionTail:
             printf("Condition Tail\n");
-            printAST(node->conditionTail.conjunction, indent + 1);
             printAST(node->conditionTail.condition, indent + 1);
+            printAST(node->conditionTail.conjunction, indent + 1);
+            printAST(node->conditionTail.conditionTail, indent + 1);
+            break;
+        case NodeType_ConditionList:
+            printf("Condition List\n");
+            printAST(node->conditionList.condition, indent + 1);
+            printAST(node->conditionList.conditionTail, indent + 1);
             break;
         case NodeType_Sign:
             printf("Sign: %s\n", node->sign.op);
@@ -518,11 +530,15 @@ void freeAST(ASTNode* node) {
             freeAST(node->condition.expr);
             freeAST(node->condition.sign);
             freeAST(node->condition.expr2);
-            freeAST(node->condition.conditionTail);
             break;
         case NodeType_ConditionTail:
             freeAST(node->conditionTail.conjunction);
             freeAST(node->conditionTail.condition);
+            freeAST(node->conditionTail.conditionTail);
+            break;
+        case NodeType_ConditionList:
+            freeAST(node->conditionList.condition);
+            freeAST(node->conditionList.conditionTail);
             break;
         case NodeType_Sign:
             // Free the operator string if allocated

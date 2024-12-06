@@ -1,12 +1,19 @@
 a = 0
-b = 100
+b = 0
 
 WhileStart0:
-a < 3 Continue0
-t4 = a + 1 
-a = t4
-t6 = b + 1 
-b = t6
+2 < 3 
+&& 
+3 < 4 
+|| 
+2 < 3 
+&& 
+3 < 4 
+goto Continue0
+t11 = a + 1 
+a = t11
+t13 = b + 1 
+b = t13
 a print 
 goto WhileStart0 
 

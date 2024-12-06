@@ -284,9 +284,9 @@ TAC* generateTAC(ASTNode* node) {
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
             sprintf(labelBuffer, "Continue%d", whileStmtCounter);
             instruction->result = strdup(labelBuffer);
-            instruction->op = conditionTAC->op;
-            instruction->arg1 = conditionTAC->arg1;
-            instruction->arg2 = conditionTAC->arg2;
+            instruction->op = "goto";
+            //instruction->arg1 = conditionTAC->arg1;
+            //instruction->arg2 = conditionTAC->arg2;
             instruction->nodetype = "While_Condition";
 
             instruction->next = NULL;
@@ -321,6 +321,15 @@ TAC* generateTAC(ASTNode* node) {
 
             break;
         }
+        case NodeType_ConditionList: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on conditionlist\n");
+
+            generateTAC(node->conditionList.condition);
+            generateTAC(node->conditionList.conditionTail);
+            break;
+        }
         case NodeType_Condition: {
             //print debug statement
             if (printDebugTAC == 1)
@@ -329,12 +338,14 @@ TAC* generateTAC(ASTNode* node) {
             TAC *leftExprTAC = generateTAC(node->condition.expr);
             TAC *rightExprTAC = generateTAC(node->condition.expr2);
 
+
+            instruction = (TAC*)malloc(sizeof(TAC));
             instruction->arg1 = leftExprTAC->result;
             instruction->arg2 = rightExprTAC->result;
             instruction->op = strdup(node->condition.sign->sign.op);
             instruction->nodetype = "Condition";
-
-            generateTAC(node->condition.conditionTail);
+            instruction->next = NULL;
+            appendTAC(&tacHead, instruction);
 
             break;
         }
@@ -344,8 +355,8 @@ TAC* generateTAC(ASTNode* node) {
                 printf("Performing TAC generation on conditiontail\n");
 
             generateTAC(node->conditionTail.conjunction);
-
             generateTAC(node->conditionTail.condition);
+            
             break;
         }
         case NodeType_Sign: {
@@ -789,7 +800,7 @@ void printTACToFile(const char* filename, TAC** tac) {
             fprintf(file, "if %s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
         }
         else if (strcmp(current->nodetype, "While_Condition") == 0 ) {
-            fprintf(file, "%s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
+            fprintf(file, "%s %s\n", current->op, current->result);
         }
         else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
             fprintf(file, "%s\n", current->result);
@@ -835,8 +846,8 @@ char* createOperand(ASTNode* node) {
 }
 
 bool isNonActionableNodeType(NodeType type) {
-    return type == NodeType_Condition ||
-           type == NodeType_FunctionDeclaration ||
+    return type == NodeType_FunctionDeclaration ||
+           type == NodeType_Condition || 
            type == NodeType_ArgTail ||
            type == NodeType_IfStmt ||
            type == NodeType_ElseIfStmt ||

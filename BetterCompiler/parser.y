@@ -56,7 +56,7 @@ int printParserDebug = 0;
 
 %type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
 %type <node> FunctionDeclaration FunctionCall ParamList ParamTail Param ArgList ArgTail BlockStmtList BlockStmt Block ReturnStmt
-%type <node> DeclarationAssignment IfBlock IfStmt ElseIfStmt ElseStmt Condition ConditionTail SIGN CONJUNCTION
+%type <node> DeclarationAssignment IfBlock IfStmt ElseIfStmt ElseStmt Condition ConditionTail ConditionList SIGN CONJUNCTION
 %type <node> WhileStmt
 %start Program
 
@@ -82,25 +82,28 @@ Stmt: Declaration { $$ = createStmtNode($1); }
 IfBlock: IfStmt ElseIfStmt ElseStmt { $$ = createIfBlockNode($1, $2, $3); };
 
 
-IfStmt: IF LPAREN Condition RPAREN LBRACE Block RBRACE { $$ = createIfStmtNode($3, $6); };
+IfStmt: IF LPAREN ConditionList RPAREN LBRACE Block RBRACE { $$ = createIfStmtNode($3, $6); };
 
 
 ElseIfStmt: { $$ = NULL; }
-	| ELSE_IF LPAREN Condition RPAREN LBRACE Block RBRACE ElseIfStmt { $$ = createElseIfStmtNode($3, $6, $8); };
+	| ELSE_IF LPAREN ConditionList RPAREN LBRACE Block RBRACE ElseIfStmt { $$ = createElseIfStmtNode($3, $6, $8); };
 
 
 ElseStmt: { $$ = NULL; }
 	| ELSE LBRACE Block RBRACE { $$ = createElseStmtNode($3); };
 
 
-WhileStmt: WHILE LPAREN Condition RPAREN LBRACE Block RBRACE { $$ = createWhileStmtNode($3, $6); };
+WhileStmt: WHILE LPAREN ConditionList RPAREN LBRACE Block RBRACE { $$ = createWhileStmtNode($3, $6); };
 
 
-Condition: Expr SIGN Expr ConditionTail{ $$ = createConditionNode($1, $2, $3, $4); };
+ConditionList: Condition ConditionTail{ $$ = createConditionListNode($1, $2); };
+
+
+Condition: Expr SIGN Expr{ $$ = createConditionNode($1, $2, $3); };
 
 
 ConditionTail: { $$ = NULL; }
-	| CONJUNCTION Condition { $$ = createConditionTailNode($1, $2); };
+	| CONJUNCTION Condition ConditionTail { $$ = createConditionTailNode($1, $2, $3); };
 
 
 SIGN: GREATER_THAN { $$ = createSignNode($1); }
