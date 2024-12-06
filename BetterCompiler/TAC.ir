@@ -2,9 +2,10 @@ t0 = 0
 a = t0
 t1 = 100
 b = t1
-WhileStart0: = while 
+
+WhileStart0:
 t2 = 3
-Continue0 = a < t2 
+a < t2 Continue0
 t3 = 1
 t4 = a + t3 
 a = t4
@@ -13,5 +14,6 @@ t6 = b + t5
 b = t6
 a print 
 goto WhileStart0 
-Continue0: = continue 
+
+Continue0:
 b print 

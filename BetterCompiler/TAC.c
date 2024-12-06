@@ -760,10 +760,10 @@ void printTACToFile(const char* filename, TAC** tac) {
     TAC* current = *(tac);
     while (current != NULL) {
         // Add new line for specific operators
-        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "WhileStmt") == 0 || strcmp(current->nodetype, "ContinueStmt") == 0 || strcmp(current->nodetype, "EndIfLabel") == 0) {
+        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "While_Stmt") == 0 || strcmp(current->nodetype, "Continue_Stmt") == 0 || strcmp(current->nodetype, "EndIfLabel") == 0) {
             fprintf(file, "\n");
         }
-        if (strcmp(current->nodetype, "WhileStmt") == 0 || strcmp(current->nodetype, "ContinueStmt") == 0) {
+        if (strcmp(current->nodetype, "While_Stmt") == 0 || strcmp(current->nodetype, "Continue_Stmt") == 0) {
             fprintf(file, "%s\n", current->result);
         }
         else if (strcmp(current->op, "array_decl") == 0) {
@@ -788,7 +788,7 @@ void printTACToFile(const char* filename, TAC** tac) {
         else if (strcmp(current->nodetype, "IfStmtCall") == 0 || strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
             fprintf(file, "if %s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
         }
-        else if (strcmp(current->nodetype, "WhileCondition") == 0 ) {
+        else if (strcmp(current->nodetype, "While_Condition") == 0 ) {
             fprintf(file, "%s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
         }
         else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
