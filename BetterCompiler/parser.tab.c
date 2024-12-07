@@ -1977,6 +1977,7 @@ int main() {
 		finalizeCodeGenerator("output.s");
 
         freeAST(root);
+		cleanupTAC(&tacHead);
 		freeSymbolTable(symTab);
 
     }

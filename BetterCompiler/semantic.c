@@ -3,7 +3,7 @@
 
 
 // Perform semantic analysis on the AST
-int printDebugSemantic = 0;
+int printDebugSemantic = 1;
 
 void semanticAnalysis(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab) 
 /*
@@ -155,14 +155,34 @@ ARGS:
                 printf("Performing semantic analysis on while statement\n");
 
             // Check condition type
-            const char* whileCondType = evaluateType(node->whileStmt.condition, symTab, varTab);
-            if (whileCondType == NULL || strcmp(whileCondType, "int") != 0) {
-                fprintf(stderr, "Semantic error: Condition in while statement must be an int\n");
-                exit(0);
-            }
+            // const char* whileCondType = evaluateType(node->whileStmt.condition, symTab, varTab);
+            // if (whileCondType == NULL || strcmp(whileCondType, "int") != 0) {
+            //     fprintf(stderr, "Semantic error: Condition in while statement must be an int\n");
+            //     exit(0);
+            // }
 
             semanticAnalysis(node->whileStmt.condition, symTab, varTab);
             semanticAnalysis(node->whileStmt.block, symTab, varTab);
+            break;
+        case NodeType_ConditionList:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on conditionlist\n");
+
+            semanticAnalysis(node->conditionList.condition, symTab, varTab);
+            semanticAnalysis(node->conditionList.conditionTail, symTab, varTab);
+            break;
+        case NodeType_ConditionTail:
+            if (printDebugSemantic == 1)
+                printf("Performing semantic analysis on conditiontail\n");
+
+            semanticAnalysis(node->conditionTail.condition, symTab, varTab);
+            semanticAnalysis(node->conditionTail.conditionTail, symTab, varTab);
+            semanticAnalysis(node->conditionTail.conjunction, symTab, varTab);
+            break;
+        case NodeType_Conjunction:
+            if (printDebugSemantic == 1)
+                printf("Conjunction: %s\n", node->conjunction.op);
+
             break;
         case NodeType_Condition:
             if (printDebugSemantic == 1)
@@ -469,8 +489,11 @@ const char* evaluateType(ASTNode* node, SymbolTable* symTab, VariableSymbolTable
 
         return leftType;  // Return the resulting type of the expression
     } else if (node->nType == NodeType_Condition) {
+        printf("Expression: \n");
         leftType = evaluateType(node->condition.expr, symTab, varTab);
         rightType = evaluateType(node->condition.expr2, symTab, varTab);
+
+
 
         // Check type compatibility for both sides
         if (strcmp(leftType, rightType) != 0) {

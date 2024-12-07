@@ -354,8 +354,9 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on conditiontail\n");
 
-            generateTAC(node->conditionTail.conjunction);
             generateTAC(node->conditionTail.condition);
+            generateTAC(node->conditionTail.conjunction);
+            generateTAC(node->conditionTail.conditionTail);
             
             break;
         }

@@ -3,12 +3,12 @@ b = 0
 
 WhileStart0:
 2 < 3 
-&& 
 3 < 4 
-|| 
+&& 
 2 < 3 
-&& 
+|| 
 3 < 4 
+&& 
 goto Continue0
 t11 = a + 1 
 a = t11
