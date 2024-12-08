@@ -57,16 +57,16 @@ ASTNode* createIfBlockNode(ASTNode* ifStmt, ASTNode* elseIfList, ASTNode* elseSt
     return node;
 }
 
-ASTNode* createIfStmtNode(ASTNode* condition, ASTNode* block) {
+ASTNode* createIfStmtNode(ASTNode* conditionList, ASTNode* block) {
     ASTNode* node = createNode(NodeType_IfStmt);
-    node->ifStmt.condition = condition;
+    node->ifStmt.conditionList = conditionList;
     node->ifStmt.block = block;
     return node;
 }
 
-ASTNode* createElseIfStmtNode(ASTNode* condition, ASTNode* block, ASTNode* next) {
+ASTNode* createElseIfStmtNode(ASTNode* conditionList, ASTNode* block, ASTNode* next) {
     ASTNode* node = createNode(NodeType_ElseIfStmt);
-    node->elseIfStmt.condition = condition;
+    node->elseIfStmt.conditionList = conditionList;
     node->elseIfStmt.block = block;
     node->elseIfStmt.next = next;
     return node;
@@ -78,9 +78,9 @@ ASTNode* createElseStmtNode(ASTNode* block) {
     return node;
 }
 
-ASTNode* createWhileStmtNode(ASTNode* condition, ASTNode* block) {
+ASTNode* createWhileStmtNode(ASTNode* conditionList, ASTNode* block) {
     ASTNode* node = createNode(NodeType_WhileStmt);
-    node->whileStmt.condition = condition;
+    node->whileStmt.conditionList = conditionList;
     node->whileStmt.block = block;
     return node;
 }
@@ -325,12 +325,12 @@ void printAST(ASTNode* node, int indent) {
             break;
         case NodeType_IfStmt:
             printf("If Statement\n");
-            printAST(node->ifStmt.condition, indent + 1);
+            printAST(node->ifStmt.conditionList, indent + 1);
             printAST(node->ifStmt.block, indent + 1);
             break;
         case NodeType_ElseIfStmt:
             printf("Else If Statement\n");
-            printAST(node->elseIfStmt.condition, indent + 1);
+            printAST(node->elseIfStmt.conditionList, indent + 1);
             printAST(node->elseIfStmt.block, indent + 1);
             printAST(node->elseIfStmt.next, indent + 1);
             break;
@@ -340,7 +340,7 @@ void printAST(ASTNode* node, int indent) {
             break;
         case NodeType_WhileStmt:
             printf("While Statement\n");
-            printAST(node->whileStmt.condition, indent + 1);
+            printAST(node->whileStmt.conditionList, indent + 1);
             printAST(node->whileStmt.block, indent + 1);
             break;
         case NodeType_Condition:
@@ -511,11 +511,11 @@ void freeAST(ASTNode* node) {
             freeAST(node->ifBlock.elseStmt);
             break;
         case NodeType_IfStmt:
-            freeAST(node->ifStmt.condition);
+            freeAST(node->ifStmt.conditionList);
             freeAST(node->ifStmt.block);
             break;
         case NodeType_ElseIfStmt:
-            freeAST(node->elseIfStmt.condition);
+            freeAST(node->elseIfStmt.conditionList);
             freeAST(node->elseIfStmt.block);
             freeAST(node->elseIfStmt.next);
             break;
@@ -523,7 +523,7 @@ void freeAST(ASTNode* node) {
             freeAST(node->elseStmt.block);
             break;
         case NodeType_WhileStmt:
-            freeAST(node->whileStmt.condition);
+            freeAST(node->whileStmt.conditionList);
             freeAST(node->whileStmt.block);
             break;
         case NodeType_Condition:

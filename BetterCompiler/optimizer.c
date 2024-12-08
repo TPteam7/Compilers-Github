@@ -6,7 +6,7 @@
 void optimizeTAC(TAC** head) {
     constantFolding(head);
 
-    constantPropagation(head);
+    //constantPropagation(head);
     
     //copyPropagation(head);            
     

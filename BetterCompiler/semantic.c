@@ -120,13 +120,13 @@ ARGS:
                 printf("Performing semantic analysis on if statement\n");
 
             // Check condition type
-            const char* condType = evaluateType(node->ifStmt.condition, symTab, varTab);
-            if (condType == NULL || strcmp(condType, "int") != 0) {
-                fprintf(stderr, "Semantic error: Condition in if statement must be an int\n");
-                exit(0);
-            }
+            // const char* condType = evaluateType(node->ifStmt.condition, symTab, varTab);
+            // if (condType == NULL || strcmp(condType, "int") != 0) {
+            //     fprintf(stderr, "Semantic error: Condition in if statement must be an int\n");
+            //     exit(0);
+            // }
 
-            semanticAnalysis(node->ifStmt.condition, symTab, varTab);
+            semanticAnalysis(node->ifStmt.conditionList, symTab, varTab);
             semanticAnalysis(node->ifStmt.block, symTab, varTab);
             break;
         case NodeType_ElseIfStmt:
@@ -134,13 +134,13 @@ ARGS:
                 printf("Performing semantic analysis on else if statement\n");
 
             // Check condition type
-            const char* elseifCondType = evaluateType(node->elseIfStmt.condition, symTab, varTab);
-            if (elseifCondType == NULL || strcmp(elseifCondType, "int") != 0) {
-                fprintf(stderr, "Semantic error: Condition in else if statement must be an int\n");
-                exit(0);
-            }
+            // const char* elseifCondType = evaluateType(node->elseIfStmt.condition, symTab, varTab);
+            // if (elseifCondType == NULL || strcmp(elseifCondType, "int") != 0) {
+            //     fprintf(stderr, "Semantic error: Condition in else if statement must be an int\n");
+            //     exit(0);
+            // }
             
-            semanticAnalysis(node->elseIfStmt.condition, symTab, varTab);
+            semanticAnalysis(node->elseIfStmt.conditionList, symTab, varTab);
             semanticAnalysis(node->elseIfStmt.block, symTab, varTab);
             semanticAnalysis(node->elseIfStmt.next, symTab, varTab);
             break;
@@ -161,7 +161,7 @@ ARGS:
             //     exit(0);
             // }
 
-            semanticAnalysis(node->whileStmt.condition, symTab, varTab);
+            semanticAnalysis(node->whileStmt.conditionList, symTab, varTab);
             semanticAnalysis(node->whileStmt.block, symTab, varTab);
             break;
         case NodeType_ConditionList:
