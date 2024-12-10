@@ -1,19 +1,24 @@
-a = 0
-b = 0
+t0 = 1
+t1 = 1
+t0 == t1 
+if goto L0
+goto L1 
 
-WhileStart0:
-a < 3 
-b < 3 
-&& 
-goto Continue0
-t5 = a + 1 
-a = t5
-t7 = b + 1 
-b = t7
-a print 
-goto WhileStart0 
+L0:
+t2 = 5
+t2 print 
+t3 = 1
+t4 = 1
+t3 == t4 
+if goto L2
+goto L3 
 
-Continue0:
-t9 = 0 * 2 
-b = t9
-b print 
+L2:
+t5 = 6
+t5 print 
+goto L3 
+
+L3:
+goto L1 
+
+L1:

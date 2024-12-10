@@ -1,56 +1,45 @@
 .data
-	a: .word 0
-	b: .word 0
+	t0: .word 0
+	t1: .word 0
+	t2: .word 0
+	t3: .word 0
+	t4: .word 0
 	t5: .word 0
-	t7: .word 0
-	t9: .word 0
 .text
 .globl main
 main:
-	li $t0, 0
-	sw $t0, a
-	li $t0, 0
-	sw $t0, b
-WhileStart0:
-	lw $t0, a
-	li $t1, 3
-	sge $t2, $t0, $t1
-	lw $t0, b
-	li $t1, 3
-	sge $t3, $t0, $t1
-	and $t0, $t2, $t3
-	bne $t0, $zero, Continue0
-	lw $t0, a
-	li $t1, 1
-	add $t2, $t0, $t1
-	sw $t2, t5
-	lw $t1, t5
-	move $t0, $t1
-	sw $t0, a
-	lw $t0, b
-	li $t1, 1
-	add $t2, $t0, $t1
-	sw $t2, t7
-	lw $t1, t7
-	move $t0, $t1
-	sw $t0, b
-	lw $t0, a
+	li $t0, 1
+	sw $t0, t0
+	li $t0, 1
+	sw $t0, t1
+	lw $t0, t0
+	lw $t1, t1
+	xor $t2, $t0, $t1
+	lw $t0, goto
+	lw $t1, (null)
+L0:
+	li $t0, 5
+	sw $t0, t2
+	lw $t0, t2
 	li $v0, 1
 	move $a0, $t0
 	syscall
 	li $v0, 11
 	li $a0, 10
 	syscall
-	j WhileStart0
-Continue0:
-	li $t0, 0
-	li $t1, 2
-	mul $t2, $t0, $t1
-	sw $t2, t9
-	lw $t1, t9
-	move $t0, $t1
-	sw $t0, b
-	lw $t0, b
+	li $t0, 1
+	sw $t0, t3
+	li $t0, 1
+	sw $t0, t4
+	lw $t0, t3
+	lw $t1, t4
+	xor $t3, $t0, $t1
+	lw $t0, goto
+	lw $t1, (null)
+L2:
+	li $t0, 6
+	sw $t0, t5
+	lw $t0, t5
 	li $v0, 1
 	move $a0, $t0
 	syscall

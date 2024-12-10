@@ -114,10 +114,9 @@ TAC* generateTAC(ASTNode* node) {
             // Create the call to the if statement
             sprintf(labelBuffer, "L%d", ifStmtCounter);
             char* trueLabel = strdup(labelBuffer); // Save label for later
-            instruction->result = strdup(labelBuffer);
-            //instruction->op = conditionTAC->op;
-            //instruction->arg1 = conditionTAC->arg1;
-            //instruction->arg2 = conditionTAC->arg2;
+            instruction->result = "if";
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
             instruction->nodetype = "IfStmtCall";
 
             instruction->next = NULL;
@@ -139,8 +138,6 @@ TAC* generateTAC(ASTNode* node) {
             sprintf(labelBuffer, "L%d:", ifStmtCounter);
             instruction->result = strdup(labelBuffer);
             instruction->op = "if";
-            instruction->arg1 = NULL;
-            instruction->arg2 = NULL;
             instruction->nodetype = "IfStmt";
 
             ifStmtCounter += 2;        
@@ -798,7 +795,7 @@ void printTACToFile(const char* filename, TAC** tac) {
             fprintf(file, "%s %s\n", current->op, current->arg1);
         }
         else if (strcmp(current->nodetype, "IfStmtCall") == 0 || strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
-            fprintf(file, "if %s %s %s %s\n", current->arg1, current->op, current->arg2, current->result);
+            fprintf(file, "%s %s %s\n", current->result, current->arg1, current->op);
         }
         else if (strcmp(current->nodetype, "While_Condition") == 0 ) {
             fprintf(file, "%s %s\n", current->op, current->result);
