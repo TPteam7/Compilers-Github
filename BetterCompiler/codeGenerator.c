@@ -552,7 +552,7 @@ void generateMIPS(TAC* tacInstructions)
         else if (strcmp(current->nodetype, "IfStmtCall") == 0) {
             printf("Generating MIPS for If statement call\n");
 
-            fprintf(outputFile, "\tbeq %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->op);
+            fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->op);
 
             // Deallocate condition registers if need be
             if(conditionReg1 != -1) {
@@ -583,7 +583,7 @@ void generateMIPS(TAC* tacInstructions)
         else if (strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
             printf("Generating MIPS for Else If statement\n");
 
-            fprintf(outputFile, "\tbeq %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->op);
+            fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->op);
 
             // Deallocate condition registers if need be
             if(conditionReg1 != -1) {
