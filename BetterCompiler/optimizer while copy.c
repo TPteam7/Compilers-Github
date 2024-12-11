@@ -6,7 +6,7 @@
 void optimizeTAC(TAC** head) {
     constantFolding(head);
 
-    constantPropagation(head);
+    //constantPropagation(head);
     
     //copyPropagation(head);            
     
@@ -205,6 +205,7 @@ void constantPropagation(TAC** head) {
                 the constant propagation optimization will replace all uses of 't0' with '5'.
     */
     TAC* current = *head;
+    bool keepChecking = true;
     while (current != NULL) {
         if (current->op != NULL && strcmp(current->op, "=") == 0) {
             // Check if the argument is a constant
@@ -214,8 +215,17 @@ void constantPropagation(TAC** head) {
                 printf("arg1: %s\n", temp->result);
                 
                 while (temp != NULL) {
-                    // skip if print operator
-                    if (strcmp(temp->op, "print") == 0) {
+                    // if inside while statement stop checking till end
+                    if (strcmp(temp->nodetype, "While_Stmt") == 0) {
+                        keepChecking = false;
+                    }
+                    // Set back to true if end of while statement
+                    if (strcmp(temp->nodetype, "End_WhileStmt") == 0) {
+                        keepChecking = true;
+                    }
+
+                    // skip if print operator or while operator
+                    if (strcmp(temp->op, "print") == 0 || keepChecking == false) {
                         temp = temp->next;
                         continue;
                     }
