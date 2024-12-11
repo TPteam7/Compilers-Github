@@ -632,7 +632,7 @@ void generateMIPS(TAC* tacInstructions)
         else if(strcmp(current->nodetype, "While_Condition") == 0) {
             printf("Generating MIPS for While statement\n");
 
-            fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->result);
+            fprintf(outputFile, "\tbeq %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->result);
 
             // Deallocate condition registers if need be
             if(conditionReg1 != -1) {

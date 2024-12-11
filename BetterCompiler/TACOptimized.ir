@@ -1,18 +1,18 @@
-t0 = 0
+t0 = 5
+a = t0
+
+WhileStart0:
 t1 = 1
-t0 == t1 
-t2 = 1
-t3 = 1
-t2 >= t3 
-|| 
-if goto L1
-goto L2 
-
-L1:
+t2 = 0
+t1 == t2 
+t3 = 10
+a != t3 
+&& 
+goto Continue0
 t4 = 1
-t4 print 
-goto L0 
+t5 = a + t4 
+a = t5
+a print 
+goto WhileStart0 
 
-L2:
-
-L0:
+Continue0:
