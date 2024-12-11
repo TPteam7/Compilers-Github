@@ -7,12 +7,12 @@
 
 static FILE* outputFile;
 bool endOfProgram = false;
-// Keep track of the array register. 
+// Keep track of the array register.
     //This register will remain and be used for all arrays
-int arrReg = 0;       
+int arrReg = 0;
 
 // Name of the current array being accessed
-char* accessedArr = NULL;   
+char* accessedArr = NULL;
 
 // Keep track of the two array registers that we will use for and/or
 //  -1 means that the register is not in use
@@ -52,7 +52,7 @@ void generateMIPS(TAC* tacInstructions)
 
     Functionality:
         Generates MIPS assembly code from the provided TAC instructions
-*/ 
+*/
 {
 
     TAC* current = tacInstructions;
@@ -78,7 +78,7 @@ void generateMIPS(TAC* tacInstructions)
         // Handle assignment operation. Skip if it's a function call
         if (strcmp(current->op, "=") == 0 && strcmp(current->arg1, "call") != 0) {
             printf("Generating MIPS for Assignment operation\n");
-            
+
             // Allocate a register for the result
             regResult = allocateRegister();
             if (regResult == -1) {
@@ -96,7 +96,7 @@ void generateMIPS(TAC* tacInstructions)
                     fprintf(stderr, "No available register for arg1\n");
                     exit(EXIT_FAILURE);
                 }
-                
+
 
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1); // Load from memory
                 fprintf(outputFile, "\tmove %s, %s\n", tempRegisters[regResult].name, tempRegisters[reg1].name); // Move to result
@@ -126,14 +126,14 @@ void generateMIPS(TAC* tacInstructions)
             // Load both arguments into registers
             if (isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
-            
+
             if (isConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
@@ -164,14 +164,14 @@ void generateMIPS(TAC* tacInstructions)
             // Load both arguments into registers
             if (isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
-            
+
             if (isConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
@@ -203,14 +203,14 @@ void generateMIPS(TAC* tacInstructions)
 
             if(isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
 
             if(isConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
@@ -241,14 +241,14 @@ void generateMIPS(TAC* tacInstructions)
 
             if(isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
 
             if(isConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
@@ -277,7 +277,7 @@ void generateMIPS(TAC* tacInstructions)
             // // Load the value to print into the register
             if (isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
@@ -303,7 +303,7 @@ void generateMIPS(TAC* tacInstructions)
             // Load the argument into the register
             if (isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", argumentRegisters[reg1].name, current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", argumentRegisters[reg1].name, current->arg1);
             }
@@ -322,13 +322,13 @@ void generateMIPS(TAC* tacInstructions)
 
             // Call the function
             fprintf(outputFile, "\tjal %s\n", current->arg2);
-              
+
             // Handle print operation
             if (strcmp(current->arg2, "print") == 0) {
                 // Load the argument into $a0
                 if (isConstant(current->result)) {
                     fprintf(outputFile, "\tli $a0, %s\n", current->result);
-                } 
+                }
                 else {
                     fprintf(outputFile, "\tlw $a0, %s\n", current->result);
                 }
@@ -383,7 +383,7 @@ void generateMIPS(TAC* tacInstructions)
             // Load the return value into $v0
             if (isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli $v0, %s\n", current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tlw $v0, %s\n", current->arg1);
             }
@@ -412,7 +412,7 @@ void generateMIPS(TAC* tacInstructions)
             // Load the argument into the register
             if (isConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", argumentRegisters[reg1].name, current->arg1);
-            } 
+            }
             else {
                 fprintf(outputFile, "\tsw %s, %s\n", argumentRegisters[reg1].name, current->arg1);
             }
@@ -473,24 +473,22 @@ void generateMIPS(TAC* tacInstructions)
             // Load the index into the register
             if (isConstant(current->arg2))
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[indexReg].name, current->arg2);
-            
+
             else
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[indexReg].name, current->arg2);
-            
+
 
             // Load the value to assign into the register
             if (isConstant(current->arg1))
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[resultReg].name, current->arg1);
-            
             else
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[resultReg].name, current->arg1);
-            
 
             // Calculate the address of the element to assign
             fprintf(outputFile, "\tmul %s, %s, 4\n", tempRegisters[indexReg].name, tempRegisters[indexReg].name);
-            
+
             // newReg, arrReg, indexReg
-            fprintf(outputFile, "\tadd %s, %s, %s\n", tempRegisters[offsetReg].name, tempRegisters[arrReg].name, tempRegisters[indexReg].name);       
+            fprintf(outputFile, "\tadd %s, %s, %s\n", tempRegisters[offsetReg].name, tempRegisters[arrReg].name, tempRegisters[indexReg].name);
 
             // Load the value from the array
             fprintf(outputFile, "\tsw %s, 0(%s)\n", tempRegisters[resultReg].name, tempRegisters[offsetReg].name);
@@ -529,15 +527,15 @@ void generateMIPS(TAC* tacInstructions)
             // Load the index into the register
             if (isConstant(current->arg2))
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[indexReg].name, current->arg2);
-            
+
             else
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[indexReg].name, current->arg2);
 
             // Calculate the address of the element to assign
             fprintf(outputFile, "\tmul %s, %s, 4\n", tempRegisters[indexReg].name, tempRegisters[indexReg].name);
-            
+
             // newReg, arrReg, indexReg
-            fprintf(outputFile, "\tadd %s, %s, %s\n", tempRegisters[offsetReg].name, tempRegisters[arrReg].name, tempRegisters[indexReg].name);       
+            fprintf(outputFile, "\tadd %s, %s, %s\n", tempRegisters[offsetReg].name, tempRegisters[arrReg].name, tempRegisters[indexReg].name);
 
             // Load the value from the array
             fprintf(outputFile, "\tlw %s, 0(%s)\n", tempRegisters[accessedElementArg].name, tempRegisters[offsetReg].name);
@@ -552,57 +550,77 @@ void generateMIPS(TAC* tacInstructions)
         }
         // Handle if statements
         else if (strcmp(current->nodetype, "IfStmtCall") == 0) {
-            printf("Generating MIPS for If statement\n");
+            printf("Generating MIPS for If statement call\n");
 
-            jumpToIfElseIfElseBlock(current);
+            fprintf(outputFile, "\tbeq %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->op);
+
+            // Deallocate condition registers if need be
+            if(conditionReg1 != -1) {
+                deallocateRegister(conditionReg1);
+                conditionReg1 = -1;
+            }
+            if(conditionReg2 != -1) {
+                deallocateRegister(conditionReg2);
+                conditionReg2 = -1;
+            }
+        }
+        else if (strcmp(current->nodetype, "EndIfCall") == 0) {
+            printf("Generating MIPS for End If call\n");
+
+            fprintf(outputFile, "\tj %s\n", current->op);
+        }
+        else if (strcmp(current->nodetype, "IfStmt") == 0) {
+            printf("Generating MIPS for If label\n");
+
+            fprintf(outputFile, "%s\n", current->result);
+        }
+        else if (strcmp(current->nodetype, "EndIfLabel") == 0) {
+            printf("Generating MIPS for next If label\n");
+
+            fprintf(outputFile, "%s\n", current->result);
         }
         // Handle else if statements
         else if (strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
             printf("Generating MIPS for Else If statement\n");
 
-            jumpToIfElseIfElseBlock(current);
+            fprintf(outputFile, "\tbeq %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->op);
+
+            // Deallocate condition registers if need be
+            if(conditionReg1 != -1) {
+                deallocateRegister(conditionReg1);
+                conditionReg1 = -1;
+            }
+            if(conditionReg2 != -1) {
+                deallocateRegister(conditionReg2);
+                conditionReg2 = -1;
+            }
+        }
+        else if (strcmp(current->nodetype, "EndElseIfCall") == 0) {
+            printf("Generating MIPS for End else If call\n");
+
+            fprintf(outputFile, "\tj %s\n", current->op);
+        }
+        else if (strcmp(current->nodetype, "ElseIfStmt") == 0) {
+            printf("Generating MIPS for else of the else if\n");
+
+            fprintf(outputFile, "%s\n", current->result);
+        }
+        else if (strcmp(current->nodetype, "EndElseIfLabel") == 0) {
+            printf("Generating MIPS for the next else if label\n");
+
+            fprintf(outputFile, "%s\n", current->result);
         }
         // Handle else statements
-        else if (strcmp(current->nodetype, "ElseStmtCall") == 0) {
+        else if (strcmp(current->nodetype, "EndElseCall") == 0) {
             printf("Generating MIPS for Else statement\n");
 
-            fprintf(outputFile, "\tj %s\n", current->result);
+            fprintf(outputFile, "\tj %s\n", current->op);
         }
-        // Handle printing out an if block
-        else if (strcmp(current->nodetype, "IfStmt") == 0) {
-            printf("Generating MIPS for If block\n");
-
-            fprintf(outputFile, "%s\n", current->result);
-        }
-        // Handle printing out an else if block
-        else if (strcmp(current->nodetype, "ElseIfStmt") == 0) {
-            printf("Generating MIPS for Else If block\n");
-
-            fprintf(outputFile, "%s\n", current->result);
-        }
-        // Handle printing out an else block
-        else if (strcmp(current->nodetype, "ElseStmt") == 0) {
+        // Handle if block
+        else if (strcmp(current->nodetype, "EndIfBlock") == 0) {
             printf("Generating MIPS for Else block\n");
 
             fprintf(outputFile, "%s\n", current->result);
-        }
-        // Handle end of if block
-        else if (strcmp(current->nodetype, "End_IfStmt") == 0) {
-            printf("Generating MIPS for End If block\n");
-
-            fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
-        }
-        // Handle end of else if block
-        else if (strcmp(current->nodetype, "End_ElseIfStmt") == 0) {
-            printf("Generating MIPS for End Else If block\n");
-
-            fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
-        }
-        // Handle end of else block
-        else if (strcmp(current->nodetype, "End_ElseStmt") == 0) {
-            printf("Generating MIPS for End Else block\n");
-
-            fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
         }
         // Handle printing out a while block
         else if (strcmp(current->nodetype, "While_Stmt") == 0) {
@@ -673,7 +691,7 @@ void generateMIPS(TAC* tacInstructions)
         {
             printf("Generating MIPS for other operations\n");
         }
-        
+
         current = current->next; // Move to the next TAC instruction
 
         if(current == NULL && !endOfProgram) {
@@ -701,13 +719,13 @@ void finalizeCodeGenerator(const char* outputFilename) {
 
 /*
 
-Implementing register allocation in your MIPS code generation phase is a crucial step 
-for optimizing the use of CPU resources. The goal is to map your temporary variables (from TAC) 
-to a limited set of MIPS registers, ideally minimizing memory access by keeping 
+Implementing register allocation in your MIPS code generation phase is a crucial step
+for optimizing the use of CPU resources. The goal is to map your temporary variables (from TAC)
+to a limited set of MIPS registers, ideally minimizing memory access by keeping
 frequently used values in registers.
 
-MIPS architecture provides a set of general-purpose registers, 
-$t0 to $t9 for temporary values, and $s0 to $s7 for saved values. 
+MIPS architecture provides a set of general-purpose registers,
+$t0 to $t9 for temporary values, and $s0 to $s7 for saved values.
 For simplicity, let's focus on using the temporary registers.
 
 Strategy for Register Allocation:
@@ -716,14 +734,14 @@ Strategy for Register Allocation:
 A simple strategy for register allocation could involve:
 
 Register Pool: Keep track of which registers are currently available.
-Allocation and Deallocation: Allocate registers when needed for operations and 
+Allocation and Deallocation: Allocate registers when needed for operations and
                              deallocate them when they are no longer needed.
 Spilling: If all registers are in use and another one is needed,
           "spill" a register's value to memory and reuse the register.
 
 */
 
-void jumpToIfElseIfElseBlock(TAC* current) 
+void jumpToIfElseIfElseBlock(TAC* current)
 /*
     Purpose: Generate MIPS code for jumping to an if, else if, or else block
 
@@ -744,7 +762,7 @@ void jumpToIfElseIfElseBlock(TAC* current)
     // Load the condition into the register
     if (isConstant(current->arg1)) {
         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
-    } 
+    }
     else {
         fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
     }
@@ -752,7 +770,7 @@ void jumpToIfElseIfElseBlock(TAC* current)
     // Load the condition into the register
     if (isConstant(current->arg2)) {
         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
-    } 
+    }
     else {
         fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
     }
@@ -822,7 +840,7 @@ void jumpToWhileBlock(TAC* current)
     // Load the condition into the register
     if (isConstant(current->arg1)) {
         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
-    } 
+    }
     else {
         fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
     }
@@ -830,7 +848,7 @@ void jumpToWhileBlock(TAC* current)
     // Load the condition into the register
     if (isConstant(current->arg2)) {
         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
-    } 
+    }
     else {
         fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
     }
@@ -847,22 +865,23 @@ void jumpToWhileBlock(TAC* current)
     }
     // If sign is < do oppposite to leave so >= MIPS code
     else if(strcmp(current->op, "<") == 0) {
-        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tslt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        
         //fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
     // If sign is > do opposite to leave so <= MIPS code
     else if(strcmp(current->op, ">") == 0) {
-        fprintf(outputFile, "\tsle %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
         //fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
     // If sign is <= do opposite to leave so > MIPS code
     else if(strcmp(current->op, "<=") == 0) {
-        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tsle %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
         //fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
     // If sign is >= do opposite to leave so < MIPS code
     else if(strcmp(current->op, ">=") == 0) {
-        fprintf(outputFile, "\tslt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
         //fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
     }
 
@@ -876,8 +895,8 @@ void jumpToWhileBlock(TAC* current)
 void addDataSection(TAC* current, char* variables[], int varIndex) {
     while (current != NULL) {
         // Check if the operation is '=', '+', '*', '-', or '/'
-        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 || 
-            strcmp(current->op, "*") == 0 || strcmp(current->op, "-") == 0 || 
+        if (strcmp(current->op, "=") == 0 || strcmp(current->op, "+") == 0 ||
+            strcmp(current->op, "*") == 0 || strcmp(current->op, "-") == 0 ||
             strcmp(current->op, "/") == 0) {
             // Check if the result is a variable
             if (current->result != NULL && !isConstant(current->result)) {
@@ -1003,7 +1022,7 @@ void printCurrentTAC(TAC* tac) {
         printf("\n--- CURRENT TAC %s ---\n", current->op);
         if (strcmp(current->op,"=") == 0) {
             printf("%s = %s\n", current->result, current->arg1);
-        } 
+        }
         else {
             if(current->result != NULL)
                 printf("%s = ", current->result);
@@ -1016,10 +1035,10 @@ void printCurrentTAC(TAC* tac) {
             printf("\n");
     }
         current = current->next;
-    }   
+    }
 }
 
-void printNewLineMIPS() 
+void printNewLineMIPS()
 /*
     Purpose:
         To print a new line to console in MIPS code generation

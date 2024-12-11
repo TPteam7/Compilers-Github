@@ -191,7 +191,7 @@ TAC* generateTAC(ASTNode* node) {
             if (printDebugTAC == 1)
                 printf("Performing TAC generation on if statement\n");
 
-            TAC* conditionTAC = generateTAC(node->ifStmt.conditionList);
+            generateTAC(node->ifStmt.conditionList);
 
             // Create the call to the if statement
             sprintf(labelBuffer, "L%d", ifStmtCounter);
@@ -257,7 +257,7 @@ TAC* generateTAC(ASTNode* node) {
                 printf("Performing TAC generation on else if statement\n");
 
             // Generate TAC for the condition of the else if statement
-            TAC* conditionTAC = generateTAC(node->elseIfStmt.conditionList);
+            generateTAC(node->elseIfStmt.conditionList);
 
             // Create the call to the else if statement
             sprintf(labelBuffer, "L%d", ifStmtCounter);
@@ -375,7 +375,7 @@ TAC* generateTAC(ASTNode* node) {
             appendTAC(currentTACList, instruction);
 
             // Generate TAC for the condition of the while statement
-            TAC* conditionTAC = generateTAC(node->whileStmt.conditionList);
+            generateTAC(node->whileStmt.conditionList);
 
             // Create the call to the while statement
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
