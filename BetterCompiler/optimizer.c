@@ -13,49 +13,55 @@ void optimizeTAC(TAC** head) {
     deadCodeElimination(head);
 }
 
-bool isConstant(const char* str) 
+bool isConstant(const char* str, TAC** head)
 /*
     Params:
         const char* str: the string to check
+        TAC* head: the head of the TAC list, to check if the variable is reassigned
 
     Returns:
         bool: true if the string is an integer constant, false otherwise
-    
+
     Functionality:
-    First, the function checks if the input is 'NULL' or an empty string. 
-        False if so, as they don't represent a valid constant.
-
-    Next, if the first character is '-', the function skips it, 
-        as negative numbers are allowed.
-
-    The function then iterates over each character of the string using a while loop.
-        For each character, it uses isdigit() to check if it's a numeric digit.
-
-    If any character is not a digit, the function immediately returns 'false'.
-
-    If the end of the string is reached without encountering any non-digit characters, 
-        the function returns 'true', indicating the string is a numeric constant.
-*/ 
+        This function checks if the input is a constant. A constant is:
+        - A numeric value (integer or float), or
+        - A variable that is never reassigned in the TAC.
+*/
 {
     if (str == NULL || *str == '\0') {
         return false; // Empty string is not a constant
     }
 
-    // Optional: Handle negative numbers
-    if (*str == '-') {
-        ++str;
+    // Check if the string is purely numeric
+    const char* tempStr = str;
+    if (*tempStr == '-') { // Allow negative numbers
+        ++tempStr;
     }
-
-    // Check if string is numeric
-    while (*str) {
-        if (!isdigit((unsigned char)*str)) {
-            return false; // Found a non-digit character
+    while (*tempStr) {
+        if (!isdigit((unsigned char)*tempStr)) {
+            break;
         }
-        ++str;
+        ++tempStr;
     }
 
-    return true; // All characters were digits
+    // If fully numeric, it's a constant
+    if (*tempStr == '\0') {
+        return true;
+    }
+
+    // Check if the string is a variable and reassigned in TAC
+    TAC* current = *head;
+    while (current != NULL) {
+        if (current->result != NULL && strcmp(current->result, str) == 0) {
+            // Found a reassignment of this variable
+            return false;
+        }
+        current = current->next;
+    }
+
+    return false; // The string is not a numeric constant or is a variable reassigned in TAC
 }
+
 
 bool isVariable(const char* str) 
 /*
@@ -123,7 +129,7 @@ void constantFolding(TAC** head)
         // Addition
         if (strcmp(current->op, "+") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1) && isConstant(current->arg2)) {
+            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
                 int result = atoi(current->arg1) + atoi(current->arg2); // Perform the addition
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -139,7 +145,7 @@ void constantFolding(TAC** head)
         // Subtraction
         else if (strcmp(current->op, "-") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1) && isConstant(current->arg2)) {
+            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
                 int result = atoi(current->arg1) - atoi(current->arg2); // Perform the subtraction
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -155,7 +161,7 @@ void constantFolding(TAC** head)
         // Multiplication
         else if (strcmp(current->op, "*") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1) && isConstant(current->arg2)) {
+            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
                 int result = atoi(current->arg1) * atoi(current->arg2); // Perform the multiplication
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -171,7 +177,7 @@ void constantFolding(TAC** head)
         // Division
         else if (strcmp(current->op, "/") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1) && isConstant(current->arg2)) {
+            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
                 int result = atoi(current->arg1) / atoi(current->arg2); // Perform the division
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -208,7 +214,7 @@ void constantPropagation(TAC** head) {
     while (current != NULL) {
         if (current->op != NULL && strcmp(current->op, "=") == 0) {
             // Check if the argument is a constant
-            if (isConstant(current->arg1)) {
+            if (isConstant(current->arg1, head)) {
                 // Propagate the constant value to all uses of the variable
                 TAC* temp = current->next;
                 printf("arg1: %s\n", temp->result);
@@ -315,7 +321,7 @@ void deadCodeElimination(TAC** head)
                 temp = temp->next;  // Move to the next TAC instruction
             }
             // if the result is an integer, it is not used
-            if (isConstant(current->result)) {
+            if (isConstant(current->result, head)) {
                 isUsed = 0;
             }
             // If the result of the assignment is not used anywhere later, it's dead code
