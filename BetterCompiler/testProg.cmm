@@ -1,6 +1,9 @@
 int a = 5;
-while(1 == 0 && a != 10)
+int x2 = 10;
+while(a < x2)
 {
     a = a + 1;
     print(a);
 }
+
+print(7);

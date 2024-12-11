@@ -741,75 +741,6 @@ Spilling: If all registers are in use and another one is needed,
 
 */
 
-void jumpToIfElseIfElseBlock(TAC* current)
-/*
-    Purpose: Generate MIPS code for jumping to an if, else if, or else block
-
-    Params:
-        current: The current TAC instruction
-*/
-{
-    // Allocate a register for the condition
-    int arg1Reg = allocateRegister();
-    int arg2Reg = allocateRegister();
-    int conditionReg = allocateRegister();
-
-    if (arg1Reg == -1 || arg2Reg == -1 || conditionReg == -1) {
-        fprintf(stderr, "No available register for if statement\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Load the condition into the register
-    if (isConstant(current->arg1)) {
-        fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
-    }
-    else {
-        fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
-    }
-
-    // Load the condition into the register
-    if (isConstant(current->arg2)) {
-        fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
-    }
-    else {
-        fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
-    }
-
-    // If sign is ==, compare the values
-    if(strcmp(current->op, "==") == 0) {
-        fprintf(outputFile, "\tbeq %s, %s, %s\n", tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name, current->result);
-    }
-    // If sign is !=, compare the values
-    else if(strcmp(current->op, "!=") == 0) {
-        fprintf(outputFile, "\tbne %s, %s, %s\n", tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name, current->result);
-    }
-    // If sign is <, compare the values
-    else if(strcmp(current->op, "<") == 0) {
-        fprintf(outputFile, "\tslt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
-    }
-    // If sign is >, compare the values
-    else if(strcmp(current->op, ">") == 0) {
-        fprintf(outputFile, "\tsgt %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
-    }
-    // If sign is <=, compare the values
-    else if(strcmp(current->op, "<=") == 0) {
-        fprintf(outputFile, "\tsle %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
-    }
-    // If sign is >=, compare the values
-    else if(strcmp(current->op, ">=") == 0) {
-        fprintf(outputFile, "\tsge %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
-        fprintf(outputFile, "\tbne %s, $zero, %s\n", tempRegisters[conditionReg].name, current->result);
-    }
-
-    // Deallocate the register
-    deallocateRegister(arg1Reg);
-    deallocateRegister(arg2Reg);
-    deallocateRegister(conditionReg);
-}
-
 void jumpToWhileBlock(TAC* current)
 /*
     Purpose: Generate MIPS code for jumping to a while block
@@ -855,12 +786,12 @@ void jumpToWhileBlock(TAC* current)
 
     // If sign is == do oppposite to leave so != MIPS code
     if(strcmp(current->op, "==") == 0) {
-        fprintf(outputFile, "\txor %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tseq %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
         //fprintf(outputFile, "\tbne %s, %s, %s\n", tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name, current->result);
     }
     // If sign is != do oppposite to leave so == MIPS code
     else if(strcmp(current->op, "!=") == 0) {
-        fprintf(outputFile, "\txor %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
+        fprintf(outputFile, "\tsne %s, %s, %s\n", tempRegisters[conditionReg].name, tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name);
         //fprintf(outputFile, "\tbeq %s, %s, %s\n", tempRegisters[arg1Reg].name, tempRegisters[arg2Reg].name, current->result);
     }
     // If sign is < do oppposite to leave so >= MIPS code

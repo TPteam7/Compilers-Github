@@ -115,7 +115,7 @@ int isPrime(int n) {
     int i;
 
     if (n <= 1) {
-        return 0;
+        print(0);
     }
 
     i = 2;
@@ -135,72 +135,72 @@ int isPrime(int n) {
 }
 
 // Main function (moved to the end)
-void main() {
-    int localInt;     // Local integer
-    //float localFloat; // Local float
-    int i;            // Loop counter
-    int result;       // Result variable
-    int temp;         // Temporary variable for operations
 
-    // Variable initialization
-    localInt = 15;
-    //localFloat = 3.7;
-    globalInt = 20;
-    globalChar = 'C';
+int localInt;     // Local integer
+//float localFloat; // Local float
+int i;            // Loop counter
+int result;       // Result variable
+int temp;         // Temporary variable for operations
 
-    // Print initial global values
-    printInt(globalInt);
-    //printChar(globalChar);
-    //printFloat(globalFloat);
+// Variable initialization
+localInt = 15;
+//localFloat = 3.7;
+globalInt = 20;
+//globalChar = 'C';
 
-    // Complex arithmetic expression
-    result = (localInt * 2 + 3) / (5 - 2) + globalInt;
+// Print initial global values
+printInt(globalInt);
+//printChar(globalChar);
+//printFloat(globalFloat);
 
-    // If statement
-    if (result > 10) {
-        temp = result * 2;  // Additional computation
-        displayResult(temp);
-    } else {
-        temp = result - 1;
-        displayResult(temp + 3);
-    }
+// Complex arithmetic expression
+result = (localInt * 2 + 3) / (5 - 2) + globalInt;
 
-    // While loop with nested logic
-    i = 0;
-    while (i < 10) {
-        result = multiply(i, i + 1);  // Function call inside loop
-
-        // If inside while
-        if (result > 20) {
-            globalInt = result;  // Update global variable
-            break;  // Exit loop
-        } else {
-            globalInt = globalInt + 1;  // Increment global variable
-        }
-
-        printInt(i); // Print loop counter
-        i = i + 1;
-    }
-
-    // Call factorial function
-    result = factorial(5);
-    printInt(result); // Print final factorial result
-
-    // Check for primality
-    if (isPrime(result)) {
-        displayResult(result);
-    } else {
-        displayResult(result - 10);
-    }
-
-    // Additional redundant computation for optimization analysis
-    temp = 5 * 4; // Constant folding opportunity
-    result = temp + 10;
-    printInt(result); // Print final redundant computation
-
-    // Final function call
-    result = computeSum(localInt, 20);
-    displayResult(result);
+// If statement
+if (result > 10) {
+    temp = result * 2;  // Additional computation
+    displayResult(temp);
+} else {
+    temp = result - 1;
+    displayResult(temp + 3);
 }
+
+// While loop with nested logic
+i = 0;
+while (i < 10) {
+    result = multiply(i, i + 1);  // Function call inside loop
+
+    // If inside while
+    if (result > 20) {
+        globalInt = result;  // Update global variable
+        break;  // Exit loop
+    } else {
+        globalInt = globalInt + 1;  // Increment global variable
+    }
+
+    printInt(i); // Print loop counter
+    i = i + 1;
+}
+
+// Call factorial function
+result = factorial(5);
+printInt(result); // Print final factorial result
+
+// Check for primality
+if (isPrime(result)) {
+    displayResult(result);
+} else {
+    displayResult(result - 10);
+}
+
+// Additional redundant computation for optimization analysis
+temp = 5 * 4; // Constant folding opportunity
+result = temp + 10;
+printInt(result); // Print final redundant computation
+
+// Final function call
+result = computeSum(localInt, 20);
+displayResult(result);
+
 
     

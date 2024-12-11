@@ -1,18 +1,17 @@
 t0 = 5
 a = t0
+t1 = 10
+x2 = t1
 
 WhileStart0:
-t1 = 1
-t2 = 0
-t1 == t2 
-t3 = 10
-a != t3 
-&& 
+a < x2 
 goto Continue0
-t4 = 1
-t5 = a + t4 
-a = t5
+t2 = 1
+t3 = a + t2 
+a = t3
 a print 
 goto WhileStart0 
 
 Continue0:
+t4 = 7
+t4 print 
