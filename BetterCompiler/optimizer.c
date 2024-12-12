@@ -13,55 +13,49 @@ void optimizeTAC(TAC** head) {
     deadCodeElimination(head);
 }
 
-bool isConstant(const char* str, TAC** head)
+bool isConstant(const char* str) 
 /*
     Params:
         const char* str: the string to check
-        TAC* head: the head of the TAC list, to check if the variable is reassigned
 
     Returns:
         bool: true if the string is an integer constant, false otherwise
-
+    
     Functionality:
-        This function checks if the input is a constant. A constant is:
-        - A numeric value (integer or float), or
-        - A variable that is never reassigned in the TAC.
-*/
+    First, the function checks if the input is 'NULL' or an empty string. 
+        False if so, as they don't represent a valid constant.
+
+    Next, if the first character is '-', the function skips it, 
+        as negative numbers are allowed.
+
+    The function then iterates over each character of the string using a while loop.
+        For each character, it uses isdigit() to check if it's a numeric digit.
+
+    If any character is not a digit, the function immediately returns 'false'.
+
+    If the end of the string is reached without encountering any non-digit characters, 
+        the function returns 'true', indicating the string is a numeric constant.
+*/ 
 {
     if (str == NULL || *str == '\0') {
         return false; // Empty string is not a constant
     }
 
-    // Check if the string is purely numeric
-    const char* tempStr = str;
-    if (*tempStr == '-') { // Allow negative numbers
-        ++tempStr;
+    // Optional: Handle negative numbers
+    if (*str == '-') {
+        ++str;
     }
-    while (*tempStr) {
-        if (!isdigit((unsigned char)*tempStr)) {
-            break;
+
+    // Check if string is numeric
+    while (*str) {
+        if (!isdigit((unsigned char)*str)) {
+            return false; // Found a non-digit character
         }
-        ++tempStr;
+        ++str;
     }
 
-    // If fully numeric, it's a constant
-    if (*tempStr == '\0') {
-        return true;
-    }
-
-    // Check if the string is a variable and reassigned in TAC
-    TAC* current = *head;
-    while (current != NULL) {
-        if (current->result != NULL && strcmp(current->result, str) == 0) {
-            // Found a reassignment of this variable
-            return false;
-        }
-        current = current->next;
-    }
-
-    return false; // The string is not a numeric constant or is a variable reassigned in TAC
+    return true; // All characters were digits
 }
-
 
 bool isVariable(const char* str) 
 /*
@@ -129,7 +123,7 @@ void constantFolding(TAC** head)
         // Addition
         if (strcmp(current->op, "+") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
+            if (isConstant(current->arg1) && isConstant(current->arg2)) {
                 int result = atoi(current->arg1) + atoi(current->arg2); // Perform the addition
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -145,7 +139,7 @@ void constantFolding(TAC** head)
         // Subtraction
         else if (strcmp(current->op, "-") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
+            if (isConstant(current->arg1) && isConstant(current->arg2)) {
                 int result = atoi(current->arg1) - atoi(current->arg2); // Perform the subtraction
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -161,7 +155,7 @@ void constantFolding(TAC** head)
         // Multiplication
         else if (strcmp(current->op, "*") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
+            if (isConstant(current->arg1) && isConstant(current->arg2)) {
                 int result = atoi(current->arg1) * atoi(current->arg2); // Perform the multiplication
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -177,7 +171,7 @@ void constantFolding(TAC** head)
         // Division
         else if (strcmp(current->op, "/") == 0) {
             // Check if both operands are constants
-            if (isConstant(current->arg1, head) && isConstant(current->arg2, head)) {
+            if (isConstant(current->arg1) && isConstant(current->arg2)) {
                 int result = atoi(current->arg1) / atoi(current->arg2); // Perform the division
                 char resultStr[20];
                 sprintf(resultStr, "%d", result); // Convert the result to a string
@@ -197,54 +191,54 @@ void constantFolding(TAC** head)
 
 
 void constantPropagation(TAC** head) {
-    /*
-        Params:
-            TAC** head: a pointer to the head of the TAC list. This has ** because we need to modify the head pointer.
-                If we only pass TAC* head, we would only have a copy of the pointer, and changes to it would not reflect outside the function.
-
-        Functionality:
-            This function performs constant propagation optimization on the provided TAC list.
-
-            Constant propagation is the process of replacing variables with known constant values.
-
-            For example, if the TAC contains an assignment operation (e.g., t0 = 5), 
-                the constant propagation optimization will replace all uses of 't0' with '5'.
-    */
     TAC* current = *head;
+
     while (current != NULL) {
         if (current->op != NULL && strcmp(current->op, "=") == 0) {
             // Check if the argument is a constant
-            if (isConstant(current->arg1, head)) {
+            if (isConstant(current->arg1)) {
                 // Propagate the constant value to all uses of the variable
                 TAC* temp = current->next;
-                printf("arg1: %s\n", temp->result);
-                
-                while (temp != NULL) {
-                    // skip if print operator
-                    if (strcmp(temp->op, "print") == 0) {
+                int isReassigned = 0;
+
+                // Check if the variable is reassigned later
+                TAC* reassignmentCheck = current->next;
+                while (reassignmentCheck != NULL) {
+                    if (reassignmentCheck->result != NULL && 
+                        strcmp(reassignmentCheck->result, current->result) == 0) {
+                        isReassigned = 1;
+                        break;
+                    }
+                    reassignmentCheck = reassignmentCheck->next;
+                }
+
+                // Only propagate if the variable is not reassigned
+                if (!isReassigned) {
+                    while (temp != NULL) {
+                        // Skip if it's a print operation
+                        if (strcmp(temp->op, "print") == 0) {
+                            temp = temp->next;
+                            continue;
+                        }
+                        // Replace temp->arg1 if it matches current->result
+                        if (temp->arg1 != NULL && strcmp(temp->arg1, current->result) == 0) {
+                            free(temp->arg1);
+                            temp->arg1 = strdup(current->arg1);
+                        }
+                        // Replace temp->arg2 if it matches current->result
+                        if (temp->arg2 != NULL && strcmp(temp->arg2, current->result) == 0) {
+                            free(temp->arg2);
+                            temp->arg2 = strdup(current->arg1);
+                        }
                         temp = temp->next;
-                        continue;
                     }
-                    // if temp arg1 is equal to current result, replace it with current arg1
-                    if (temp->arg1 != NULL && strcmp(temp->arg1, current->result) == 0) {
-                        char* result = current->result;
-                        free(temp->arg1);
-                        
-                        // replace the arg1 with the current arg1
-                        temp->arg1 = strdup(current->arg1);
-                    }
-                    // if temp arg2 is equal to current result, replace it with current arg1
-                    if (temp->arg2 != NULL && strcmp(temp->arg2, current->result) == 0) {
-                        free(temp->arg2);
-                        temp->arg2 = strdup(current->arg1);
-                    }
-                    temp = temp->next;
                 }
             }
         }
         current = current->next;
     }
 }
+
 
 void copyPropagation(TAC** head) 
 /*
@@ -321,7 +315,7 @@ void deadCodeElimination(TAC** head)
                 temp = temp->next;  // Move to the next TAC instruction
             }
             // if the result is an integer, it is not used
-            if (isConstant(current->result, head)) {
+            if (isConstant(current->result)) {
                 isUsed = 0;
             }
             // If the result of the assignment is not used anywhere later, it's dead code

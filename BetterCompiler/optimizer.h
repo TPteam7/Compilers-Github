@@ -23,7 +23,7 @@ Basic Optimizations:
 #include <ctype.h>
 
 void optimizeTAC(TAC** head);
-bool isConstant(const char* str, TAC** head);
+bool isConstant(const char* str);
 bool isVariable(const char* str);
 void constantFolding(TAC** head);
 void constantPropagation(TAC** head);

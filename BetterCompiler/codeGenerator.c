@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 static FILE* outputFile;
 bool endOfProgram = false;
@@ -87,7 +88,7 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Check if arg1 is a constant
-            if (isConstant(current->arg1)) {
+            if (isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[regResult].name, current->arg1); // Load immediate
             } else {
                 // Allocate a register for arg1
@@ -124,14 +125,14 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Load both arguments into registers
-            if (isConstant(current->arg1)) {
+            if (isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
 
-            if (isConstant(current->arg2)) {
+            if (isAConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
             else {
@@ -162,14 +163,14 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Load both arguments into registers
-            if (isConstant(current->arg1)) {
+            if (isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
 
-            if (isConstant(current->arg2)) {
+            if (isAConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
             else {
@@ -201,14 +202,14 @@ void generateMIPS(TAC* tacInstructions)
                 exit(EXIT_FAILURE);
             }
 
-            if(isConstant(current->arg1)) {
+            if(isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
 
-            if(isConstant(current->arg2)) {
+            if(isAConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
             else {
@@ -239,14 +240,14 @@ void generateMIPS(TAC* tacInstructions)
                 exit(EXIT_FAILURE);
             }
 
-            if(isConstant(current->arg1)) {
+            if(isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
             else {
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
 
-            if(isConstant(current->arg2)) {
+            if(isAConstant(current->arg2)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg2].name, current->arg2);
             }
             else {
@@ -275,7 +276,7 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // // Load the value to print into the register
-            if (isConstant(current->arg1)) {
+            if (isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[reg1].name, current->arg1);
             }
             else {
@@ -301,7 +302,7 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Load the argument into the register
-            if (isConstant(current->arg1)) {
+            if (isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", argumentRegisters[reg1].name, current->arg1);
             }
             else {
@@ -326,7 +327,7 @@ void generateMIPS(TAC* tacInstructions)
             // Handle print operation
             if (strcmp(current->arg2, "print") == 0) {
                 // Load the argument into $a0
-                if (isConstant(current->result)) {
+                if (isAConstant(current->result)) {
                     fprintf(outputFile, "\tli $a0, %s\n", current->result);
                 }
                 else {
@@ -381,7 +382,7 @@ void generateMIPS(TAC* tacInstructions)
         // Handle return operation
         else if (strcmp(current->op, "return") == 0) {
             // Load the return value into $v0
-            if (isConstant(current->arg1)) {
+            if (isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli $v0, %s\n", current->arg1);
             }
             else {
@@ -410,7 +411,7 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Load the argument into the register
-            if (isConstant(current->arg1)) {
+            if (isAConstant(current->arg1)) {
                 fprintf(outputFile, "\tli %s, %s\n", argumentRegisters[reg1].name, current->arg1);
             }
             else {
@@ -471,7 +472,7 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Load the index into the register
-            if (isConstant(current->arg2))
+            if (isAConstant(current->arg2))
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[indexReg].name, current->arg2);
 
             else
@@ -479,7 +480,7 @@ void generateMIPS(TAC* tacInstructions)
 
 
             // Load the value to assign into the register
-            if (isConstant(current->arg1))
+            if (isAConstant(current->arg1))
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[resultReg].name, current->arg1);
             else
                 fprintf(outputFile, "\tlw %s, %s\n", tempRegisters[resultReg].name, current->arg1);
@@ -525,7 +526,7 @@ void generateMIPS(TAC* tacInstructions)
             }
 
             // Load the index into the register
-            if (isConstant(current->arg2))
+            if (isAConstant(current->arg2))
                 fprintf(outputFile, "\tli %s, %s\n", tempRegisters[indexReg].name, current->arg2);
 
             else
@@ -769,7 +770,7 @@ void jumpToWhileBlock(TAC* current)
     }
 
     // Load the condition into the register
-    if (isConstant(current->arg1)) {
+    if (isAConstant(current->arg1)) {
         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg1Reg].name, current->arg1);
     }
     else {
@@ -777,7 +778,7 @@ void jumpToWhileBlock(TAC* current)
     }
 
     // Load the condition into the register
-    if (isConstant(current->arg2)) {
+    if (isAConstant(current->arg2)) {
         fprintf(outputFile, "\tli %s, %s\n", tempRegisters[arg2Reg].name, current->arg2);
     }
     else {
@@ -830,7 +831,7 @@ void addDataSection(TAC* current, char* variables[], int varIndex) {
             strcmp(current->op, "*") == 0 || strcmp(current->op, "-") == 0 ||
             strcmp(current->op, "/") == 0) {
             // Check if the result is a variable
-            if (current->result != NULL && !isConstant(current->result)) {
+            if (current->result != NULL && !isAConstant(current->result)) {
                 int found = 0;
                 for (int i = 0; i < varIndex; i++) {
                     if (variables[i] != NULL && strcmp(variables[i], current->result) == 0) {
@@ -848,7 +849,7 @@ void addDataSection(TAC* current, char* variables[], int varIndex) {
         }
         // Params
         else if (strcmp(current->op, "param") == 0) {
-            if (current->arg1 != NULL && !isConstant(current->arg1)) {
+            if (current->arg1 != NULL && !isAConstant(current->arg1)) {
                 int found = 0;
                 for (int i = 0; i < varIndex; i++) {
                     if (variables[i] != NULL && strcmp(variables[i], current->arg1) == 0) {
@@ -869,7 +870,7 @@ void addDataSection(TAC* current, char* variables[], int varIndex) {
             // Get the int value of the array size
             int size = atoi(current->arg2);
 
-            if (current->result != NULL && !isConstant(current->result)) {
+            if (current->result != NULL && !isAConstant(current->result)) {
                 int found = 0;
                 for (int i = 0; i < varIndex; i++) {
                     if (variables[i] != NULL && strcmp(variables[i], current->result) == 0) {
@@ -888,7 +889,7 @@ void addDataSection(TAC* current, char* variables[], int varIndex) {
         // Any access or assignment of array
         else if(strcmp(current->op, "array_assign") == 0 || strcmp(current->op, "array_access") == 0)
         {
-            if (current->result != NULL && !isConstant(current->result)) {
+            if (current->result != NULL && !isAConstant(current->result)) {
                 int found = 0;
                 for (int i = 0; i < varIndex; i++) {
                     if (variables[i] != NULL && strcmp(variables[i], current->result) == 0) {
@@ -978,4 +979,48 @@ void printNewLineMIPS()
 {
     // Print a newline by printing the ASCII value 10
     fprintf(outputFile, "\tli $v0, 11\n\tli $a0, 10\n\tsyscall\n");
+}
+
+bool isAConstant(const char* str) 
+/*
+    Params:
+        const char* str: the string to check
+
+    Returns:
+        bool: true if the string is an integer constant, false otherwise
+    
+    Functionality:
+    First, the function checks if the input is 'NULL' or an empty string. 
+        False if so, as they don't represent a valid constant.
+
+    Next, if the first character is '-', the function skips it, 
+        as negative numbers are allowed.
+
+    The function then iterates over each character of the string using a while loop.
+        For each character, it uses isdigit() to check if it's a numeric digit.
+
+    If any character is not a digit, the function immediately returns 'false'.
+
+    If the end of the string is reached without encountering any non-digit characters, 
+        the function returns 'true', indicating the string is a numeric constant.
+*/ 
+{
+    if (str == NULL || *str == '\0') {
+        return false; // Empty string is not a constant
+    }
+
+    // Optional: Handle negative numbers
+    if (*str == '-') {
+        ++str;
+    }
+
+    // Check if string is numeric
+    while (*str) {
+        if (!isdigit((unsigned char)*str)) {
+            return false; // Found a non-digit character
+        }
+        ++str;
+    }
+
+    return true; // All characters were digits
 }
