@@ -1,0 +1,12 @@
+arg 5
+arg 3
+t3 = call add
+sum = t3
+sum print 
+
+function add 
+a param 
+b param 
+t0 = a + b 
+c = t0
+c return 

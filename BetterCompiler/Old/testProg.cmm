@@ -1,0 +1,15 @@
+// Function to calculate the factorial of a number
+int factorial(int n) {
+    int result;
+    int fact;
+
+    if (n <= 1) {
+        print(1);  // Print base case result
+        return 1;
+    } else {
+        fact = factorial(n - 1);
+        result = n * fact;  // Recursive call
+        print(result); // Print intermediate factorial value
+        return result;
+    }
+}
