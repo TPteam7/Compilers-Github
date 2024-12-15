@@ -256,7 +256,10 @@ ARGS:
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on return\n");
 
+            printf("%s", evaluateType(node->returnStmt.expr,symTab,varTab));
+
             semanticAnalysis(node->returnStmt.expr, symTab, varTab);
+
             break;
         // Check if vriable has already been declared. If not, add to VariableSymbolTable
         case NodeType_Declaration:
@@ -363,13 +366,13 @@ ARGS:
                 break;
             }
 
+            printf("%s", evaluateType(node->assignment.expr, symTab, varTab));
+
             if (printDebugSemantic == 1)
                 printf("Performing semantic analysis on assignment\n");
 
             semanticAnalysis(node->assignment.id, symTab, varTab);
             semanticAnalysis(node->assignment.expr, symTab, varTab);
-
-            evaluateType(node, symTab, varTab);
 
             break;
         case NodeType_Print:
@@ -445,6 +448,14 @@ const char* evaluateType(ASTNode* node, SymbolTable* symTab, VariableSymbolTable
         return "int";  // Assuming all numbers are int for simplicity
     } else if (node->nType == NodeType_ID) {
         Variable* var = lookupVariable(varTab, node->id.name);
+        if (var == NULL) {
+            fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->id.name);
+            exit(0);
+        }
+
+        return var->variableType;
+    } else if (node->nType == NodeType_ArrayAccess) {
+        Variable* var = lookupVariable(varTab, node->arrayAccess.id->id.name);
         if (var == NULL) {
             fprintf(stderr, "Semantic error: Variable %s has not been declared\n", node->id.name);
             exit(0);

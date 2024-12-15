@@ -157,7 +157,8 @@ BlockStmt: Declaration { $$ = createBlockStmtNode($1); }
 	| Assignment { $$ = createBlockStmtNode($1); }
 	| Print { $$ = createBlockStmtNode($1); }
 	| FunctionCall { $$ = createBlockStmtNode($1); }
-	| IfBlock { printf("IF Stmt\n"); };
+	| IfBlock { printf("IF Stmt\n"); }
+	| WhileStmt { $$ = createStmtNode($1); };
 
 
 ReturnStmt: RETURN Expr SEMICOLON { $$ = createReturnNode($2); };

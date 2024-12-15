@@ -6,7 +6,7 @@
 void optimizeTAC(TAC** head) {
     constantFolding(head);
 
-    //constantPropagation(head);
+    constantPropagation(head);
     
     //copyPropagation(head);            
     
@@ -191,64 +191,54 @@ void constantFolding(TAC** head)
 
 
 void constantPropagation(TAC** head) {
-    /*
-        Params:
-            TAC** head: a pointer to the head of the TAC list. This has ** because we need to modify the head pointer.
-                If we only pass TAC* head, we would only have a copy of the pointer, and changes to it would not reflect outside the function.
-
-        Functionality:
-            This function performs constant propagation optimization on the provided TAC list.
-
-            Constant propagation is the process of replacing variables with known constant values.
-
-            For example, if the TAC contains an assignment operation (e.g., t0 = 5), 
-                the constant propagation optimization will replace all uses of 't0' with '5'.
-    */
     TAC* current = *head;
-    bool keepChecking = true;
+
     while (current != NULL) {
         if (current->op != NULL && strcmp(current->op, "=") == 0) {
             // Check if the argument is a constant
             if (isConstant(current->arg1)) {
                 // Propagate the constant value to all uses of the variable
                 TAC* temp = current->next;
-                printf("arg1: %s\n", temp->result);
-                
-                while (temp != NULL) {
-                    // if inside while statement stop checking till end
-                    if (strcmp(temp->nodetype, "While_Stmt") == 0) {
-                        keepChecking = false;
-                    }
-                    // Set back to true if end of while statement
-                    if (strcmp(temp->nodetype, "End_WhileStmt") == 0) {
-                        keepChecking = true;
-                    }
+                int isReassigned = 0;
 
-                    // skip if print operator or while operator
-                    if (strcmp(temp->op, "print") == 0 || keepChecking == false) {
+                // Check if the variable is reassigned later
+                TAC* reassignmentCheck = current->next;
+                while (reassignmentCheck != NULL) {
+                    if (reassignmentCheck->result != NULL && 
+                        strcmp(reassignmentCheck->result, current->result) == 0) {
+                        isReassigned = 1;
+                        break;
+                    }
+                    reassignmentCheck = reassignmentCheck->next;
+                }
+
+                // Only propagate if the variable is not reassigned
+                if (!isReassigned) {
+                    while (temp != NULL) {
+                        // Skip if it's a print operation
+                        if (strcmp(temp->op, "print") == 0) {
+                            temp = temp->next;
+                            continue;
+                        }
+                        // Replace temp->arg1 if it matches current->result
+                        if (temp->arg1 != NULL && strcmp(temp->arg1, current->result) == 0) {
+                            free(temp->arg1);
+                            temp->arg1 = strdup(current->arg1);
+                        }
+                        // Replace temp->arg2 if it matches current->result
+                        if (temp->arg2 != NULL && strcmp(temp->arg2, current->result) == 0) {
+                            free(temp->arg2);
+                            temp->arg2 = strdup(current->arg1);
+                        }
                         temp = temp->next;
-                        continue;
                     }
-                    // if temp arg1 is equal to current result, replace it with current arg1
-                    if (temp->arg1 != NULL && strcmp(temp->arg1, current->result) == 0) {
-                        char* result = current->result;
-                        free(temp->arg1);
-                        
-                        // replace the arg1 with the current arg1
-                        temp->arg1 = strdup(current->arg1);
-                    }
-                    // if temp arg2 is equal to current result, replace it with current arg1
-                    if (temp->arg2 != NULL && strcmp(temp->arg2, current->result) == 0) {
-                        free(temp->arg2);
-                        temp->arg2 = strdup(current->arg1);
-                    }
-                    temp = temp->next;
                 }
             }
         }
         current = current->next;
     }
 }
+
 
 void copyPropagation(TAC** head) 
 /*
@@ -294,13 +284,11 @@ void copyPropagation(TAC** head)
 void deadCodeElimination(TAC** head) 
 /*
     Params:
-        TAC** head: a pointer to the head of the TAC list. This has ** because we need to modify the head pointer.
-            If we only pass TAC* head, we would only have a copy of the pointer, and changes to it would not reflect outside the function.
+        TAC** head: a pointer to the head of the TAC list.
 
     Functionality:
-        This function performs dead code elimination optimization on the provided TAC list.
-
-        Dead code elimination is the process of removing instructions that compute values not used by subsequent instructions or the program's output.
+        Removes instructions that compute values not used by subsequent instructions 
+        or the program's output, while preserving variable updates needed for program logic.
 */
 {
     TAC* current = *head; // Pointer to the current TAC instruction
@@ -324,10 +312,22 @@ void deadCodeElimination(TAC** head)
                 }
                 temp = temp->next;  // Move to the next TAC instruction
             }
-            // if the result is an integer, it is not used
-            if (isConstant(current->result)) {
-                isUsed = 0;
+
+            // Preserve assignments to variables used in control flow or externally (e.g., printed)
+            if (!isUsed && current->result != NULL && isVariable(current->result)) {
+                TAC* check = current->next;
+                while (check != NULL) {
+                    // Look for any `goto`, `print`, or other operations that depend on the variable
+                    if ((check->arg1 && strcmp(check->arg1, current->result) == 0) ||
+                        (check->op && strcmp(check->op, "print") == 0 && 
+                         check->arg1 && strcmp(check->arg1, current->result) == 0)) {
+                        isUsed = 1;  // Mark it as used if found
+                        break;
+                    }
+                    check = check->next;
+                }
             }
+
             // If the result of the assignment is not used anywhere later, it's dead code
             if (!isUsed) {
                 // Remove the dead code (the current TAC instruction)

@@ -190,6 +190,7 @@ ASTNode* createDeclarationAssignmentNode(ASTNode* type, ASTNode* id, ASTNode* ex
     node->declarationAssignment.type = type;
     node->declarationAssignment.id = id;
     node->declarationAssignment.expr = expr;
+    if (expr) expr->parent = node;
     return node;
 }
 

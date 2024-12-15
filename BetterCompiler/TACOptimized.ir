@@ -1,13 +1,108 @@
-a = 5
+length = 5
+array = array_decl 5
+i = 0
+
+WhileStart3:
+i < 5 
+goto Continue3
+arg i
+t20 = call factorial
+fact = t20
+array[i] = fact
+t22 = i + 1 
+i = t22
+goto WhileStart3 
+
+Continue3:
+i = 0
+
+WhileStart4:
+i < 5 
+goto Continue4
+t24 = array[i]
+arg t24
+t25 = call printInt
+var = t25
+t27 = i + 1 
+i = t27
+goto WhileStart4 
+
+Continue4:
+
+function add 
+a param 
+b param 
+t0 = a + b 
+sum = t0
+t2 = sum + 5 
+temp = t2
+t4 = temp * 2 
+doubleSum = t4
+doubleSum > 50 
+if goto L1
+goto L2 
+
+L1:
+doubleSum print 
+goto L0 
+
+L2:
+t6 = 0
+t6 print 
+goto L0 
+
+L0:
+doubleSum return 
+
+function subtract 
+a param 
+b param 
+t7 = a - b 
+c = t7
 
 WhileStart0:
-a < 10 
+c < 20 
 goto Continue0
-t3 = a + 1 
-a = t3
-a print 
+c print 
+t10 = c + 2 
+c = t10
 goto WhileStart0 
 
 Continue0:
-t4 = 7
-t4 print 
+c return 
+
+function factorial 
+n param 
+result = 1
+current = n
+
+WhileStart1:
+current > 1 
+goto Continue1
+t13 = result * current 
+result = t13
+t15 = current - 1 
+current = t15
+goto WhileStart1 
+
+Continue1:
+result return 
+
+function modulus 
+dividend param 
+divisor param 
+
+WhileStart2:
+dividend >= divisor 
+goto Continue2
+t16 = dividend - divisor 
+dividend = t16
+goto WhileStart2 
+
+Continue2:
+dividend return 
+
+function printInt 
+a param 
+a print 
+1 return 

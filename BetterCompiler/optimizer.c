@@ -4,9 +4,10 @@
 #include <string.h>
 
 void optimizeTAC(TAC** head) {
-    constantFolding(head);
 
     constantPropagation(head);
+
+    constantFolding(head);
     
     //copyPropagation(head);            
     
@@ -123,6 +124,7 @@ void constantFolding(TAC** head)
         // Addition
         if (strcmp(current->op, "+") == 0) {
             // Check if both operands are constants
+            printf("%s  &&  %s\n", current->arg1, current->arg2);
             if (isConstant(current->arg1) && isConstant(current->arg2)) {
                 int result = atoi(current->arg1) + atoi(current->arg2); // Perform the addition
                 char resultStr[20];
@@ -301,19 +303,19 @@ void deadCodeElimination(TAC** head)
         // Check if the operation is an assignment (e.g., t0 = ...)
         if (current->op != NULL && strcmp(current->op, "=") == 0) {
             // Flag to track whether the assigned result is ever used
-            int isUsed = 0;
+            int isUsed = 1;
 
-            // Temporary pointer to traverse the rest of the list and check usage of 'result'
-            TAC* temp = current->next;
-            while (temp != NULL) {
-                // Check if the result of the current assignment is used in later instructions (either as arg1 or arg2)
-                if ((temp->arg1 != NULL && strcmp(temp->arg1, current->result) == 0) ||
-                    (temp->arg2 != NULL && strcmp(temp->arg2, current->result) == 0)) {
-                    isUsed = 1;  // Mark it as used if found
-                    break;        // Exit the loop once usage is found
-                }
-                temp = temp->next;  // Move to the next TAC instruction
-            }
+            // // Temporary pointer to traverse the rest of the list and check usage of 'result'
+            // TAC* temp = current->next;
+            // while (temp != NULL) {
+            //     // Check if the result of the current assignment is used in later instructions (either as arg1 or arg2)
+            //     if ((temp->arg1 != NULL && strcmp(temp->arg1, current->result) == 0) ||
+            //         (temp->arg2 != NULL && strcmp(temp->arg2, current->result) == 0)) {
+            //         isUsed = 1;  // Mark it as used if found
+            //         break;        // Exit the loop once usage is found
+            //     }
+            //     temp = temp->next;  // Move to the next TAC instruction
+            // }
             // if the result is an integer, it is not used
             if (isConstant(current->result)) {
                 isUsed = 0;

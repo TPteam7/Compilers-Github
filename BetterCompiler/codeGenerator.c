@@ -633,7 +633,7 @@ void generateMIPS(TAC* tacInstructions)
         else if(strcmp(current->nodetype, "While_Condition") == 0) {
             printf("Generating MIPS for While statement\n");
 
-            fprintf(outputFile, "\tbeq %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->result);
+            fprintf(outputFile, "\tbeq %s, $zero, %s\n", tempRegisters[conditionReg1].name, current->op);
 
             // Deallocate condition registers if need be
             if(conditionReg1 != -1) {
@@ -868,6 +868,7 @@ void addDataSection(TAC* current, char* variables[], int varIndex) {
         // Array declaration
         else if(strcmp(current->op, "array_decl") == 0) {
             // Get the int value of the array size
+            printf("\n%s\n", current->arg2);
             int size = atoi(current->arg2);
 
             if (current->result != NULL && !isAConstant(current->result)) {

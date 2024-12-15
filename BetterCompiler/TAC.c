@@ -94,9 +94,12 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->functionCall.id);
             generateTAC(node->functionCall.argList);
 
-            if(node->parent->nType == NodeType_Assignment || node->parent->nType == NodeType_ArrayAssignment)
-                instruction->result = createTempVar();
-                instruction->op = "=";
+            if(node->parent != NULL) {
+                if(node->parent->nType == NodeType_Assignment || node->parent->nType == NodeType_ArrayAssignment) {
+                    instruction->result = createTempVar();
+                    instruction->op = "=";
+                }
+            }
             
             instruction->arg1 = "call";
             instruction->arg2 = createOperand(node->functionCall.id);
@@ -380,8 +383,8 @@ TAC* generateTAC(ASTNode* node) {
             // Create the call to the while statement
             instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
             sprintf(labelBuffer, "Continue%d", whileStmtCounter);
-            instruction->result = strdup(labelBuffer);
-            instruction->op = "goto";
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
             //instruction->arg1 = conditionTAC->arg1;
             //instruction->arg2 = conditionTAC->arg2;
             instruction->nodetype = "While_Condition";
@@ -795,6 +798,7 @@ void printTAC(TAC** tac) {
         printf("\n");
     }
     printf("\n");
+    
 }
 
 void printTACToFile(const char* filename, TAC** tac) {
@@ -838,7 +842,7 @@ void printTACToFile(const char* filename, TAC** tac) {
             fprintf(file, "%s %s %s\n", current->result, current->arg1, current->op);
         }
         else if (strcmp(current->nodetype, "While_Condition") == 0 ) {
-            fprintf(file, "%s %s\n", current->op, current->result);
+            fprintf(file, "%s %s\n", current->arg1, current->op);
         }
         else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
             fprintf(file, "%s\n", current->result);

@@ -1,9 +1,71 @@
-int a = 5;
-int x2 = 10;
-while(a < x2)
-{
-    a = a + 1;
-    print(a);
+int add(int a, int b) {
+    int sum;
+    int doubleSum;
+    int temp;
+
+    sum = a + b;  // Compute sum
+    temp = sum + 5;  // Add constant
+    doubleSum = temp * 2;  // Double the sum
+
+    if(doubleSum > 50) {
+        print(doubleSum);
+    }
+    else {
+        print(0);
+    }
+
+    return doubleSum;
 }
 
-print(7);
+int subtract(int a, int b) {
+    int c = a - b;
+
+    while(c < 20) {
+        print(c);
+        c = c + 2;
+    }
+
+    return c;
+}
+
+int factorial(int n) {
+    int result = 1; 
+    int current = n; 
+   
+    while (current > 1) {
+        result = result * current; 
+        current = current - 1;      
+    }
+ 
+    return result;
+}
+
+int modulus(int dividend, int divisor) {
+    while(dividend >= divisor) {
+        dividend = dividend - divisor;
+    }
+    return dividend;
+}
+
+int printInt(int a) {
+    print(a);
+    return 1;
+}
+
+int length = 5;
+int array[length];
+int i = 0;
+int fact;
+int var;
+
+while (i < length) {
+    fact = factorial(i);
+    array[i] = fact;
+    i = i + 1;
+}
+
+i = 0;
+while (i < length) {
+    var = printInt(array[i]);            
+    i = i + 1;
+}
