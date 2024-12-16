@@ -38,22 +38,26 @@ int printParserDebug = 0;
 	int number;
 	char character;
 	char* string;
+	char* stringOp;
 	char op;
 	struct ASTNode* node;
 }
 
 %token <string> ID
 %token <string> INT FLOAT BOOL VOID TRUE FALSE
-%token <string> PRINT IF ELSE WHILE RETURN
+%token <string> PRINT IF ELSE ELSE_IF WHILE RETURN
 %token <character> SEMICOLON COMMA
 %token <character> LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token <op> ASSIGN PLUS MINUS MULT DIV
+%token <stringOp> GREATER_THAN LESS_THAN EQUAL_TO GREATER_THAN_EQUAL_TO LESS_THAN_EQUAL_TO AND OR NOT_EQUAL_TO
 %token <number> NUMBER
 
 %printer { fprintf(yyoutput, "%s", $$); } ID;
 
 %type <node> Program StmtList Stmt Declaration Type Assignment Print Expr Term Factor
 %type <node> FunctionDeclaration FunctionCall ParamList ParamTail Param ArgList ArgTail BlockStmtList BlockStmt Block ReturnStmt
+%type <node> DeclarationAssignment IfBlock IfStmt ElseIfStmt ElseStmt Condition ConditionTail ConditionList SIGN CONJUNCTION
+%type <node> WhileStmt
 %start Program
 
 %%
@@ -66,16 +70,58 @@ StmtList:  { $$ = NULL; }
 
 
 Stmt: Declaration { $$ = createStmtNode($1); } 
+	| DeclarationAssignment { $$ = createStmtNode($1); } 
 	| Assignment { $$ = createStmtNode($1); }
 	| Print { $$ = createStmtNode($1); }
 	| FunctionCall { $$ = createStmtNode($1); }
-	| FunctionDeclaration { $$ = createStmtNode($1); };
+	| FunctionDeclaration { $$ = createStmtNode($1); }
+	| IfBlock { $$ = createStmtNode($1); }
+	| WhileStmt { $$ = createStmtNode($1); };
+
+
+IfBlock: IfStmt ElseIfStmt ElseStmt { $$ = createIfBlockNode($1, $2, $3); };
+
+
+IfStmt: IF LPAREN ConditionList RPAREN LBRACE Block RBRACE { $$ = createIfStmtNode($3, $6); };
+
+
+ElseIfStmt: { $$ = NULL; }
+	| ELSE_IF LPAREN ConditionList RPAREN LBRACE Block RBRACE ElseIfStmt { $$ = createElseIfStmtNode($3, $6, $8); };
+
+
+ElseStmt: { $$ = NULL; }
+	| ELSE LBRACE Block RBRACE { $$ = createElseStmtNode($3); };
+
+
+WhileStmt: WHILE LPAREN ConditionList RPAREN LBRACE Block RBRACE { $$ = createWhileStmtNode($3, $6); };
+
+
+ConditionList: Condition ConditionTail{ $$ = createConditionListNode($1, $2); };
+
+
+Condition: Expr SIGN Expr{ $$ = createConditionNode($1, $2, $3); };
+
+
+ConditionTail: { $$ = NULL; }
+	| CONJUNCTION Condition ConditionTail { $$ = createConditionTailNode($1, $2, $3); };
+
+
+SIGN: GREATER_THAN { $$ = createSignNode($1); }
+	| LESS_THAN { $$ = createSignNode($1); }
+	| EQUAL_TO { $$ = createSignNode($1); }
+	| GREATER_THAN_EQUAL_TO { $$ = createSignNode($1); }
+	| LESS_THAN_EQUAL_TO { $$ = createSignNode($1); };
+	| NOT_EQUAL_TO { $$ = createSignNode($1); };
+
+
+CONJUNCTION: AND { $$ = createConjunctionNode($1); }
+	| OR { $$ = createConjunctionNode($1); };
 
 
 FunctionDeclaration: Type ID LPAREN ParamList RPAREN LBRACE Block RBRACE { $$ = createFunctionDeclarationNode($1, createIDNode($2), $4, $7); };
 
 
-FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON{ printf("HERE\n"); $$ = createFunctionCallNode(createIDNode($1), $3); };
+FunctionCall: ID LPAREN ArgList RPAREN SEMICOLON{ $$ = createFunctionCallNode(createIDNode($1), $3); };
 
 
 ParamList: { $$ = NULL; }
@@ -107,9 +153,12 @@ BlockStmtList:  { $$ = NULL; }
 
 
 BlockStmt: Declaration { $$ = createBlockStmtNode($1); } 
+	| DeclarationAssignment { $$ = createStmtNode($1); } 
 	| Assignment { $$ = createBlockStmtNode($1); }
 	| Print { $$ = createBlockStmtNode($1); }
-	| FunctionCall { $$ = createBlockStmtNode($1); };
+	| FunctionCall { $$ = createBlockStmtNode($1); }
+	| IfBlock { printf("IF Stmt\n"); }
+	| WhileStmt { $$ = createStmtNode($1); };
 
 
 ReturnStmt: RETURN Expr SEMICOLON { $$ = createReturnNode($2); };
@@ -119,7 +168,11 @@ Declaration: Type ID SEMICOLON { $$ = createDeclarationNode($1, createIDNode($2)
 	| Type ID LBRACKET Expr RBRACKET SEMICOLON { $$ = createArrayDeclarationNode($1, createIDNode($2), $4); };
 
 
-Type: INT { printf("HERE\n"); $$ = createTypeNode($1); }
+DeclarationAssignment: Type ID ASSIGN Expr SEMICOLON { $$ = createDeclarationAssignmentNode($1, createIDNode($2), $4);}
+	| Type ID ASSIGN FunctionCall { $$ = createDeclarationAssignmentNode($1, createIDNode($2), $4);}
+
+
+Type: INT { $$ = createTypeNode($1); }
     | FLOAT { $$ = createTypeNode($1); }
 	| BOOL { $$ = createTypeNode($1); }
 	| VOID { $$ = createTypeNode($1); };
@@ -166,7 +219,7 @@ int main() {
         return EXIT_FAILURE;
     }
 
-	printf("\nPARSER:\nStarting to parse\n\n");
+	printf("\n=== PARSER ===\n\n");
     int result = yyparse();
 
     if (result == 0) {
@@ -177,17 +230,16 @@ int main() {
 			printSymbolTable(symTab);
 		}
 
-		printf("\nPARSER:\nParsing successful!\n");
+		printf("\n=== AST ===\n\n");
 
 		printAST(root, 0);
 		
 
 		// Semantic analysis
 		printf("\n=== SEMANTIC ANALYSIS ===\n\n");
+
 		semanticAnalysis(root, symTab, symTab->topLevelStatements);
-
-
-		//print symbolTable
+		// print symbolTable
 		printSymbolTable(symTab);
 
 		printf("\n=== THREE ADDRESS CODE ===\n");
@@ -200,7 +252,7 @@ int main() {
 		printf("\n\n=== CODE OPTIMIZATION ===\n");
 
 		optimizeTAC(&tacHead);
-		printOptimizedTAC("TACOptimized.ir", tacHead);
+		printTACToFile("TACOptimized.ir", &tacHead);
 
 		printf("\n=== CODE GENERATION ===\n");
 		initCodeGenerator("output.s");
@@ -208,6 +260,7 @@ int main() {
 		finalizeCodeGenerator("output.s");
 
         freeAST(root);
+		cleanupTAC(&tacHead);
 		freeSymbolTable(symTab);
 
     }

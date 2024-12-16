@@ -10,6 +10,16 @@ typedef enum {
     NodeType_Stmt,
     NodeType_FunctionDeclaration,
     NodeType_FunctionCall,
+    NodeType_IfBlock,
+    NodeType_IfStmt,
+    NodeType_ElseIfStmt,
+    NodeType_ElseStmt,
+    NodeType_WhileStmt,
+    NodeType_Condition,
+    NodeType_ConditionTail,
+    NodeType_ConditionList,
+    NodeType_Sign,
+    NodeType_Conjunction,
     NodeType_ParamList,
     NodeType_ParamTail,
     NodeType_Param,
@@ -20,6 +30,7 @@ typedef enum {
     NodeType_BlockStmt,
     NodeType_Return,
     NodeType_Declaration,
+    NodeType_DeclarationAssignment,
     NodeType_ArrayDeclaration,
     NodeType_ArrayAccess,
     NodeType_ArrayAssignment,
@@ -51,7 +62,7 @@ typedef struct ASTNode {
         } stmtList;
 
         struct {
-            struct ASTNode* child; // Declaration, assignment, print, functionCall, functionDeclaration
+            struct ASTNode* child; // Declaration, assignment, print, functionCall, functionDeclaration, DeclarationAssignment
         } stmt;
 
         struct {
@@ -65,6 +76,57 @@ typedef struct ASTNode {
             struct ASTNode* id;
             struct ASTNode* argList;      // switched from paramList to argList
         } functionCall;
+
+        struct {
+            struct ASTNode* ifStmt;        // IfStmt 
+            struct ASTNode* elseIfList;    // Linked list of ElseIfStmt nodes
+            struct ASTNode* elseStmt;      // Optional ElseStmt node
+        } ifBlock;
+
+        struct {
+            struct ASTNode* conditionList; 
+            struct ASTNode* block;
+        } ifStmt;
+
+        struct {
+            struct ASTNode* conditionList;
+            struct ASTNode* block;
+            struct ASTNode* next; // Next ElseIfStmt in the list
+        } elseIfStmt;
+
+        struct {
+            struct ASTNode* block;
+        } elseStmt;
+
+        struct {
+            struct ASTNode* conditionList;
+            struct ASTNode* block;
+        } whileStmt;
+
+        struct {
+            struct ASTNode* expr;
+            struct ASTNode* sign;
+            struct ASTNode* expr2;
+        } condition;
+
+        struct{
+            struct ASTNode* conjunction;
+            struct ASTNode* condition; 
+            struct ASTNode* conditionTail;
+        } conditionTail;
+
+        struct {
+            struct ASTNode* condition;
+            struct ASTNode* conditionTail;
+        } conditionList;
+
+        struct {
+            char* op; 
+        } sign;
+
+        struct {
+            char* op;
+        } conjunction;
 
         struct {
             struct ASTNode* paramTail;
@@ -110,6 +172,12 @@ typedef struct ASTNode {
             struct ASTNode* type;
             struct ASTNode* id;
         } declaration;
+
+        struct {
+            struct ASTNode* type;
+            struct ASTNode* id;
+            struct ASTNode* expr;
+        } declarationAssignment;
 
         struct {
             struct ASTNode* type;
@@ -177,6 +245,16 @@ ASTNode* createStmtListNode(ASTNode* stmt, ASTNode* stmtList);
 ASTNode* createStmtNode(ASTNode* child);
 ASTNode* createFunctionDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* paramList, ASTNode* block);
 ASTNode* createFunctionCallNode(ASTNode* id, ASTNode* argList);
+ASTNode* createIfBlockNode(ASTNode* ifStmt, ASTNode* elseIfList, ASTNode* elseStmt);
+ASTNode* createIfStmtNode(ASTNode* conditionList, ASTNode* block);
+ASTNode* createElseIfStmtNode(ASTNode* conditionList, ASTNode* block, ASTNode* next);
+ASTNode* createElseStmtNode(ASTNode* block);
+ASTNode* createWhileStmtNode(ASTNode* conditionList, ASTNode* block);
+ASTNode* createConditionNode(ASTNode* expr, ASTNode* sign, ASTNode* expr2);
+ASTNode* createConditionTailNode(ASTNode* conjunction, ASTNode* condition, ASTNode* conditionTail);
+ASTNode* createConditionListNode(ASTNode* condition, ASTNode* conditionTail);
+ASTNode* createSignNode(char* op);
+ASTNode* createConjunctionNode(char* op);
 ASTNode* createParamListNode(ASTNode* paramTail);
 ASTNode* createParamTailNode(ASTNode* param, ASTNode* paramTail);
 ASTNode* createParamNode(ASTNode* child);
@@ -187,6 +265,7 @@ ASTNode* createBlockStmtListNode(ASTNode* blockStmt, ASTNode* blockStmtList);
 ASTNode* createBlockStmtNode(ASTNode* child);
 ASTNode* createReturnNode(ASTNode* expr);
 ASTNode* createDeclarationNode(ASTNode* type, ASTNode* id);
+ASTNode* createDeclarationAssignmentNode(ASTNode* type, ASTNode* id, ASTNode* expr);
 ASTNode* createArrayDeclarationNode(ASTNode* type, ASTNode* id, ASTNode* size);
 ASTNode* createArrayAccessNode(ASTNode* id, ASTNode* index);
 ASTNode* createArrayAssignmentNode(ASTNode* id, ASTNode* index, ASTNode* value);

@@ -1,31 +1,192 @@
-t1 = 5
-arr = array_decl t1
-t2 = 3
-t3 = 17
-arr[t2] = t3
-t4 = 2
-t5 = 2
-arr[t4] = t5
-t6 = 5
-t7 = 5
-arr[t6] = t7
-t8 = 4
-t9 = arr[t8]
-t9 print 
-t10 = 2
-t11 = arr[t10]
-arg t11
-t12 = 3
-t13 = arr[t12]
-arg t13
-t14 = call addNums
-sum = t14
-sum print 
+t26 = 5
+length = t26
+array = array_decl length
+t27 = 0
+i = t27
 
-function addNums 
+WhileStart3:
+i < length 
+goto Continue3
+arg i
+t28 = call factorial
+fact = t28
+array[i] = fact
+t29 = 1
+t30 = i + t29 
+i = t30
+goto WhileStart3 
+
+Continue3:
+t31 = 0
+i = t31
+
+WhileStart4:
+i < length 
+goto Continue4
+t32 = array[i]
+arg t32
+t33 = call printInt
+printVar = t33
+t34 = 1
+t35 = i + t34 
+i = t35
+goto WhileStart4 
+
+Continue4:
+t36 = 4
+t37 = array[t36]
+arg t37
+t38 = 2
+t39 = array[t38]
+arg t39
+t40 = call modulus
+mod = t40
+mod print 
+t41 = 4
+t42 = array[t41]
+arg t42
+t43 = 0
+t44 = array[t43]
+arg t44
+t45 = call nestedIfStatements
+nested = t45
+
+function add 
 a param 
 b param 
 t0 = a + b 
-total = t0
-total return 
+sum = t0
+t1 = 5
+t2 = sum + t1 
+temp = t2
+t3 = 2
+t4 = temp * t3 
+doubleSum = t4
+t5 = 50
+doubleSum > t5 
+if goto L1
+goto L2 
 
+L1:
+doubleSum print 
+goto L0 
+
+L2:
+t6 = 0
+t6 print 
+goto L0 
+
+L0:
+doubleSum return 
+
+function subtract 
+a param 
+b param 
+t7 = a - b 
+c = t7
+
+WhileStart0:
+t8 = 20
+c < t8 
+goto Continue0
+c print 
+t9 = 2
+t10 = c + t9 
+c = t10
+goto WhileStart0 
+
+Continue0:
+c return 
+
+function factorial 
+n param 
+t11 = 1
+result = t11
+current = n
+
+WhileStart1:
+t12 = 1
+current > t12 
+goto Continue1
+t13 = result * current 
+result = t13
+t14 = 1
+t15 = current - t14 
+current = t15
+goto WhileStart1 
+
+Continue1:
+result return 
+
+function modulus 
+dividend param 
+divisor param 
+
+WhileStart2:
+dividend >= divisor 
+goto Continue2
+t16 = dividend - divisor 
+dividend = t16
+goto WhileStart2 
+
+Continue2:
+dividend return 
+
+function printInt 
+a param 
+a print 
+t17 = 1
+t17 return 
+
+function nestedIfStatements 
+test1 param 
+test2 param 
+test1 > test2 
+t18 = 10
+test1 != t18 
+&& 
+if goto L4
+goto L5 
+
+L4:
+t19 = 2
+t20 = test1 / t19 
+test1 = t20
+test1 < test2 
+if goto L7
+goto L8 
+
+L7:
+arg test1
+t21 = call printInt
+printVar = t21
+goto L6 
+
+L8:
+test1 > test2 
+elseif goto L9
+goto L10 
+
+L9:
+arg test2
+t22 = call printInt
+printVar = t22
+goto L6 
+
+L10:
+t23 = 0
+arg t23
+t24 = call printInt
+printVar = t24
+goto L6 
+
+L6:
+goto L3 
+
+L5:
+t25 = 0
+printVar = t25
+goto L3 
+
+L3:
+printVar return 

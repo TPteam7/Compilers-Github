@@ -1,19 +1,170 @@
-arr = array_decl 5 
-arr = 17 array_assign 3 
-arr = 2 array_assign 2 
-arr = 5 array_assign 5 
-t9 = arr array_access 4 
-t9 print 
-t11 = arr array_access 2 
-t11 arg 
-t13 = arr array_access 3 
-t13 arg 
-t14 = call addNums 
-sum = t14 
-sum print 
-function addNums 
+length = 5
+array = array_decl 5
+i = 0
+
+WhileStart3:
+i < 5 
+goto Continue3
+arg i
+t28 = call factorial
+fact = t28
+array[i] = fact
+t30 = i + 1 
+i = t30
+goto WhileStart3 
+
+Continue3:
+i = 0
+
+WhileStart4:
+i < 5 
+goto Continue4
+t32 = array[i]
+arg t32
+t33 = call printInt
+printVar = t33
+t35 = i + 1 
+i = t35
+goto WhileStart4 
+
+Continue4:
+t37 = array[4]
+arg t37
+t39 = array[2]
+arg t39
+t40 = call modulus
+mod = t40
+mod print 
+t42 = array[4]
+arg t42
+t44 = array[0]
+arg t44
+t45 = call nestedIfStatements
+nested = t45
+
+function add 
 a param 
 b param 
 t0 = a + b 
-total = t0 
-total return 
+sum = t0
+t2 = sum + 5 
+temp = t2
+t4 = temp * 2 
+doubleSum = t4
+doubleSum > 50 
+if goto L1
+goto L2 
+
+L1:
+doubleSum print 
+goto L0 
+
+L2:
+t6 = 0
+t6 print 
+goto L0 
+
+L0:
+doubleSum return 
+
+function subtract 
+a param 
+b param 
+t7 = a - b 
+c = t7
+
+WhileStart0:
+c < 20 
+goto Continue0
+c print 
+t10 = c + 2 
+c = t10
+goto WhileStart0 
+
+Continue0:
+c return 
+
+function factorial 
+n param 
+result = 1
+current = n
+
+WhileStart1:
+current > 1 
+goto Continue1
+t13 = result * current 
+result = t13
+t15 = current - 1 
+current = t15
+goto WhileStart1 
+
+Continue1:
+result return 
+
+function modulus 
+dividend param 
+divisor param 
+
+WhileStart2:
+dividend >= divisor 
+goto Continue2
+t16 = dividend - divisor 
+dividend = t16
+goto WhileStart2 
+
+Continue2:
+dividend return 
+
+function printInt 
+a param 
+a print 
+1 return 
+
+function nestedIfStatements 
+test1 param 
+test2 param 
+test1 > test2 
+test1 != 10 
+&& 
+if goto L4
+goto L5 
+
+L4:
+t20 = test1 / 2 
+test1 = t20
+test1 < test2 
+if goto L7
+goto L8 
+
+L7:
+arg test1
+t21 = call printInt
+printVar = t21
+goto L6 
+
+L8:
+test1 > test2 
+elseif goto L9
+goto L10 
+
+L9:
+arg test2
+t22 = call printInt
+printVar = t22
+goto L6 
+
+L10:
+arg 0
+t24 = call printInt
+printVar = t24
+goto L6 
+
+L6:
+goto L3 
+
+L5:
+printVar = 0
+goto L3 
+
+L3:
+0 return 

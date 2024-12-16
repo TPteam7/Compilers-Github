@@ -8,6 +8,14 @@ TAC** currentTACList = &tacHead;
 int tempVars[60];
 int printDebugTAC = 1;
 
+// Counter for if-elseif-else statements
+char labelBuffer[20];
+int ifStmtCounter = 0;
+int whileStmtCounter = 0;
+
+Stack stack;
+
+
 // Implement functions to generate TAC expressions
 TAC* generateTAC(ASTNode* node) {
 
@@ -30,16 +38,18 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Program: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on program\n");
+                printf("Performing TAC generation on program\n");
+            
+            initializeStack(&stack);
 
             generateTAC(node->program.stmtList);
-            appendTAC(&tacHead, funcDeclHead);
+            appendTAC(currentTACList, funcDeclHead);
             break;
         }
         case NodeType_StmtList: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on stmtlist\n");
+                printf("Performing TAC generation on stmtlist\n");
 
             generateTAC(node->stmtList.stmt);
             generateTAC(node->stmtList.stmtList);
@@ -48,7 +58,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Stmt: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on stmt\n");
+                printf("Performing TAC generation on stmt\n");
 
             generateTAC(node->stmt.child);
             break;
@@ -56,7 +66,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_FunctionDeclaration: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on function declaration\n");
+                printf("Performing TAC generation on function declaration\n");
 
             instruction->op = "function";
             instruction->arg2 = createOperand(node->functionDeclaration.id);
@@ -79,14 +89,17 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_FunctionCall: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on function call\n");
+                printf("Performing TAC generation on function call\n");
 
             generateTAC(node->functionCall.id);
             generateTAC(node->functionCall.argList);
 
-            if(node->parent->nType == NodeType_Assignment || node->parent->nType == NodeType_ArrayAssignment)
-                instruction->result = createTempVar();
-                instruction->op = "=";
+            if(node->parent != NULL) {
+                if(node->parent->nType == NodeType_Assignment || node->parent->nType == NodeType_ArrayAssignment) {
+                    instruction->result = createTempVar();
+                    instruction->op = "=";
+                }
+            }
             
             instruction->arg1 = "call";
             instruction->arg2 = createOperand(node->functionCall.id);
@@ -96,7 +109,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ParamList: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on paramlist\n");
+                printf("Performing TAC generation on paramlist\n");
 
             generateTAC(node->paramList.paramTail);
             break;
@@ -104,7 +117,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ParamTail: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on paramtail\n");
+                printf("Performing TAC generation on paramtail\n");
             
             generateTAC(node->paramTail.param);
             generateTAC(node->paramTail.paramTail);
@@ -113,7 +126,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Param: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on param\n");
+                printf("Performing TAC generation on param\n");
 
             generateTAC(node->param.child);
 
@@ -128,7 +141,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ArgList: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on arglist\n");
+                printf("Performing TAC generation on arglist\n");
 
             generateTAC(node->argList.argTail);
             break;
@@ -136,7 +149,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ArgTail: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on argtail\n");
+                printf("Performing TAC generation on argtail\n");
 
             TAC* exprTAC = generateTAC(node->argTail.expr);
 
@@ -153,10 +166,320 @@ TAC* generateTAC(ASTNode* node) {
             
             break;
         }
+        case NodeType_IfBlock: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on if-elseif-else block\n");
+
+            sprintf(labelBuffer, "L%d", ifStmtCounter);
+            push(&stack, strdup(labelBuffer)); // Save label for later
+
+            ifStmtCounter++;
+
+            generateTAC(node->ifBlock.ifStmt);
+            generateTAC(node->ifBlock.elseIfList);
+            generateTAC(node->ifBlock.elseStmt);
+
+            // Create the label for the end of the ifStmtBlock
+            sprintf(labelBuffer, "%s:", pop(&stack));
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "endIfBlock";
+            instruction->nodetype = "EndIfBlock";
+
+            break;
+        }
+        case NodeType_IfStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on if statement\n");
+
+            generateTAC(node->ifStmt.conditionList);
+
+            // Create the call to the if statement
+            sprintf(labelBuffer, "L%d", ifStmtCounter);
+            char* trueLabel = strdup(labelBuffer); // Save label for later
+            instruction->result = "if";
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "IfStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Create the call to the false result
+            sprintf(labelBuffer, "L%d", ifStmtCounter + 1);
+            char* falseLabel = strdup(labelBuffer);
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "EndIfCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Create the label for the if statement block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "if";
+            instruction->nodetype = "IfStmt";
+
+            ifStmtCounter += 2;        
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Generate TAC for the if statement block
+            generateTAC(node->ifStmt.block);
+
+            sprintf(labelBuffer, "%s", peek(&stack));
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "EndIfCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Create the label for the if statement block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "%s:", falseLabel);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "endif";
+            instruction->nodetype = "EndIfLabel";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+            
+            break;
+        }
+        case NodeType_ElseIfStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on else if statement\n");
+
+            // Generate TAC for the condition of the else if statement
+            generateTAC(node->elseIfStmt.conditionList);
+
+            // Create the call to the else if statement
+            sprintf(labelBuffer, "L%d", ifStmtCounter);
+            char* trueLabel = strdup(labelBuffer); // Save label for later
+            instruction->result = "elseif";
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "ElseIfStmtCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Create the call to the false result
+            sprintf(labelBuffer, "L%d", ifStmtCounter + 1);
+            char* falseLabel = strdup(labelBuffer);
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "EndElseIfCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Create the label for the else if statement block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "elseIf";
+            instruction->nodetype = "ElseIfStmt";
+
+            ifStmtCounter += 2;
+
+            // Append the instruction to the TAC list
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Generate TAC for the else if statement block
+            generateTAC(node->elseIfStmt.block);
+
+            sprintf(labelBuffer, "%s", peek(&stack));
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "EndElseIfCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Create the label for the if statement block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "%s:", falseLabel);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "endelseif";
+            instruction->nodetype = "EndElseIfLabel";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            generateTAC(node->elseIfStmt.next);
+            break;
+        }
+        case NodeType_ElseStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on else statement\n");
+
+            // sprintf(labelBuffer, "L%d", ifStmtCounter);
+            // instruction->result = strdup(labelBuffer);
+            // instruction->op = "else";
+            // instruction->nodetype = "ElseStmtCall";
+
+            // instruction->next = NULL;
+            // appendTAC(currentTACList, instruction);
+
+            // instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            // sprintf(labelBuffer, "L%d:", ifStmtCounter);
+            // instruction->result = strdup(labelBuffer);
+            // instruction->op = "else";
+            // instruction->arg1 = NULL;
+            // instruction->arg2 = NULL;
+            // instruction->nodetype = "ElseStmt";
+
+            // ifStmtCounter++;
+
+            // instruction->next = NULL;
+            // appendTAC(currentTACList, instruction);
+
+            generateTAC(node->elseStmt.block);
+
+            sprintf(labelBuffer, "%s", peek(&stack));
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            instruction->nodetype = "EndElseCall";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            break;
+        }
+        case NodeType_WhileStmt: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on while statement\n");
+
+            // Create the label for the while statement block
+            sprintf(labelBuffer, "WhileStart%d:", whileStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "while";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
+            instruction->nodetype = "While_Stmt";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Generate TAC for the condition of the while statement
+            generateTAC(node->whileStmt.conditionList);
+
+            // Create the call to the while statement
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "Continue%d", whileStmtCounter);
+            instruction->op = strdup(labelBuffer);
+            instruction->arg1 = "goto";
+            //instruction->arg1 = conditionTAC->arg1;
+            //instruction->arg2 = conditionTAC->arg2;
+            instruction->nodetype = "While_Condition";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Generate TAC for the while statement block
+            generateTAC(node->whileStmt.block);
+
+            //Add a instruction to end the while block
+            instruction = (TAC*)malloc(sizeof(TAC)); // Create a new instruction
+            sprintf(labelBuffer, "WhileStart%d", whileStmtCounter);
+            instruction->arg1 = "goto";
+            instruction->op = strdup(labelBuffer);
+            instruction->nodetype = "End_WhileStmt";
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            // Add the continue statement
+            instruction = (TAC*)malloc(sizeof(TAC));
+            sprintf(labelBuffer, "Continue%d:", whileStmtCounter);
+            instruction->result = strdup(labelBuffer);
+            instruction->op = "continue";
+            instruction->arg1 = NULL;
+            instruction->arg2 = NULL;
+            instruction->nodetype = "Continue_Stmt";
+
+            whileStmtCounter++;
+
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            break;
+        }
+        case NodeType_ConditionList: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on conditionlist\n");
+
+            generateTAC(node->conditionList.condition);
+            generateTAC(node->conditionList.conditionTail);
+            break;
+        }
+        case NodeType_Condition: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on condition\n");
+
+            TAC *leftExprTAC = generateTAC(node->condition.expr);
+            TAC *rightExprTAC = generateTAC(node->condition.expr2);
+
+
+            instruction = (TAC*)malloc(sizeof(TAC));
+            instruction->arg1 = leftExprTAC->result;
+            instruction->arg2 = rightExprTAC->result;
+            instruction->op = strdup(node->condition.sign->sign.op);
+            instruction->nodetype = "Condition";
+            instruction->next = NULL;
+            appendTAC(currentTACList, instruction);
+
+            break;
+        }
+        case NodeType_ConditionTail: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on conditiontail\n");
+
+            generateTAC(node->conditionTail.condition);
+            generateTAC(node->conditionTail.conjunction);
+            generateTAC(node->conditionTail.conditionTail);
+            
+            break;
+        }
+        case NodeType_Sign: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on sign\n");
+
+            break;
+        }
+        case NodeType_Conjunction: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on conjunction\n");
+
+            instruction->op = strdup(node->conjunction.op);
+            instruction->nodetype = "Conjunction";
+            break;
+        }
         case NodeType_Block: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on block\n");
+                printf("Performing TAC generation on block\n");
 
             generateTAC(node->block.blockStmtList);
             generateTAC(node->block.returnStmt);
@@ -165,7 +488,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_BlockStmtList: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on blockStmtlist\n");
+                printf("Performing TAC generation on blockStmtlist\n");
 
             generateTAC(node->blockStmtList.blockStmt);
             generateTAC(node->blockStmtList.blockStmtList);
@@ -174,7 +497,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_BlockStmt: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on blockStmt\n");
+                printf("Performing TAC generation on blockStmt\n");
 
             generateTAC(node->blockStmt.child);
             break;
@@ -182,7 +505,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Return: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on return\n");
+                printf("Performing TAC generation on return\n");
 
             TAC* exprTAC = generateTAC(node->returnStmt.expr);
 
@@ -196,7 +519,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Declaration: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on declaration\n");
+                printf("Performing TAC generation on declaration\n");
 
             printf("Declaration: %s\n", node->declaration.id->id.name);
 
@@ -204,10 +527,27 @@ TAC* generateTAC(ASTNode* node) {
             generateTAC(node->declaration.id);
             break;
         }
+        case NodeType_DeclarationAssignment: {
+            //print debug statement
+            if (printDebugTAC == 1)
+                printf("Performing TAC generation on declaration assignment\n");
+
+            generateTAC(node->declarationAssignment.type);
+            generateTAC(node->declarationAssignment.id);
+            TAC* exprTAC = generateTAC(node->declarationAssignment.expr);
+
+            instruction->arg1 = exprTAC->result;
+            instruction->op = "=";
+            instruction->arg2 = NULL;
+            instruction->result = createOperand(node->declarationAssignment.id);
+            instruction->nodetype = "DeclarationAssignment";
+
+            break;
+        }
         case NodeType_ArrayDeclaration: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on array declaration\n");
+                printf("Performing TAC generation on array declaration\n");
 
             // Generate TAC for the size of the array
             generateTAC(node->arrayDeclaration.type);
@@ -225,7 +565,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ArrayAssignment: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on array assignment\n");
+                printf("Performing TAC generation on array assignment\n");
 
             generateTAC(node->arrayAssignment.id);
             TAC* indexTAC = generateTAC(node->arrayAssignment.index);
@@ -242,7 +582,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ArrayAccess: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on array access\n");
+                printf("Performing TAC generation on array access\n");
 
             // Skip the array access if it is part of an assignment
             // if (node->parent->nType == NodeType_Assignment || node->parent->nType == NodeType_ArrayAssignment) {
@@ -263,14 +603,14 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Type: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on type: %s\n", node->type.typeName);
+                printf("Performing TAC generation on type: %s\n", node->type.typeName);
 
             break;
         }
         case NodeType_Assignment: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on assignment\n");
+                printf("Performing TAC generation on assignment\n");
 
             generateTAC(node->assignment.id);
             TAC* exprTAC = generateTAC(node->assignment.expr); 
@@ -286,7 +626,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Print: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on print\n");
+                printf("Performing TAC generation on print\n");
 
             TAC* exprTAC = generateTAC(node->print.expr); 
             
@@ -300,7 +640,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Expr: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on expr\n");
+                printf("Performing TAC generation on expr\n");
 
             TAC* leftTAC = generateTAC(node->expr.left);
             TAC* rightTAC = generateTAC(node->expr.right);
@@ -316,7 +656,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Term: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on term\n");
+                printf("Performing TAC generation on term\n");
 
             TAC* leftTAC = generateTAC(node->term.left);
             TAC* rightTAC = generateTAC(node->term.right);
@@ -332,7 +672,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Factor: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on factor\n");
+                printf("Performing TAC generation on factor\n");
 
             generateTAC(node->factor.child);
             break;
@@ -340,7 +680,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_ID: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on ID\n");
+                printf("Performing TAC generation on ID\n");
 
             instruction->result = createOperand(node); 
             instruction->op = NULL; 
@@ -355,7 +695,7 @@ TAC* generateTAC(ASTNode* node) {
         case NodeType_Number: {
             //print debug statement
             if (printDebugTAC == 1)
-                printf("Performing semantic analysis on number\n");
+                printf("Performing TAC generation on number\n");
 
             instruction->op = "=";
             instruction->arg1 = createOperand(node);
@@ -373,7 +713,7 @@ TAC* generateTAC(ASTNode* node) {
             return NULL;
     }
 
-    if (node->nType != NodeType_FunctionDeclaration && node->nType != NodeType_ArgTail) {
+    if (!isNonActionableNodeType(node->nType)) {
         instruction->next = NULL;  // Make sure to null-terminate the new instruction
         appendTAC(currentTACList, instruction);
     }
@@ -458,6 +798,7 @@ void printTAC(TAC** tac) {
         printf("\n");
     }
     printf("\n");
+    
 }
 
 void printTACToFile(const char* filename, TAC** tac) {
@@ -472,11 +813,13 @@ void printTACToFile(const char* filename, TAC** tac) {
     TAC* current = *(tac);
     while (current != NULL) {
         // Add new line for specific operators
-        if (strcmp(current->op, "function") == 0) {
+        if (strcmp(current->nodetype, "FunctionDeclaration") == 0 || strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "While_Stmt") == 0 || strcmp(current->nodetype, "Continue_Stmt") == 0 || strcmp(current->nodetype, "EndIfLabel") == 0 || strcmp(current->nodetype, "EndElseIfLabel") == 0 || strcmp(current->nodetype, "EndIfBlock") == 0) {
             fprintf(file, "\n");
         }
-
-        if (strcmp(current->op, "array_decl") == 0) {
+        if (strcmp(current->nodetype, "While_Stmt") == 0 || strcmp(current->nodetype, "Continue_Stmt") == 0) {
+            fprintf(file, "%s\n", current->result);
+        }
+        else if (strcmp(current->op, "array_decl") == 0) {
             fprintf(file, "%s = %s %s\n", current->result, current->op, current->arg2);
         }
         else if (strcmp(current->op, "array_assign") == 0) {
@@ -495,6 +838,18 @@ void printTACToFile(const char* filename, TAC** tac) {
         else if (strcmp(current->op, "arg") == 0) {
             fprintf(file, "%s %s\n", current->op, current->arg1);
         }
+        else if (strcmp(current->nodetype, "IfStmtCall") == 0 || strcmp(current->nodetype, "ElseIfStmtCall") == 0) {
+            fprintf(file, "%s %s %s\n", current->result, current->arg1, current->op);
+        }
+        else if (strcmp(current->nodetype, "While_Condition") == 0 ) {
+            fprintf(file, "%s %s\n", current->arg1, current->op);
+        }
+        else if(strcmp(current->nodetype, "ElseStmtCall") == 0) {
+            fprintf(file, "%s\n", current->result);
+        }
+        else if (strcmp(current->nodetype, "IfStmt") == 0 || strcmp(current->nodetype, "ElseIfStmt") == 0 || strcmp(current->nodetype, "ElseStmt") == 0 || strcmp(current->nodetype, "EndIfLabel") == 0 || strcmp(current->nodetype, "EndElseIfLabel") == 0 || strcmp(current->nodetype, "EndIfBlock") == 0) {
+            fprintf(file, "%s\n", current->result);
+        }
         else {
             if(current->result != NULL)
                 fprintf(file, "%s = ", current->result);
@@ -504,10 +859,6 @@ void printTACToFile(const char* filename, TAC** tac) {
                 fprintf(file, "%s ", current->op);
             if(current->arg2 != NULL)
                 fprintf(file, "%s ", current->arg2);
-            fprintf(file, "\n");
-        }
-
-        if (strcmp(current->op, "return") == 0) {
             fprintf(file, "\n");
         }
 
@@ -534,6 +885,16 @@ char* createOperand(ASTNode* node) {
         default:
             return NULL;
     }
+}
+
+bool isNonActionableNodeType(NodeType type) {
+    return type == NodeType_FunctionDeclaration ||
+           type == NodeType_Condition || 
+           type == NodeType_ArgTail ||
+           type == NodeType_IfStmt ||
+           type == NodeType_ElseIfStmt ||
+           type == NodeType_ElseStmt ||
+           type == NodeType_WhileStmt;
 }
 
 // Function to remove nodes with NULL arg1, arg2, and op
@@ -564,4 +925,49 @@ void cleanupTAC(TAC** head) {
         // Move to the next node
         current = next;
     }
+}
+
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+// STACK IMPLEMENTATION
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+
+void initializeStack(Stack* stack) {
+    stack->top = -1;  // Top is -1 when the stack is empty
+}
+
+int isEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+
+int isFull(Stack* stack) {
+    return stack->top == MAX - 1;
+}
+
+void push(Stack* stack, char* value) {
+    if (isFull(stack)) {
+        printf("Stack Overflow! Cannot push %s.\n", value);
+        return;
+    }
+    stack->endLabel[++stack->top] = value;
+}
+
+char* pop(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack Underflow! Cannot pop.\n");
+        return NULL;  // Return an invalid value or handle it differently
+    }
+    return stack->endLabel[stack->top--];
+}
+
+char* peek(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty! Nothing to peek.\n");
+        return NULL;  // Return an invalid value or handle it differently
+    }
+    return stack->endLabel[stack->top];
 }
