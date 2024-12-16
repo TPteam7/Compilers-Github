@@ -3,7 +3,7 @@
 
 
 // Perform semantic analysis on the AST
-int printDebugSemantic = 1;
+int printDebugSemantic = 0;
 
 void semanticAnalysis(ASTNode* node, SymbolTable* symTab, VariableSymbolTable* varTab) 
 /*

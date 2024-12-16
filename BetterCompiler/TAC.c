@@ -6,7 +6,7 @@ TAC* tacHead = NULL;
 TAC* funcDeclHead = NULL; // Separate list for function declarations
 TAC** currentTACList = &tacHead;
 int tempVars[60];
-int printDebugTAC = 1;
+int printDebugTAC = 0;
 
 // Counter for if-elseif-else statements
 char labelBuffer[20];
