@@ -6,11 +6,11 @@ WhileStart3:
 i < 5 
 goto Continue3
 arg i
-t20 = call factorial
-fact = t20
+t28 = call factorial
+fact = t28
 array[i] = fact
-t22 = i + 1 
-i = t22
+t30 = i + 1 
+i = t30
 goto WhileStart3 
 
 Continue3:
@@ -19,15 +19,28 @@ i = 0
 WhileStart4:
 i < 5 
 goto Continue4
-t24 = array[i]
-arg t24
-t25 = call printInt
-var = t25
-t27 = i + 1 
-i = t27
+t32 = array[i]
+arg t32
+t33 = call printInt
+printVar = t33
+t35 = i + 1 
+i = t35
 goto WhileStart4 
 
 Continue4:
+t37 = array[4]
+arg t37
+t39 = array[2]
+arg t39
+t40 = call modulus
+mod = t40
+mod print 
+t42 = array[4]
+arg t42
+t44 = array[0]
+arg t44
+t45 = call nestedIfStatements
+nested = t45
 
 function add 
 a param 
@@ -106,3 +119,52 @@ function printInt
 a param 
 a print 
 1 return 
+
+function nestedIfStatements 
+test1 param 
+test2 param 
+test1 > test2 
+test1 != 10 
+&& 
+if goto L4
+goto L5 
+
+L4:
+t20 = test1 / 2 
+test1 = t20
+test1 < test2 
+if goto L7
+goto L8 
+
+L7:
+arg test1
+t21 = call printInt
+printVar = t21
+goto L6 
+
+L8:
+test1 > test2 
+elseif goto L9
+goto L10 
+
+L9:
+arg test2
+t22 = call printInt
+printVar = t22
+goto L6 
+
+L10:
+arg 0
+t24 = call printInt
+printVar = t24
+goto L6 
+
+L6:
+goto L3 
+
+L5:
+printVar = 0
+goto L3 
+
+L3:
+0 return 

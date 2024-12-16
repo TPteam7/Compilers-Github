@@ -58,6 +58,11 @@ void generateMIPS(TAC* tacInstructions)
 
     TAC* current = tacInstructions;
     fprintf(outputFile, ".data\n"); // Data segment for variables
+    fprintf(outputFile, "\tstart_time: .word 0\n");
+    fprintf(outputFile, "\tend_time: .word 0\n");
+    fprintf(outputFile, "\tmessage: .asciiz \"Execution time: \"\n");
+    fprintf(outputFile, "\tnewline: .asciiz \"\n\" \n");
+    
 
     // Make a list to store the variables in order to not declare them multiple times
     char* variables[100] = {NULL}; // Initialize all elements to NULL
@@ -70,6 +75,11 @@ void generateMIPS(TAC* tacInstructions)
 
 
     fprintf(outputFile, ".text\n.globl main\nmain:\n");
+    fprintf(outputFile, "\tli $v0, 30\n");
+    fprintf(outputFile, "\tsyscall\n");
+    fprintf(outputFile, "\tsw $v0, start_time\n");
+
+
 
     printf("Generating MIPS code...\n");
 
@@ -368,6 +378,28 @@ void generateMIPS(TAC* tacInstructions)
 
             // if end of program is false print the end in main first
             if(!endOfProgram) {
+                fprintf(outputFile, "\tla $a0, message\n");
+                fprintf(outputFile, "\tli $v0, 4\n");
+                fprintf(outputFile, "\tsyscall\n");
+
+                fprintf(outputFile, "\tli $v0, 30\n");
+                fprintf(outputFile, "\tsyscall\n");
+                fprintf(outputFile, "\tsw $v0, end_time\n");
+
+                fprintf(outputFile, "\tlw $t2, end_time\n");
+                fprintf(outputFile, "\tlw $t3, start_time\n");
+                fprintf(outputFile, "\tsub $t4, $t2, $t3\n");
+
+                fprintf(outputFile, "\tmtc1 $t4, $f0\n");
+                fprintf(outputFile, "\tli $t5, 1000\n");
+                fprintf(outputFile, "\tmtc1 $t5, $f1\n");
+                fprintf(outputFile, "\tcvt.s.w $f0, $f0\n");
+                fprintf(outputFile, "\tcvt.s.w $f1, $f1\n");
+                fprintf(outputFile, "\tdiv.s $f2, $f0, $f1\n");
+
+                fprintf(outputFile, "\tli $v0, 2\n");
+                fprintf(outputFile, "\tmov.s $f12, $f2\n");
+                fprintf(outputFile, "\tsyscall\n");
                 fprintf(outputFile, "\tli $v0, 10\n\tsyscall\n");
                 endOfProgram = true;
             }

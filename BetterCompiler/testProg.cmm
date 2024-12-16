@@ -1,71 +1,133 @@
+// Function add:
+// This function demonstrates how the compiler handles variable declarations,
+// basic arithmetic operations, and conditional statements. It computes the sum 
+// of two integers, applies additional operations, and evaluates conditions to 
+// determine which value to print.
 int add(int a, int b) {
-    int sum;
-    int doubleSum;
-    int temp;
+    int sum;               // Compiler allocates memory for sum
+    int doubleSum;         // Compiler allocates memory for doubleSum
+    int temp;              // Compiler allocates memory for temp
 
-    sum = a + b;  // Compute sum
-    temp = sum + 5;  // Add constant
-    doubleSum = temp * 2;  // Double the sum
+    sum = a + b;           // Compiler generates TAC for addition: t1 = a + b
+    temp = sum + 5;        // Compiler generates TAC for addition: t2 = t1 + 5
+    doubleSum = temp * 2;  // Compiler generates TAC for multiplication: t3 = t2 * 2
 
-    if(doubleSum > 50) {
-        print(doubleSum);
+    // Conditional check: Compiler generates TAC for comparison and branching
+    if (doubleSum > 50) {  
+        print(doubleSum);  // Compiler generates TAC to print doubleSum
+    } else {
+        print(0);          // Compiler generates TAC to print 0
     }
-    else {
-        print(0);
-    }
 
-    return doubleSum;
+    return doubleSum;      // Compiler generates TAC to return doubleSum
 }
 
+// Function subtract:
+// Demonstrates a while loop implementation where the compiler checks conditions,
+// executes loop body instructions, and updates the loop variable.
 int subtract(int a, int b) {
-    int c = a - b;
+    int c = a - b;         // Compiler generates TAC for subtraction: t1 = a - b
 
-    while(c < 20) {
-        print(c);
-        c = c + 2;
+    // While loop: Compiler generates TAC for condition check and loop control
+    while (c < 20) {       
+        print(c);          // Compiler generates TAC to print c
+        c = c + 2;         // Compiler generates TAC for incrementing c
     }
 
-    return c;
+    return c;              // Compiler generates TAC to return c
 }
 
+// Function factorial:
+// Demonstrates the compiler's handling of iterative calculations and 
+// maintaining a running result. Implements factorial calculation with 
+// multiplication and loop control.
 int factorial(int n) {
-    int result = 1; 
-    int current = n; 
-   
-    while (current > 1) {
-        result = result * current; 
-        current = current - 1;      
+    int result = 1;        // Compiler initializes result to 1
+    int current = n;       // Compiler initializes current to n
+
+    // While loop for factorial calculation
+    while (current > 1) {  
+        result = result * current;  // Compiler generates TAC for multiplication
+        current = current - 1;      // Compiler generates TAC for decrement
     }
- 
-    return result;
+
+    return result;         // Compiler generates TAC to return the result
 }
 
+// Function modulus:
+// Demonstrates how the compiler handles loops for arithmetic operations
+// that involve repeated subtraction until a condition is met.
 int modulus(int dividend, int divisor) {
-    while(dividend >= divisor) {
-        dividend = dividend - divisor;
+    // While loop for modulus calculation
+    while (dividend >= divisor) { 
+        dividend = dividend - divisor;  // Compiler generates TAC for subtraction
     }
-    return dividend;
+    return dividend;          // Compiler generates TAC to return the remainder
 }
 
+// Function printInt:
+// A utility function that prints an integer. Demonstrates function calls 
+// with a single argument and return statements.
 int printInt(int a) {
-    print(a);
-    return 1;
+    print(a);                // Compiler generates TAC to print the integer
+    return 1;                // Compiler generates TAC to return a dummy value
 }
 
-int length = 5;
-int array[length];
-int i = 0;
-int fact;
-int var;
+// Function nestedIfStatements:
+// This function demonstrates nested if-else statements and function calls
+// within another function. The compiler processes multiple conditions, generates
+// code for short-circuit evaluation, and supports function calls within branches.
+int nestedIfStatements(int test1, int test2) {
+    int printVar;            // Compiler allocates memory for printVar
 
+    // Outer if condition with logical AND and inequality check
+    if (test1 > test2 && test1 != 10) { 
+        test1 = test1 / 2;   // Compiler generates TAC for division
+
+        // Nested if-else statements
+        if (test1 < test2) { 
+            printVar = printInt(test1);  // Compiler handles function call within branch
+        } else if (test1 > test2) { 
+            printVar = printInt(test2);  // Function call in another branch
+        } else {
+            printVar = printInt(0);      // Default branch calls the function with 0
+        }
+    } else {
+        printVar = 0;         // Default value when outer condition fails
+    }
+
+    return printVar;          // Compiler generates TAC to return printVar
+}
+
+// Main execution:
+// Demonstrates array declarations, iterative calculations, and function calls
+// within a while loop. The compiler manages memory for arrays and loop control.
+int length = 5;              // Compiler allocates memory for a constant
+int array[length];           // Compiler allocates memory for an array
+int i = 0;                   // Compiler initializes loop counter
+int fact;                    // Compiler allocates memory for factorial result
+int printVar;                // Compiler allocates memory for print result
+int mod;                     // Compiler allocates memory for modulus result
+int nested;                  // Compiler allocates memory for nested function result
+
+// Populate the array with factorial values
 while (i < length) {
-    fact = factorial(i);
-    array[i] = fact;
-    i = i + 1;
+    fact = factorial(i);     // Compiler generates TAC for function call
+    array[i] = fact;         // Compiler generates TAC for array assignment
+    i = i + 1;               // Compiler generates TAC for loop counter increment
 }
 
-i = 0;
+i = 0;                       // Reset loop counter
+
+// Print all values in the array
 while (i < length) {
-    var = printInt(array[i]);            
-    i = i + 1;
+    printVar = printInt(array[i]);  // Compiler generates TAC for function call and printing
+    i = i + 1;                      // Compiler generates TAC for loop counter increment
 }
+
+// Compute and print modulus of two array elements
+mod = modulus(array[4], array[2]);  // Compiler generates TAC for modulus calculation
+print(mod);                         // Compiler generates TAC to print the result
+
+// Call nestedIfStatements with two array values
+nested = nestedIfStatements(array[4], array[0]);  // Compiler generates TAC for function call
