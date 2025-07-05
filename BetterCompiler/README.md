@@ -1,6 +1,6 @@
 # C-Lite Compiler README
 
-![C-Lite Logo](C-Lite.png "C-Lite")
+![C-Lite Logo](C-Lite Logo.png "C-Lite")
 
 ## Overview
 This document provides an extensive guide to the compiler we built, including its purpose, capabilities, and how to use it effectively. The compiler supports a custom programming language with syntax inspired by C. It includes support for:
