@@ -1,7 +1,7 @@
 # Compiler README
 
 ## Overview
-This document provides an extensive guide to the compiler you are building, including its purpose, capabilities, and how to use it effectively. The compiler supports a custom programming language with syntax inspired by C. It includes support for:
+This document provides an extensive guide to the compiler we built, including its purpose, capabilities, and how to use it effectively. The compiler supports a custom programming language with syntax inspired by C. It includes support for:
 
 1. Arithmetic operations.
 2. Control structures like conditional statements and loops.
